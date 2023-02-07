@@ -13,7 +13,13 @@
 
 	<script src="/assets/plugins/countdowntime/countdowntime.js"></script>
 
-	<script src="/assets/js/main.js"></script>
+  <?php
+  if(isset($skin_path)) {
+  ?>
+	<script src="<?=$skin_path?>js/main.js"></script>
+  <?php
+  }
+  ?>
 
 </body>
 </html>

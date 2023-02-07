@@ -25,7 +25,12 @@
 
 	<link rel="stylesheet" type="text/css" href="/assets/css/util.css">
 
-	<link rel="stylesheet" type="text/css" href="/assets/css/main.css">
-
+  <?php
+  if(isset($skin_path)) {
+  ?>
+	<link rel="stylesheet" type="text/css" href="<?=$skin_path?>css/main.css">
+  <?php
+  }
+  ?>
 </head>
 <body>
