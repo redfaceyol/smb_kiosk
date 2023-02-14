@@ -14,9 +14,9 @@
 	<script src="/assets/plugins/countdowntime/countdowntime.js"></script>
 
   <?php
-  if(isset($skin_path)) {
+  if(isset($login_skin_name)) {
   ?>
-	<script src="<?=$skin_path?>js/main.js"></script>
+	<script src="/assets/skin/<?=$login_skin_name?>/js/main.js"></script>
   <?php
   }
   ?>

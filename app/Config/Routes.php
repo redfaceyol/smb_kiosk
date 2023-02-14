@@ -32,14 +32,22 @@ $routes->set404Override();
 //$routes->get('/', 'Home::index');
 $routes->get('/', 'admin\Login::index');
 
-$routes->group('api', static function ($routes) {
-    $routes->get('docs', 'api\Docs::index');
-});
-
 $routes->get('admin', 'admin\Login::index');
 
-$routes->group('admin', static function ($routes) {
+$routes->group('admin', static function ($routes) {    
+    $routes->get('login', 'admin\Login::index');
+    $routes->get('login/(:any)', 'admin\Login::$1');
+    $routes->post('login/(:any)', 'admin\Login::$1');
+});
+
+$routes->group('api', static function ($routes) {
     $routes->get('docs', 'api\Docs::index');
+
+    $routes->get('shop/(:any)', 'api\Shop::$1');
+    $routes->post('shop/(:any)', 'api\Shop::$1');
+    
+    $routes->get('kiosk/(:any)', 'api\Kiosk::$1');
+    $routes->post('kiosk/(:any)', 'api\Kiosk::$1');
 });
 
 /*

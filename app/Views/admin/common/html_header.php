@@ -26,9 +26,9 @@
 	<link rel="stylesheet" type="text/css" href="/assets/css/util.css">
 
   <?php
-  if(isset($skin_path)) {
+  if(isset($login_skin_name)) {
   ?>
-	<link rel="stylesheet" type="text/css" href="<?=$skin_path?>css/main.css">
+	<link rel="stylesheet" type="text/css" href="/assets/skin/<?=$login_skin_name?>/css/main.css">
   <?php
   }
   ?>
