@@ -38,6 +38,14 @@ $routes->group('admin', static function ($routes) {
     $routes->get('login', 'admin\Login::index');
     $routes->get('login/(:any)', 'admin\Login::$1');
     $routes->post('login/(:any)', 'admin\Login::$1');
+    
+    $routes->get('dashboard', 'admin\Dashboard::index');
+    $routes->get('dashboard/(:any)', 'admin\Dashboard::$1');
+    $routes->post('dashboard/(:any)', 'admin\Dashboard::$1');
+    
+    $routes->get('myaccount', 'admin\MyAccount::index');
+    $routes->get('myaccount/(:any)', 'admin\MyAccount::$1');
+    $routes->post('myaccount/(:any)', 'admin\MyAccount::$1');
 });
 
 $routes->group('api', static function ($routes) {

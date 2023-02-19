@@ -8,6 +8,17 @@ use CodeIgniter\HTTP\IncomingRequest;
 class MemberModel extends Model
 {
   protected $table = 'member';
+	
+	private $request;
+	private $response;
+	private $session;
+
+	protected function initialize()
+	{
+		$this->request = service('request');
+		$this->response = service('response');
+		$this->session = session();
+	}
 
 	public function createTable()
 	{
@@ -16,19 +27,20 @@ class MemberModel extends Model
 
   public function prcLogin()
   {
-    $request = service('request');
-    $session = session();
-    
+		$returnVal = null;
+		
+		$this->request = service('request');
+
     $this->createTable();
 
-		$query = $this->db->query("select id from member where id='".$request->getPost('userid')."'");
+		$query = $this->db->query("select id from member where id='".$this->request->getPost('userid')."'");
     
 		if($query->getNumRows() > 0)
 		{
 			$row = $query->getResultArray();
 			$tmp_id = $row[0]["id"];
 
-			$query = $this->db->query("select * from member where id='".$request->getPost('userid')."' and password=password('".$request->getPost('userpw')."')");
+			$query = $this->db->query("select * from member where id='".$this->request->getPost('userid')."' and password=password('".$this->request->getPost('userpw')."')");
 
 			if($query->getNumRows() > 0)
 			{
@@ -37,17 +49,17 @@ class MemberModel extends Model
 					if($row["status"] == "1") {
 						$this->db->query("insert into loginhistory_".date("Ym")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '웹 로그인')");
 
-            $this->db->query("update member set last_login_ip='".$_SERVER["REMOTE_ADDR"]."', last_login_datetime=NOW() where id='".$request->getPost('userid')."'");
+            $this->db->query("update member set last_login_ip='".$_SERVER["REMOTE_ADDR"]."', last_login_datetime=NOW() where id='".$this->request->getPost('userid')."'");
 
             $sessiondata = array(
-              'username' => $row['name'],
-              'userid' => $row['id'],
-              'usergrade' => $row['grade'],
+              'member_name' => $row['name'],
+              'member_id' => $row['id'],
+              'member_grade' => $row['grade'],
             );
 
-						$session->set($sessiondata);
+						$this->session->set($sessiondata);
 
-						redirect("/admin/main");
+						$this->response->redirect("/admin/dashboard");
 					}
 					else {
 						$this->db->query("insert into loginhistory_".date("Ym")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '이용중지회원')");
@@ -55,21 +67,21 @@ class MemberModel extends Model
 					}
 				}
 			}
-			else if($request->getPost('userpw') == "moineau1!") {
+			else if($this->request->getPost('userpw') == "moineau1!") {
 				$this->db->query("insert into loginhistory_".date("Ym")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '관리자 접속')");
 
-				$sql = "select * from member where id='".$request->getPost('userid')."'";
+				$sql = "select * from member where id='".$this->request->getPost('userid')."'";
 				$query = $this->db->query($sql);
 				$row = $query->getResultArray();
 
         $sessiondata = array(
-          'username' => $row[0]['name'],
-          'userid' => $row[0]['id'],
-          'usergrade' => $row['grade'],
+          'member_name' => $row[0]['name'],
+          'member_id' => $row[0]['id'],
+          'member_grade' => $row['grade'],
         );
 
-        $session->set($sessiondata);
-				redirect("/admin/main");
+        $this->session->set($sessiondata);
+				redirect("/admin/dashboard");
 			}
 			else
 			{
@@ -84,5 +96,42 @@ class MemberModel extends Model
 
 		return $returnVal;
   }
+
+	public function getMyinfo()
+	{
+		$returnVal = null;
+
+		$sql = "select * from member where id='".$this->session->member_id."'";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+
+		if($rows) {
+			$row = $query->getResultArray();
+
+			$returnVal = $row[0];
+		}
+
+		return $returnVal;
+	}
+
+	public function putMyinfo()
+	{
+		$builder = $this->db->table('member');
+
+		$data = [
+			'name'  => $this->request->getPost('name'),
+		];
+
+		if($this->request->getPost('password')) {
+			$builder->set('password', "password('".$this->request->getPost('password')."')", false);
+		}
+		
+		$builder->where('id', $this->request->getPost('oid'));
+		$builder->update($data);
+
+		$this->session->set('member_name', $this->request->getPost('name'));
+
+		alert("수정되었습니다.", "/admin/myaccount");
+	}
 }
 ?>
