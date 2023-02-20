@@ -43,6 +43,14 @@ $routes->group('admin', static function ($routes) {
     $routes->get('dashboard/(:any)', 'admin\Dashboard::$1');
     $routes->post('dashboard/(:any)', 'admin\Dashboard::$1');
     
+    $routes->get('representative', 'admin\Representative::index');
+    $routes->get('representative/(:any)', 'admin\Representative::$1');
+    $routes->post('representative/(:any)', 'admin\Representative::$1');
+    
+    $routes->get('shop', 'admin\Shop::index');
+    $routes->get('shop/(:any)', 'admin\Shop::$1');
+    $routes->post('shop/(:any)', 'admin\Shop::$1');
+    
     $routes->get('myaccount', 'admin\MyAccount::index');
     $routes->get('myaccount/(:any)', 'admin\MyAccount::$1');
     $routes->post('myaccount/(:any)', 'admin\MyAccount::$1');

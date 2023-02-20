@@ -34,7 +34,7 @@ function alert_only($msg) {
 	exit;
 }
 
-function alert_continue($msg){
+function alert_continue($msg) {
 	$app_config = config('App');
 
 	echo "<meta http-equiv=\"content-type\" content=\"text/html; charset=".$app_config->charset."\">";

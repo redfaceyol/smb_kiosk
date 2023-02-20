@@ -10,7 +10,7 @@ use App\Models\admin\MemberModel;
 
 class Dashboard extends BaseController
 {
-  private $membermodel;
+  private $member_model;
 
   public function initController(
     RequestInterface $request,
@@ -22,7 +22,7 @@ class Dashboard extends BaseController
       $session = session();
       
 			if($session->member_id) {
-				$this->membermodel = model(MemberModel::class);
+				$this->member_model = model(MemberModel::class);
 			}
 			else {
 				alert('로그인해주세요.', "/admin/login");

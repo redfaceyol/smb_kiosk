@@ -6,6 +6,18 @@ body {
   font-size: 1rem;
 }
 
+.table th {
+  font-size: 1rem;
+  text-transform: initial;
+}
+
+.table .btn-sm {
+  font-size: 0.9375rem;
+}
+
+.display-none {
+  display: none;
+}
 
 
 /*

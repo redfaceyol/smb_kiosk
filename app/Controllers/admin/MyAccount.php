@@ -10,7 +10,7 @@ use App\Models\admin\MemberModel;
 
 class MyAccount extends BaseController
 {
-  private $membermodel;
+  private $member_model;
   private $svc_request;
   private $session;
 
@@ -24,7 +24,7 @@ class MyAccount extends BaseController
       $this->session = session();
       
 			if($this->session->member_id) {
-				$this->membermodel = model(MemberModel::class);
+				$this->member_model = model(MemberModel::class);
 
         $this->svc_request = service('request');
 			}
@@ -35,7 +35,7 @@ class MyAccount extends BaseController
 
   public function index()
   {
-    $data["myInfo"] = $this->membermodel->getMyInfo();
+    $data["myInfo"] = $this->member_model->getMyInfo();
 
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
@@ -47,7 +47,7 @@ class MyAccount extends BaseController
   {
     
     if($this->session->member_id == $this->svc_request->getPost('oid')) {
-      $this->membermodel->putMyinfo();
+      $this->member_model->putMyinfo();
     }
     else {
       alert('잘못된 호출입니다.', "/admin/myaccount");
