@@ -51,6 +51,10 @@ $routes->group('admin', static function ($routes) {
     $routes->get('shop/(:any)', 'admin\Shop::$1');
     $routes->post('shop/(:any)', 'admin\Shop::$1');
     
+    $routes->get('kiosk', 'admin\Kiosk::index');
+    $routes->get('kiosk/(:any)', 'admin\Kiosk::$1');
+    $routes->post('kiosk/(:any)', 'admin\Kiosk::$1');
+    
     $routes->get('myaccount', 'admin\MyAccount::index');
     $routes->get('myaccount/(:any)', 'admin\MyAccount::$1');
     $routes->post('myaccount/(:any)', 'admin\MyAccount::$1');
