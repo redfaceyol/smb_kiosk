@@ -6,11 +6,11 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use App\Models\admin\MenuModel;
+use App\Models\ImageModel;
 
-class Menu extends BaseController
+class Image extends BaseController
 {
-  private $menu_model;
+  private $image_model;
   private $svc_uri;
 
   public function initController(
@@ -20,7 +20,7 @@ class Menu extends BaseController
   ) {
       parent::initController($request, $response, $logger);
 
-      $this->menu_model = model(MenuModel::class);
+      $this->image_model = model(ImageModel::class);
 
       $this->svc_uri = service('uri');
   }
@@ -30,9 +30,15 @@ class Menu extends BaseController
     
   }
 
-  public function image()
+  public function menu_image()
   {
 		header("Content-type: image/jpg");
-		echo $this->menu_model->getImage($this->svc_uri->getSegment(3));
+		echo $this->image_model->getMenuImage($this->svc_uri->getSegment(3));
+  }
+
+  public function menu_thumbimage()
+  {
+		header("Content-type: image/jpg");
+		echo $this->image_model->getMenuThumbImage($this->svc_uri->getSegment(3));
   }
 }

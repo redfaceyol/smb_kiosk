@@ -39,7 +39,7 @@ $_Link = "page=".$_request->getGet('page');
           <label class="col-sm-2 col-form-label" for="imagefile">등록이미지</label>
           <div class="col-sm-6">
             <? if($menuData["image"]) { ?>
-            <img src="/menu/image/<?=$menuData["id"]?>.jpg" height="20">
+            <img src="/image/menu/<?=$menuData["id"]?>.jpg" height="200">
             <? } ?>
           </div>
         </div>

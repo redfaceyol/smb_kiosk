@@ -74,7 +74,9 @@ $routes->group('api', static function ($routes) {
     $routes->post('kiosk/(:any)', 'api\Kiosk::$1');
 });
 
-$routes->get('menu/image/(:num).jpg', 'Menu::image/$1');
+$routes->get('image/menu/(:num)/(:num).jpg', 'Image::menu_image/$1');
+$routes->get('image/menu/(:num)/thumb_(:num).jpg', 'Image::menu_thumbimage/$1');
+$routes->get('image/sign/(:num)/(:num).jpg', 'Image::sign_image/$1');
 
 /*
  * --------------------------------------------------------------------

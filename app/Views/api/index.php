@@ -42,6 +42,39 @@
                   최초 작성
                 </td>
               </tr>
+              <tr>
+                <td style="width: 150px; background: #fafafa;">
+                  2023-02-08
+                </td>
+                <td>
+                  키오스크 로그인 수정 ( 패스워드 삭제 )
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 150px; background: #fafafa;">
+                  2023-02-11
+                </td>
+                <td>
+                  키오스크 Response 추가 
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 150px; background: #fafafa;">
+                  2023-02-11
+                </td>
+                <td>
+                  통합 메뉴리스트 추가<br>
+                  단계별 메뉴 삭제
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 150px; background: #fafafa;">
+                  2023-02-15
+                </td>
+                <td>
+                  메뉴이미지 썸네일 추가
+                </td>
+              </tr>
             </table>
 
           </div>
@@ -182,7 +215,7 @@
             
             <table class="table table-bordered" width="100%">
               <tr>
-                <th colspan="2">키오스크 로그인 <small>(last update : 2023-02-06)</small></th>
+                <th colspan="2">키오스크 로그인 <small>(last update : 2023-02-11)</small></th>
               </tr>
               <tr>
                 <td style="width: 150px; background: #fafafa;">
@@ -205,9 +238,9 @@
                   Data
                 </td>
                 <td>
-                  id : 키오스크아이디
+                  sid : 매장아이디
                   <br>
-                  password : 패스워드
+                  kid : 키오스크아이디
                 </td>
               </tr>
               <tr>
@@ -217,7 +250,7 @@
                 <td>
                   [&nbsp;Code&nbsp;]&nbsp;100 : 요청 성공
                   <br><br>
-                  [&nbsp;Content&nbsp;]&nbsp;{"id":"키오스크아이디", "kiosk_type":"장비타입", "shop_id":"매장아이디", "shop_title":"매장명"}
+                  [&nbsp;Content&nbsp;]&nbsp;{"id":"키오스크아이디", "kiosk_type":"장비타입", "shop_id":"매장아이디", "shop_title":"매장명", "biz_num":"사업자번호", "representative_name":"대표자명", "sign_image":"도장이미지"}
                   <br><br>
                   [&nbsp;Discription&nbsp;]&nbsp;kiosk_type : 1 - 키오스크, 2 - 테이블오더
                 </td>
@@ -227,13 +260,13 @@
                   Error Response
                 </td>
                 <td>
-                  [&nbsp;Code&nbsp;]&nbsp;500 : 입력된 키오스크아이디 없음
+                  [&nbsp;Code&nbsp;]&nbsp;500 : 입력된 매장아이디 없음
                   <br>
-                  [&nbsp;Code&nbsp;]&nbsp;501 : 입력된 패스워드 없음
+                  [&nbsp;Code&nbsp;]&nbsp;501 : 입력된 키오스크아이디 없음
                   <br>
-                  [&nbsp;Code&nbsp;]&nbsp;510 : 등록되지 않은 키오스크아이디
+                  [&nbsp;Code&nbsp;]&nbsp;510 : 등록되지 않은 매장아이디
                   <br>
-                  [&nbsp;Code&nbsp;]&nbsp;511 : 일치하지 않은 패스워드
+                  [&nbsp;Code&nbsp;]&nbsp;511 : 등록되지 않은 키오스크아이디
                   <br>
                   [&nbsp;Code&nbsp;]&nbsp;599 : 기타
                 </td>
@@ -242,14 +275,14 @@
             
             <table class="table table-bordered" width="100%">
               <tr>
-                <th colspan="2">1차메뉴 정보 <small>(last update : 2023-02-06)</small></th>
+                <th colspan="2">메뉴 정보 <small>(last update : 2023-02-15)</small></th>
               </tr>
               <tr>
                 <td style="width: 150px; background: #fafafa;">
                   URL
                 </td>
                 <td>
-                  /api/kiosk/menu1
+                  /api/kiosk/menulist
                 </td>
               </tr>
               <tr>
@@ -265,7 +298,7 @@
                   Data
                 </td>
                 <td>
-                  id : 매장아이디
+                  sid : 매장아이디
                 </td>
               </tr>
               <tr>
@@ -275,9 +308,11 @@
                 <td>
                   [&nbsp;Code&nbsp;]&nbsp;100 : 요청 성공
                   <br><br>
-                  [&nbsp;Content&nbsp;]&nbsp;{"menulist":[{"menuid":"메뉴아이디", "menutitle":"메뉴명", "nextmenu":"하위메뉴여부", "price":"가격", "imagename":"이미지명", "imagepath":"전체이미지경로"},...]}
+                  [&nbsp;Content&nbsp;]&nbsp;{"menulist":[{"menuid":"메뉴아이디", "menutitle":"메뉴명", "nextmenu":"하위메뉴여부", "price":"가격", "imagename":"이미지명", "imagepath":"전체이미지경로", "thumbimagename":"썸네일이미지명", "thumbimagepath":"전체썸네일이미지경로", "imageversion":"이미지버전", "soldout":"품절여부", "menulist":[....]},...]}
                   <br><br>
                   [&nbsp;Discription&nbsp;]&nbsp;nextmenu : true / false
+                  <br>
+                  [&nbsp;Discription&nbsp;]&nbsp;soldout : 0 - 판매, 1 - 품절
                 </td>
               </tr>
               <tr>
@@ -288,124 +323,6 @@
                   [&nbsp;Code&nbsp;]&nbsp;500 : 입력된 매장아이디 없음
                   <br>
                   [&nbsp;Code&nbsp;]&nbsp;510 : 등록되지 않은 매장아이디
-                  <br>
-                  [&nbsp;Code&nbsp;]&nbsp;599 : 기타
-                </td>
-              </tr>
-            </table>
-            
-            <table class="table table-bordered" width="100%">
-              <tr>
-                <th colspan="2">2차메뉴 정보 <small>(last update : 2023-02-06)</small></th>
-              </tr>
-              <tr>
-                <td style="width: 150px; background: #fafafa;">
-                  URL
-                </td>
-                <td>
-                  /api/kiosk/menu2
-                </td>
-              </tr>
-              <tr>
-                <td style="width: 150px; background: #fafafa;">
-                  Method
-                </td>
-                <td>
-                  get
-                </td>
-              </tr>
-              <tr>
-                <td style="width: 150px; background: #fafafa;">
-                  Data
-                </td>
-                <td>
-                  id : 매장아이디
-                  <br>
-                  menu1 : 1단계 메뉴 아이디
-                </td>
-              </tr>
-              <tr>
-                <td style="width: 150px; background: #fafafa;">
-                  Success Response
-                </td>
-                <td>
-                  [&nbsp;Code&nbsp;]&nbsp;100 : 요청 성공
-                  <br><br>
-                  [&nbsp;Content&nbsp;]&nbsp;{"menulist":[{"menuid":"메뉴아이디", "menutitle":"메뉴명", "nextmenu":"하위메뉴여부", "price":"가격", "imagename":"이미지명", "imagepath":"전체이미지경로"},...]}
-                  <br><br>
-                  [&nbsp;Discription&nbsp;]&nbsp;nextmenu : true / false
-                </td>
-              </tr>
-              <tr>
-                <td style="width: 150px; background: #fafafa;">
-                  Error Response
-                </td>
-                <td>
-                  [&nbsp;Code&nbsp;]&nbsp;500 : 입력된 매장아이디 없음
-                  <br>
-                  [&nbsp;Code&nbsp;]&nbsp;501 : 입력된 1단계 메뉴아이디 없음
-                  <br>
-                  [&nbsp;Code&nbsp;]&nbsp;510 : 등록되지 않은 매장아이디
-                  <br>
-                  [&nbsp;Code&nbsp;]&nbsp;511 : 등록되지 않은 1단계 메뉴아이디
-                  <br>
-                  [&nbsp;Code&nbsp;]&nbsp;599 : 기타
-                </td>
-              </tr>
-            </table>
-            
-            <table class="table table-bordered" width="100%">
-              <tr>
-                <th colspan="2">3차메뉴 정보 <small>(last update : 2023-02-06)</small></th>
-              </tr>
-              <tr>
-                <td style="width: 150px; background: #fafafa;">
-                  URL
-                </td>
-                <td>
-                  /api/kiosk/menu3
-                </td>
-              </tr>
-              <tr>
-                <td style="width: 150px; background: #fafafa;">
-                  Method
-                </td>
-                <td>
-                  get
-                </td>
-              </tr>
-              <tr>
-                <td style="width: 150px; background: #fafafa;">
-                  Data
-                </td>
-                <td>
-                  id : 매장아이디
-                  <br>
-                  menu2 : 2단계 메뉴 아이디
-                </td>
-              </tr>
-              <tr>
-                <td style="width: 150px; background: #fafafa;">
-                  Success Response
-                </td>
-                <td>
-                  [&nbsp;Code&nbsp;]&nbsp;100 : 요청 성공
-                  <br><br>
-                  [&nbsp;Content&nbsp;]&nbsp;{"menulist":[{"menuid":"메뉴아이디", "menutitle":"메뉴명", "price":"가격", "imagename":"이미지명", "imagepath":"전체이미지경로"},...]}
-                </td>
-              </tr>
-              <tr>
-                <td style="width: 150px; background: #fafafa;">
-                  Error Response
-                </td>
-                <td>
-                  [&nbsp;Code&nbsp;]&nbsp;500 : 입력된 매장아이디 없음
-                  <br>
-                  [&nbsp;Code&nbsp;]&nbsp;501 : 입력된 2단계 메뉴아이디 없음
-                  <br>
-                  [&nbsp;Code&nbsp;]&nbsp;510 : 등록되지 않은 매장아이디
-                  <br>
-                  [&nbsp;Code&nbsp;]&nbsp;511 : 등록되지 않은 2단계 메뉴아이디
                   <br>
                   [&nbsp;Code&nbsp;]&nbsp;599 : 기타
                 </td>

@@ -107,53 +107,6 @@ class MenuModel extends Model
 
 	public function getMenuList()
 	{
-		/*
-		$sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid from menu where shop='".$this->request->getGet('sid')."' and depth='1' order by sort";
-
-		$query = $this->db->query($sql);
-
-    $rows = $query->getNumRows();
-    $result = $query->getResult();
-
-		$menulist = array();
-
-		for($i=0; $i<$rows; $i++) {
-			$d1_menu = $result[$i];
-
-			$d2_sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid from menu where shop='".$this->request->getGet('sid')."' and upperid='".$d1_menu->id."' and depth='2' order by sort";
-
-			$d2_query = $this->db->query($d2_sql);
-
-			$d2_rows = $d2_query->getNumRows();
-			$d2_result = $d2_query->getResult();
-
-			$menu2list = array();
-
-			for($j=0; $j<$d2_rows; $j++) {
-				$d2_menu = $d2_result[$j];
-
-				$d3_sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid from menu where shop='".$this->request->getGet('sid')."' and upperid='".$d2_menu->id."' and depth='3' order by sort";
-
-				$d3_query = $this->db->query($d3_sql);
-
-				$d3_rows = $d3_query->getNumRows();
-				$d3_result = $d3_query->getResult();
-
-				for($k=0; $k<$d3_rows; $k++) {
-					$d3_menu = $d3_result[$k];
-					
-				}
-
-				array_push($menu2list, $d2_menu);
-				
-			}
-
-			$d1_menu->list = $menu2list;
-
-			array_push($menulist, $d1_menu);
-
-		}
-		*/
 		$sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid from menu where shop='".$this->request->getGet('sid')."' and depth='1' order by sort";
 
 		$query = $this->db->query($sql);
@@ -205,6 +158,15 @@ class MenuModel extends Model
 		return $result[0]->image;
 	}
 
+	public function getThumbImage($inId)
+	{
+		$sql = "select thumbimage from menu where id='".$inId."'";
+		$query = $this->db->query($sql);
+		$result = $query->getResult();
+
+		return $result[0]->thumbimage;
+	}
+
 	public function checkID()
 	{
 		$query = $this->db->query("select id from ".$this->request->getPost('TypeofUser')." where id='".$this->request->getPost('id')."'");
@@ -249,7 +211,11 @@ class MenuModel extends Model
       $trg_width = 600;
       $trg_height = 600;
 
+      $trg2_width = 256;
+      $trg2_height = 256;
+
 			$target = imagecreatetruecolor($trg_width, $trg_height);
+			$target2 = imagecreatetruecolor($trg2_width, $trg2_height);
 
 			if($imagesize[2] == 1)
 			{
@@ -258,6 +224,10 @@ class MenuModel extends Model
 				ob_start();
 				imagegif($target);
 				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagegif($target2);
+				$imgdata_bn2 = ob_get_clean();
 			}
 			else if($imagesize[2] == 2)
 			{
@@ -266,6 +236,10 @@ class MenuModel extends Model
 				ob_start();
 				imagejpeg($target, null, 100);
 				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagejpeg($target2, null, 100);
+				$imgdata_bn2 = ob_get_clean();
 			}
 			else if($imagesize[2] == 3)
 			{
@@ -274,12 +248,18 @@ class MenuModel extends Model
 				ob_start();
 				imagepng($target, null, 0);
 				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagepng($target2, null, 0);
+				$imgdata_bn2 = ob_get_clean();
 			}
 
 			imagedestroy($source);
 			imagedestroy($target);
+			imagedestroy($target2);
 
 			$data['image'] = $imgdata_bn;
+			$data['thumbimage'] = $imgdata_bn2;
 		}
 
     $builder->set('registe_datetime', "now()", false);
@@ -326,7 +306,11 @@ class MenuModel extends Model
       $trg_width = 600;
       $trg_height = 600;
 
+      $trg2_width = 256;
+      $trg2_height = 256;
+
 			$target = imagecreatetruecolor($trg_width, $trg_height);
+			$target2 = imagecreatetruecolor($trg2_width, $trg2_height);
 
 			if($imagesize[2] == 1)
 			{
@@ -335,6 +319,10 @@ class MenuModel extends Model
 				ob_start();
 				imagegif($target);
 				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagegif($target2);
+				$imgdata_bn2 = ob_get_clean();
 			}
 			else if($imagesize[2] == 2)
 			{
@@ -343,6 +331,10 @@ class MenuModel extends Model
 				ob_start();
 				imagejpeg($target, null, 100);
 				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagejpeg($target2, null, 100);
+				$imgdata_bn2 = ob_get_clean();
 			}
 			else if($imagesize[2] == 3)
 			{
@@ -351,13 +343,19 @@ class MenuModel extends Model
 				ob_start();
 				imagepng($target, null, 0);
 				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagepng($target2, null, 0);
+				$imgdata_bn2 = ob_get_clean();
 			}
 
 			imagedestroy($source);
 			imagedestroy($target);
+			imagedestroy($target2);
 
 			$data['imageversion'] = time();
 			$data['image'] = $imgdata_bn;
+			$data['thumbimage'] = $imgdata_bn2;
 		}
 		
 		$builder->where('id', $this->request->getPost('oid'));
