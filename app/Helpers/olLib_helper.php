@@ -40,4 +40,13 @@ function alert_continue($msg) {
 	echo "<meta http-equiv=\"content-type\" content=\"text/html; charset=".$app_config->charset."\">";
 	echo "<script type='text/javascript'> alert('".$msg."'); </script>";
 }
+
+function indentation($depth) {
+	$returnVal = "";
+
+	if($depth > 1) {
+		$returnVal = "<span style=\"display:inline-block; margin:0 5px 0 ".(($depth-1)*($depth-1)*5)."px\">└</span>";
+	}
+	return $returnVal;
+}
 ?>

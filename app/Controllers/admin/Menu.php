@@ -127,10 +127,33 @@ class Menu extends BaseController
   public function putMenu()
   {
     if(md5($this->svc_request->getPost('oid')) == $this->svc_request->getPost('cid')) {
-      $this->menu_model->putMenu();
+      $validationRule = [
+        'imagefile' => [
+            'label' => 'Image File',
+            'rules' => 'uploaded[imagefile]'
+                . '|is_image[imagefile]'
+                . '|mime_in[imagefile,image/jpg,image/jpeg,image/gif,image/png,image/webp]'
+                . '|max_size[imagefile,0]'
+                . '|max_dims[imagefile,0,0]',
+        ],
+      ];
+  
+      $img = $this->request->getFile('imagefile');
+  
+      $data = array();
+  
+      if (! $img->hasMoved()) {
+        $data["imagefile"] = array('upload_data' => $img);
+      }
+      else {
+        $data["imagefile"] = array('error' => $img->error);
+        $data["imagefile"]["upload_data"]["file_name"] = "";
+      }
+
+      $this->menu_model->putMenu($data);
     }
     else {
-      alert('잘못된 호출입니다.', "/admin/menu/menuModify?oid=".$this->svc_request->getPost('oid')."&cid=".md5($this->svc_request->getPost('oid'))."&page=");
+      alert('잘못된 호출입니다.', "/admin/menu/menuModify?sid=".$this->svc_request->getPost('sid')."&oid=".$this->svc_request->getPost('oid')."&cid=".md5($this->svc_request->getPost('oid'))."&page=");
     }
   }
 
@@ -140,7 +163,7 @@ class Menu extends BaseController
       $this->menu_model->delMenu();
     }
     else {
-      alert('잘못된 호출입니다.', "/admin/menu/menuList?page=".$this->svc_request->getGet('page'));
+      alert('잘못된 호출입니다.', "/admin/menu/menuList?sid=".$this->svc_request->getGet('sid')."&page=".$this->svc_request->getGet('page'));
     }
   }
 

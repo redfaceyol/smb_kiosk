@@ -51,11 +51,6 @@ $_Link = "page=".$_request->getGet('page');
       return;
     }
 
-    if(!$('#price').val()) {
-      alert("가격을 입력해 주세요.");
-      return false;
-    }
-
     $('#regForm').submit();
   }
 </script>

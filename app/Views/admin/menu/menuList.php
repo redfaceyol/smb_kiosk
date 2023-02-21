@@ -20,8 +20,8 @@ $_Link = "page=".$_request->getGet('page');
       <table class="table table-hover table-bordered table-sm">
         <thead>
           <tr>
-            <th width="80">No.</th>
-            <th width="600">메뉴명</th>
+            <th width="80"></th>
+            <th width="800">메뉴명</th>
             <th width="100">가격</th>
             <th width="100">이미지</th>
             <th width="180">관리</th> 
@@ -30,12 +30,16 @@ $_Link = "page=".$_request->getGet('page');
         <tbody class="table-border-bottom-0">
 					<? $rowNum = 1; foreach($list as $lt) { ?>
           <tr>
-            <td><?=$rowNum?></td>
-            <td><?=$lt->title?></td>
+            <td></td>
+            <td><?=indentation($lt->depth)?><?=$lt->title?></td>
             <td><?=$lt->price?></td>
-            <td><img src="/menu/image/<?=$lt->id?>" height="50"></td>
+            <td><img src="<?=($lt->id?"/menu/image/".$lt->id.".jpg":"")?>" height="50"></td>
             <td>
-              <a class="btn btn-sm btn-info" href="/admin/menu/menuList?id=<?=$lt->id?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 메뉴관리</a>
+              <a class="btn btn-sm btn-info" href="/admin/menu/menuModify?sid=<?=$_request->getGet('sid')?>&oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 수정</a>
+              <a class="btn btn-sm btn-danger" href="javascript:delConfirm('/admin/menu/delMenu?sid=<?=$_request->getGet('sid')?>&oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
+              <? if($lt->depth<3) { ?>
+              <a class="btn btn-sm btn-primary" href="/admin/menu/menuRegiste?sid=<?=$_request->getGet('sid')?>&depth=<?=($lt->depth+1)?>&uid=<?=$lt->id?>&<?=$_Link?>"><?=($lt->depth+1)?>단계 메뉴등록</a>
+              <? } ?>
             </td>
           </tr>
 				  <? $rowNum++; } ?>
