@@ -51,6 +51,10 @@ $routes->group('admin', static function ($routes) {
     $routes->get('shop/(:any)', 'admin\Shop::$1');
     $routes->post('shop/(:any)', 'admin\Shop::$1');
     
+    $routes->get('menu', 'admin\Menu::index');
+    $routes->get('menu/(:any)', 'admin\Menu::$1');
+    $routes->post('menu/(:any)', 'admin\Menu::$1');
+    
     $routes->get('kiosk', 'admin\Kiosk::index');
     $routes->get('kiosk/(:any)', 'admin\Kiosk::$1');
     $routes->post('kiosk/(:any)', 'admin\Kiosk::$1');
@@ -69,6 +73,8 @@ $routes->group('api', static function ($routes) {
     $routes->get('kiosk/(:any)', 'api\Kiosk::$1');
     $routes->post('kiosk/(:any)', 'api\Kiosk::$1');
 });
+
+$routes->get('menu/image/(:num)', 'Menu::image/$1');
 
 /*
  * --------------------------------------------------------------------
