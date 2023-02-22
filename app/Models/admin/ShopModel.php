@@ -180,7 +180,7 @@ class ShopModel extends Model
     return $genid;
   }
 
-	public function postShop()
+	public function postShop($imgdata)
 	{
     $builder = $this->db->table('shop');
 
@@ -192,8 +192,51 @@ class ShopModel extends Model
 			'zipcode' => $this->request->getPost('zipcode'), 
 			'address1' => $this->request->getPost('address1'), 
 			'address2' => $this->request->getPost('address2'), 
+			'biznum' => $this->request->getPost('biznum'), 
 			'status' => '1', 
 		];
+    
+		if(isset($imgdata["imagefile"]) && $imgdata["imagefile"]["upload_data"]->getTempName()) {
+			$imagesize = getimagesize($imgdata["imagefile"]["upload_data"]->getTempName());
+
+			$org_width = $imagesize[0];
+			$org_height = $imagesize[1];
+
+      $trg_width = 600;
+      $trg_height = 600;
+
+			$target = imagecreatetruecolor($trg_width, $trg_height);
+
+			if($imagesize[2] == 1)
+			{
+				$source = imagecreatefromgif($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagegif($target);
+				$imgdata_bn = ob_get_clean();
+			}
+			else if($imagesize[2] == 2)
+			{
+				$source = imagecreatefromjpeg($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagejpeg($target, null, 100);
+				$imgdata_bn = ob_get_clean();
+			}
+			else if($imagesize[2] == 3)
+			{
+				$source = imagecreatefrompng($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagepng($target, null, 0);
+				$imgdata_bn = ob_get_clean();
+			}
+
+			imagedestroy($source);
+			imagedestroy($target);
+
+			$data['signimage'] = $imgdata_bn;
+		}
 
 		$builder->set('password', "password('".$this->request->getPost('password')."')", false);
     $builder->set('registe_datetime', "now()", false);
@@ -222,7 +265,7 @@ class ShopModel extends Model
 		return $returnVal;
 	}
 
-	public function putShop()
+	public function putShop($imgdata)
 	{
     $builder = $this->db->table('shop');
 
@@ -233,7 +276,50 @@ class ShopModel extends Model
 			'zipcode' => $this->request->getPost('zipcode'), 
 			'address1' => $this->request->getPost('address1'), 
 			'address2' => $this->request->getPost('address2'), 
+			'biznum' => $this->request->getPost('biznum'), 
 		];
+    
+		if(isset($imgdata["imagefile"]) && $imgdata["imagefile"]["upload_data"]->getTempName()) {
+			$imagesize = getimagesize($imgdata["imagefile"]["upload_data"]->getTempName());
+
+			$org_width = $imagesize[0];
+			$org_height = $imagesize[1];
+
+      $trg_width = 600;
+      $trg_height = 600;
+
+			$target = imagecreatetruecolor($trg_width, $trg_height);
+
+			if($imagesize[2] == 1)
+			{
+				$source = imagecreatefromgif($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagegif($target);
+				$imgdata_bn = ob_get_clean();
+			}
+			else if($imagesize[2] == 2)
+			{
+				$source = imagecreatefromjpeg($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagejpeg($target, null, 100);
+				$imgdata_bn = ob_get_clean();
+			}
+			else if($imagesize[2] == 3)
+			{
+				$source = imagecreatefrompng($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagepng($target, null, 0);
+				$imgdata_bn = ob_get_clean();
+			}
+
+			imagedestroy($source);
+			imagedestroy($target);
+
+			$data['signimage'] = $imgdata_bn;
+		}
 
 		if($this->request->getPost('password')) {
 			$builder->set('password', "password('".$this->request->getPost('password')."')", false);

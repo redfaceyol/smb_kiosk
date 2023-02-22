@@ -8,7 +8,7 @@ $_Link = "";
 
   <!-- Basic Bootstrap Table -->
   <div class="card">
-    <form name="modForm" id="modForm" method="post" action="/admin/shop/putShop">
+    <form name="modForm" id="modForm" method="post" action="/admin/shop/putShop" enctype="multipart/form-data">
       <input type="hidden" name="oid" value="<?=$shopData["id"]?>">
       <input type="hidden" name="cid" value="<?=md5($shopData["id"])?>">
       <div class="card-body">
@@ -104,6 +104,29 @@ $_Link = "";
           </div>
         </div>
 
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label" for="biznum">사업자등록번호</label>
+          <div class="col-sm-3">
+            <input type="text" class="form-control" id="biznum" name="biznum" value="<?=$shopData["biznum"]?>" placeholder="- 를 제외하고 입력하세요." onkeydown="onlyNumber(this)" />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label" for="imagefile">사인(도장)이미지</label>
+          <div class="col-sm-6">
+            <input class="form-control" type="file" id="imagefile" name="imagefile" />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label" for="imagefile">등록이미지</label>
+          <div class="col-sm-6">
+            <? if($shopData["signimage"]) { ?>
+            <img src="/image/sign/<?=$shopData["id"]?>/<?=$shopData["id"]?>.jpg" height="200">
+            <? } ?>
+          </div>
+        </div>
+
       </div>
       <div class="card-footer pt-0">
         <a href="javascript:chkForm()" class="btn btn-primary">수정</a>
@@ -189,6 +212,16 @@ $_Link = "";
 		
     if(!$('#zipcode').val()) {
       alert("주소를 입력해 주세요.");
+      return false;
+    }
+		
+    if(!$('#biznum').val()) {
+      alert("사업자등록번호를 입력해 주세요.");
+      return false;
+    }
+		
+    if(!checkCorporateRegistrationNumber($('#biznum').val())) {
+      alert("사업자등록번호가 유효하지 않습니다. 확인해주세요.");
       return false;
     }
 

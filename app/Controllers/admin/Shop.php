@@ -85,7 +85,30 @@ class Shop extends BaseController
 
 	public function postShop()
 	{
-		$this->shop_model->postShop();
+    $validationRule = [
+      'imagefile' => [
+          'label' => 'Image File',
+          'rules' => 'uploaded[imagefile]'
+              . '|is_image[imagefile]'
+              . '|mime_in[imagefile,image/jpg,image/jpeg,image/gif,image/png,image/webp]'
+              . '|max_size[imagefile,0]'
+              . '|max_dims[imagefile,0,0]',
+      ],
+    ];
+
+    $img = $this->request->getFile('imagefile');
+
+		$data = array();
+
+		if (! $img->hasMoved()) {
+			$data["imagefile"] = array('upload_data' => $img);
+		}
+		else {
+			$data["imagefile"] = array('error' => $img->error);
+			$data["imagefile"]["upload_data"]["file_name"] = "";
+		}
+
+		$this->shop_model->postShop($data);
 	}
 
   public function shopModify()
@@ -107,7 +130,30 @@ class Shop extends BaseController
   public function putShop()
   {
     if(md5($this->svc_request->getPost('oid')) == $this->svc_request->getPost('cid')) {
-      $this->shop_model->putShop();
+      $validationRule = [
+        'imagefile' => [
+            'label' => 'Image File',
+            'rules' => 'uploaded[imagefile]'
+                . '|is_image[imagefile]'
+                . '|mime_in[imagefile,image/jpg,image/jpeg,image/gif,image/png,image/webp]'
+                . '|max_size[imagefile,0]'
+                . '|max_dims[imagefile,0,0]',
+        ],
+      ];
+  
+      $img = $this->request->getFile('imagefile');
+  
+      $data = array();
+  
+      if (! $img->hasMoved()) {
+        $data["imagefile"] = array('upload_data' => $img);
+      }
+      else {
+        $data["imagefile"] = array('error' => $img->error);
+        $data["imagefile"]["upload_data"]["file_name"] = "";
+      }
+  
+      $this->shop_model->putShop($data);
     }
     else {
       alert('잘못된 호출입니다.', "/admin/shop/shopModify?oid=".$this->svc_request->getPost('oid')."&cid=".md5($this->svc_request->getPost('oid'))."&page=");

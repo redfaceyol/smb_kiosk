@@ -41,4 +41,10 @@ class Image extends BaseController
 		header("Content-type: image/jpg");
 		echo $this->image_model->getMenuThumbImage($this->svc_uri->getSegment(3));
   }
+
+  public function sign_image()
+  {
+		header("Content-type: image/jpg");
+		echo $this->image_model->getSignImage($this->svc_uri->getSegment(3));
+  }
 }

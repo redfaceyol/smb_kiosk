@@ -37,5 +37,14 @@ class ImageModel extends Model
 
 		return $result[0]->thumbimage;
 	}
+
+	public function getSignImage($inId)
+	{
+		$sql = "select signimage from shop where id='".$inId."'";
+		$query = $this->db->query($sql);
+		$result = $query->getResult();
+
+		return $result[0]->signimage;
+	}
 }
 ?>

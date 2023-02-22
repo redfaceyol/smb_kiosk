@@ -8,7 +8,7 @@ $_Link = "";
 
   <!-- Basic Bootstrap Table -->
   <div class="card">
-    <form name="regForm" id="regForm" method="post" action="/admin/shop/postShop">
+    <form name="regForm" id="regForm" method="post" action="/admin/shop/postShop" enctype="multipart/form-data">
       <div class="card-body">
 
         <!--div class="row mb-3">
@@ -96,6 +96,20 @@ $_Link = "";
           <label class="col-sm-2 col-form-label" for="address2">상세주소</label>
           <div class="col-sm-6">
             <input type="text" class="form-control" id="address2" name="address2" value=""/>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label" for="biznum">사업자등록번호</label>
+          <div class="col-sm-3">
+            <input type="text" class="form-control" id="biznum" name="biznum" value="" placeholder="- 를 제외하고 입력하세요." onkeydown="onlyNumber(this)" />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label" for="imagefile">사인(도장)이미지</label>
+          <div class="col-sm-6">
+            <input class="form-control" type="file" id="imagefile" name="imagefile" />
           </div>
         </div>
 
@@ -189,6 +203,16 @@ $_Link = "";
 		
     if(!$('#zipcode').val()) {
       alert("주소를 입력해 주세요.");
+      return false;
+    }
+		
+    if(!$('#biznum').val()) {
+      alert("사업자등록번호를 입력해 주세요.");
+      return false;
+    }
+		
+    if(!checkCorporateRegistrationNumber($('#biznum').val())) {
+      alert("사업자등록번호가 유효하지 않습니다. 확인해주세요.");
       return false;
     }
 

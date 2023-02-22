@@ -33,7 +33,7 @@ $_Link = "page=".$_request->getGet('page');
             <td></td>
             <td><?=indentation($lt->depth)?><?=$lt->title?></td>
             <td><?=$lt->price?></td>
-            <td><img src="<?=($lt->id?"/image/menu/".$lt->id."/thumb_".$lt->id.".jpg":"")?>" height="50"></td>
+            <td><img src="<?=($lt->id?"/image/menu/".$lt->id."/".$lt->id.".jpg":"")?>" height="50"></td>
             <td>
               <a class="btn btn-sm btn-info" href="/admin/menu/menuModify?sid=<?=$_request->getGet('sid')?>&oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 수정</a>
               <a class="btn btn-sm btn-danger" href="javascript:delConfirm('/admin/menu/delMenu?sid=<?=$_request->getGet('sid')?>&oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
