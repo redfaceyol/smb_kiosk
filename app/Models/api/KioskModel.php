@@ -124,9 +124,9 @@ class KioskModel extends Model
               $d2_menu['menutitle'] = $d2_result[$j]->title;
               $d2_menu['price'] = $d2_result[$j]->price;
               $d2_menu['imagename'] = ($d2_result[$j]->image?$d2_result[$j]->id.".jpg":"");
-              $d2_menu['imagepath'] = ($d2_result[$j]->image?"/image/menu/".$d2_result[$k]->id."/".$d2_result[$j]->id.".jpg":"");
+              $d2_menu['imagepath'] = ($d2_result[$j]->image?"/image/menu/".$d2_result[$j]->id."/".$d2_result[$j]->id.".jpg":"");
               $d2_menu['thumbimagename'] = ($d2_result[$j]->thumbimage?"thumb_".$d2_result[$j]->id.".jpg":"");
-              $d2_menu['thumbimagepath'] = ($d2_result[$j]->thumbimage?"/image/menu/".$d2_result[$k]->id."/thumb_".$d2_result[$j]->id.".jpg":"");
+              $d2_menu['thumbimagepath'] = ($d2_result[$j]->thumbimage?"/image/menu/".$d2_result[$j]->id."/thumb_".$d2_result[$j]->id.".jpg":"");
               $d2_menu['imageversion'] = $d2_result[$j]->imageversion;
               $d2_menu['soldout'] = $d2_result[$j]->soldout;
 
