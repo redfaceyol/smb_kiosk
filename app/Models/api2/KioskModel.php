@@ -73,7 +73,7 @@ class KioskModel extends Model
         if($shop_rows) {
           $resultVal['code'] = "100";
 
-          $menu_sql = "select id, shop, title, price, takeoutprice, sort, view, depth, imageversion, soldout, upperid, registe_datetime, if(isnull(image), '', concat('http://".$_SERVER["HTTP_HOST"]."/image/menu/', id, '/', id, '.jpg')) as imgpath from menu where depth=1 and view=1 and shop='".$this->request->getGet('sid')."' order by sort";
+          $menu_sql = "select id, shop, title, if(isnull(price), '0', price) as price, if(isnull(takeoutprice), '0', takeoutprice) as takeoutprice, sort, view, depth, imageversion, soldout, upperid, registe_datetime, if(isnull(image), '', concat('http://".$_SERVER["HTTP_HOST"]."/image/menu/', id, '/', id, '.jpg')) as imgpath from menu where depth=1 and view=1 and shop='".$this->request->getGet('sid')."' order by sort";
           $menu_query = $this->db->query($menu_sql);
           $menu_result = $menu_query->getResult();
 
@@ -110,7 +110,7 @@ class KioskModel extends Model
         if($shop_rows) {
           $resultVal['code'] = "100";
 
-          $menu_sql = "select id, shop, title, price, takeoutprice, sort, view, depth, imageversion, soldout, upperid, registe_datetime, if(isnull(image), '', concat('http://".$_SERVER["HTTP_HOST"]."/image/menu/', id, '/', id, '.jpg')) as imgpath from menu where depth=2 and view=1 and shop='".$this->request->getGet('sid')."' order by sort";
+          $menu_sql = "select id, shop, title, if(isnull(price), '0', price) as price, if(isnull(takeoutprice), '0', takeoutprice) as takeoutprice, sort, view, depth, imageversion, soldout, upperid, registe_datetime, if(isnull(image), '', concat('http://".$_SERVER["HTTP_HOST"]."/image/menu/', id, '/', id, '.jpg')) as imgpath from menu where depth=2 and view=1 and shop='".$this->request->getGet('sid')."' order by sort";
           $menu_query = $this->db->query($menu_sql);
           $menu_result = $menu_query->getResult();
 
@@ -147,7 +147,7 @@ class KioskModel extends Model
         if($shop_rows) {
           $resultVal['code'] = "100";
 
-          $menu_sql = "select id, shop, title, price, takeoutprice, sort, view, depth, imageversion, soldout, upperid, registe_datetime, if(isnull(image), '', concat('http://".$_SERVER["HTTP_HOST"]."/image/menu/', id, '/', id, '.jpg')) as imgpath from menu where depth=3 and view=1 and shop='".$this->request->getGet('sid')."' order by sort";
+          $menu_sql = "select id, shop, title, if(isnull(price), '0', price) as price, if(isnull(takeoutprice), '0', takeoutprice) as takeoutprice, sort, view, depth, imageversion, soldout, upperid, registe_datetime, if(isnull(image), '', concat('http://".$_SERVER["HTTP_HOST"]."/image/menu/', id, '/', id, '.jpg')) as imgpath from menu where depth=3 and view=1 and shop='".$this->request->getGet('sid')."' order by sort";
           $menu_query = $this->db->query($menu_sql);
           $menu_result = $menu_query->getResult();
 
