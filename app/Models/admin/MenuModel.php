@@ -25,7 +25,7 @@ class MenuModel extends Model
 		$page_per_block = 10;
 		$num_per_page = 10;
 
-		$sql = "select shop.* from shop where 1=1";
+		$sql = "select shop.*, (select count(id) from menu where shop=shop.id and depth='1') as menu1cnt, (select count(id) from menu where shop=shop.id and depth='2') as menu2cnt from shop where 1=1";
 
     if($this->request->getGet('searchtext')) {
       $sql .= " and (title like '%".$this->request->getGet('searchtext')."%' or shop.id like '%".$this->request->getGet('searchtext')."%') ";
@@ -107,7 +107,7 @@ class MenuModel extends Model
 
 	public function getMenuList()
 	{
-		$sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid from menu where shop='".$this->request->getGet('sid')."' and depth='1' order by sort";
+		$sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid, image, takeoutprice from menu where shop='".$this->request->getGet('sid')."' and depth='1' order by sort";
 
 		$query = $this->db->query($sql);
 
@@ -119,7 +119,7 @@ class MenuModel extends Model
 		for($i=0; $i<$rows; $i++) {
 			array_push($menulist, $result[$i]);
 
-			$d2_sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid from menu where shop='".$this->request->getGet('sid')."' and upperid='".$result[$i]->id."' and depth='2' order by sort";
+			$d2_sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid, image, takeoutprice from menu where shop='".$this->request->getGet('sid')."' and upperid='".$result[$i]->id."' and depth='2' order by sort";
 
 			$d2_query = $this->db->query($d2_sql);
 
@@ -129,7 +129,7 @@ class MenuModel extends Model
 			for($j=0; $j<$d2_rows; $j++) {
 				array_push($menulist, $d2_result[$j]);
 
-				$d3_sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid from menu where shop='".$this->request->getGet('sid')."' and upperid='".$d2_result[$j]->id."' and depth='3' order by sort";
+				$d3_sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid, image, takeoutprice from menu where shop='".$this->request->getGet('sid')."' and upperid='".$d2_result[$j]->id."' and depth='3' order by sort";
 
 				$d3_query = $this->db->query($d3_sql);
 
@@ -195,6 +195,7 @@ class MenuModel extends Model
 			'shop' => $this->request->getPost('sid'), 
 			'title' => $this->request->getPost('title'), 
       'price' => $this->request->getPost('price'),
+			'takeoutprice' => $this->request->getPost('takeoutprice'),
 			'sort' => $max_sort, 
 			'view' => '1', 
 			'depth' => $this->request->getPost('depth'), 
@@ -295,6 +296,7 @@ class MenuModel extends Model
 		$data = [
 			'title' => $this->request->getPost('title'), 
       'price' => $this->request->getPost('price'),
+			'takeoutprice' => $this->request->getPost('takeoutprice'),
 		];
     
 		if(isset($imgdata["imagefile"]) && $imgdata["imagefile"]["upload_data"]->getTempName()) {

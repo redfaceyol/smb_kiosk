@@ -19,7 +19,6 @@ $_Link = "page=".$_request->getGet('page');
         </div>
       </div>
       <div class="col-sm-6 text-end">
-        <a class="btn btn-primary" href="/admin/menu/menuRegiste">신규등록</a>
       </div>
     </div>
     <div class="table-responsive text-nowrap">
@@ -31,7 +30,6 @@ $_Link = "page=".$_request->getGet('page');
             <th width="200">아이디</th>
             <th width="100">1단계메뉴</th>
             <th width="100">2단계메뉴</th>
-            <th width="100">3단계메뉴</th>
             <th width="180">관리</th> 
           </tr>
         </thead>
@@ -41,9 +39,8 @@ $_Link = "page=".$_request->getGet('page');
             <td><?=($total_count - (($cur_page - 1) * $num_per_page) - $rowNum)?></td>
             <td><?=$lt->title?></td>
             <td><?=$lt->id?></td>
-            <td><?=$lt->tel?></td>
-            <td><?=$lt->tel?></td>
-            <td><?=$lt->tel?></td>
+            <td><?=$lt->menu1cnt?></td>
+            <td><?=$lt->menu2cnt?></td>
             <td>
               <a class="btn btn-sm btn-info" href="/admin/menu/menuList?sid=<?=$lt->id?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 메뉴관리</a>
             </td>

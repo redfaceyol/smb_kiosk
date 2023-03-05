@@ -1,4 +1,6 @@
 <?php
+$session = \Config\Services::session();
+
 $_Link = "page=".$_request->getGet('page');
 ?>
 <!-- Content -->
@@ -10,6 +12,7 @@ $_Link = "page=".$_request->getGet('page');
   
   <div class="card">
     <div class="card-header row">
+      <? if($session->member_grade >= 90) { ?>
       <div class="col-sm-6 row">
         <div class="col-sm-6">
           <input type="text" class="form-control" id="searchtext" name="searchtext" value="<?=$_request->getGet('searchtext')?>" placeholder="검색어" />
@@ -21,6 +24,7 @@ $_Link = "page=".$_request->getGet('page');
       <div class="col-sm-6 text-end">
         <a class="btn btn-primary" href="/admin/kiosk/kioskRegiste">신규등록</a>
       </div>
+      <? } ?>
     </div>
     <div class="table-responsive text-nowrap">
       <table class="table table-hover table-bordered table-sm">
@@ -31,8 +35,10 @@ $_Link = "page=".$_request->getGet('page');
             <th width="200">아이디</th>
             <th width="200">KIOSK번호</th>
             <th width="200">타입</th>
-            <th width="100">상태</th>
+            <th width="100">사용</th>
+            <? if($session->member_grade >= 90) { ?>
             <th width="180">관리</th> 
+            <? } ?>
           </tr>
         </thead>
         <tbody class="table-border-bottom-0">
@@ -44,10 +50,12 @@ $_Link = "page=".$_request->getGet('page');
             <td><?=$lt->number?></td>
             <td><?=($lt->types=="1"?"KIOSK":($lt->types=="2"?"TableOrder":$lt->types))?></td>
             <td><?=($lt->status=="1"?"사용":($lt->status=="0"?"미사용":$lt->status))?></td>
+            <? if($session->member_grade >= 90) { ?>
             <td>
               <a class="btn btn-sm btn-info" href="/admin/kiosk/kioskModify?oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 수정</a>
               <a class="btn btn-sm btn-danger" href="javascript:delConfirm('/admin/kiosk/delKiosk?oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
             </td>
+            <? } ?>
           </tr>
 				  <? $rowNum++; } ?>
         </tbody>

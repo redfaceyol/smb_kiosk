@@ -22,6 +22,8 @@ $session = \Config\Services::session();
 
             <li class="menu-header small text-uppercase"><span class="menu-header-text">정보관리</span></li>
 
+            <? if($session->member_grade >= 90) { ?>
+
             <li class="menu-item">
               <a href="/admin/representative" class="menu-link" >
                 <i class="menu-icon tf-icons bx bx-file"></i>
@@ -46,6 +48,29 @@ $session = \Config\Services::session();
                 <div data-i18n="Kiosk">KIOSK 관리</div>
               </a>
             </li>
+
+            <? } elseif($session->member_grade >= 50) { ?>
+
+            <li class="menu-item">
+              <a href="/admin/shop" class="menu-link" >
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Shop">업장 관리</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/admin/menu" class="menu-link" >
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Menu">메뉴 관리</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/admin/kiosk" class="menu-link" >
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Kiosk">KIOSK 관리</div>
+              </a>
+            </li>
+
+            <? } ?>
             
             <li class="menu-header small text-uppercase"><span class="menu-header-text">계정</span></li>
 

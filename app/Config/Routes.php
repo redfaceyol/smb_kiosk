@@ -74,9 +74,19 @@ $routes->group('api', static function ($routes) {
     $routes->post('kiosk/(:any)', 'api\Kiosk::$1');
 });
 
+$routes->group('api2', static function ($routes) {
+    $routes->get('docs', 'api2\Docs::index');
+
+    $routes->get('shop/(:any)', 'api2\Shop::$1');
+    $routes->post('shop/(:any)', 'api2\Shop::$1');
+    
+    $routes->get('kiosk/(:any)', 'api2\Kiosk::$1');
+    $routes->post('kiosk/(:any)', 'api2\Kiosk::$1');
+});
+
 $routes->get('image/menu/(:num)/(:num).jpg', 'Image::menu_image/$1');
 $routes->get('image/menu/(:num)/thumb_(:num).jpg', 'Image::menu_thumbimage/$1');
-$routes->get('image/sign/(:num)/(:num).jpg', 'Image::sign_image/$1');
+$routes->get('image/shop/(:num).jpg', 'Image::shop_image/$1');
 
 /*
  * --------------------------------------------------------------------

@@ -1,3 +1,6 @@
+<?
+$session = \Config\Services::session();
+?>
 
 <!-- Content -->
 
@@ -40,6 +43,16 @@
             <input type="password" class="form-control" id="password2" value="" />
           </div>
         </div>
+
+        <? if($session->member_grade >= 90) { ?>
+        <? } elseif($session->member_grade >= 50) { ?>
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label" for="phone">전화번호</label>
+          <div class="col-sm-3">
+            <input type="text" class="form-control" id="phone" name="phone" value="<?=$myInfo["phone"]?>" placeholder="- 를 제외하고 입력하세요." onkeydown="onlyNumber(this)" />
+          </div>
+        </div>
+        <? } ?>
 
       </div>
       <div class="card-footer pt-0">

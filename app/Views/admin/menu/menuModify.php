@@ -21,10 +21,18 @@ $_Link = "page=".$_request->getGet('page');
           </div>
         </div>
 
+        <? if($menuData['depth'] != "1") { ?>
         <div class="row mb-3">
           <label class="col-sm-2 col-form-label" for="price">가격</label>
           <div class="col-sm-3">
             <input type="text" class="form-control" id="price" name="price" value="<?=$menuData["price"]?>" onkeydown="onlyNumber(this)" />
+          </div>
+        </div>
+        
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label" for="price">포장가격</label>
+          <div class="col-sm-3">
+            <input type="text" class="form-control" id="takeoutprice" name="takeoutprice" value="<?=$menuData["takeoutprice"]?>" onkeydown="onlyNumber(this)" />
           </div>
         </div>
 
@@ -43,6 +51,7 @@ $_Link = "page=".$_request->getGet('page');
             <? } ?>
           </div>
         </div>
+        <? } ?>
 
       </div>
       <div class="card-footer pt-0">

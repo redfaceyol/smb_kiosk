@@ -11,6 +11,7 @@ use App\Models\ImageModel;
 class Image extends BaseController
 {
   private $image_model;
+  private $svc_response;
   private $svc_uri;
 
   public function initController(
@@ -22,6 +23,7 @@ class Image extends BaseController
 
       $this->image_model = model(ImageModel::class);
 
+      $this->svc_response = service('response');
       $this->svc_uri = service('uri');
   }
 
@@ -32,19 +34,28 @@ class Image extends BaseController
 
   public function menu_image()
   {
-		header("Content-type: image/jpg");
-		echo $this->image_model->getMenuImage($this->svc_uri->getSegment(3));
+		$data =  $this->image_model->getMenuImage($this->svc_uri->getSegment(3));
+    $this->svc_response->setHeader("Content-Type", "image/jpg");
+    $this->svc_response->setHeader("Content-Length", strlen($data));
+    $this->svc_response->setStatusCode(200)->setBody($data);
+    $this->svc_response->send();
   }
 
   public function menu_thumbimage()
   {
-		header("Content-type: image/jpg");
-		echo $this->image_model->getMenuThumbImage($this->svc_uri->getSegment(3));
+		$data = $this->image_model->getMenuThumbImage($this->svc_uri->getSegment(3));
+    $this->svc_response->setHeader("Content-Type", "image/jpg");
+    $this->svc_response->setHeader("Content-Length", strlen($data));
+    $this->svc_response->setStatusCode(200)->setBody($data);
+    $this->svc_response->send();
   }
 
-  public function sign_image()
+  public function shop_image()
   {
-		header("Content-type: image/jpg");
-		echo $this->image_model->getSignImage($this->svc_uri->getSegment(3));
+		$data = $this->image_model->getShopImage($this->svc_uri->getSegment(3));
+    $this->svc_response->setHeader("Content-Type", "image/jpg");
+    $this->svc_response->setHeader("Content-Length", strlen($data));
+    $this->svc_response->setStatusCode(200)->setBody($data);
+    $this->svc_response->send();
   }
 }

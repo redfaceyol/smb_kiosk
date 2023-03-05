@@ -38,13 +38,13 @@ class ImageModel extends Model
 		return $result[0]->thumbimage;
 	}
 
-	public function getSignImage($inId)
+	public function getShopImage($inId)
 	{
-		$sql = "select signimage from shop where id='".$inId."'";
+		$sql = "select shopimage from shop where id='".$inId."'";
 		$query = $this->db->query($sql);
 		$result = $query->getResult();
 
-		return $result[0]->signimage;
+		return $result[0]->shopimage;
 	}
 }
 ?>

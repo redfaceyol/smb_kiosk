@@ -1,4 +1,5 @@
 <?php
+$session = \Config\Services::session();
 $_Link = "";
 ?>
 <!-- Content -->
@@ -25,6 +26,7 @@ $_Link = "";
           </div>
         </!--div-->
 
+        <? if($session->member_grade >= 90) { ?>
         <div class="row mb-3">
           <label class="col-sm-2 col-form-label" for="search_representative">업주명 검색</label>
           <div class="col-sm-2 mb-3 mb-sm-0">
@@ -40,6 +42,7 @@ $_Link = "";
           <div class="col-sm-10" id="searchlist">
           </div>
         </div>
+        <? } ?>
 
         <div class="row mb-3">
           <label class="col-sm-2 col-form-label" for="representative_name">업주명</label>
@@ -112,7 +115,7 @@ $_Link = "";
         </div>
 
         <div class="row mb-3">
-          <label class="col-sm-2 col-form-label" for="imagefile">사인(도장)이미지</label>
+          <label class="col-sm-2 col-form-label" for="imagefile">업장이미지</label>
           <div class="col-sm-6">
             <input class="form-control" type="file" id="imagefile" name="imagefile" />
           </div>
@@ -121,8 +124,8 @@ $_Link = "";
         <div class="row mb-3">
           <label class="col-sm-2 col-form-label" for="imagefile">등록이미지</label>
           <div class="col-sm-6">
-            <? if($shopData["signimage"]) { ?>
-            <img src="/image/sign/<?=$shopData["id"]?>/<?=$shopData["id"]?>.jpg" height="200">
+            <? if($shopData["shopimage"]) { ?>
+            <img src="/image/shop/<?=$shopData["id"]?>.jpg" height="200">
             <? } ?>
           </div>
         </div>

@@ -235,7 +235,8 @@ class ShopModel extends Model
 			imagedestroy($source);
 			imagedestroy($target);
 
-			$data['signimage'] = $imgdata_bn;
+			$data['shopimage'] = $imgdata_bn;
+			$data['shopimageversion'] = time();
 		}
 
 		$builder->set('password', "password('".$this->request->getPost('password')."')", false);
@@ -318,7 +319,8 @@ class ShopModel extends Model
 			imagedestroy($source);
 			imagedestroy($target);
 
-			$data['signimage'] = $imgdata_bn;
+			$data['shopimage'] = $imgdata_bn;
+			$data['shopimageversion'] = time();
 		}
 
 		if($this->request->getPost('password')) {

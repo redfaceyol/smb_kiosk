@@ -1,4 +1,6 @@
 <?php
+$session = \Config\Services::session();
+
 $_Link = "page=".$_request->getGet('page');
 ?>
 <!-- Content -->
@@ -10,6 +12,7 @@ $_Link = "page=".$_request->getGet('page');
   
   <div class="card">
     <div class="card-header row">
+      <? if($session->member_grade >= 90) { ?>
       <div class="col-sm-6 row">
         <div class="col-sm-6">
           <input type="text" class="form-control" id="searchtext" name="searchtext" value="<?=$_request->getGet('searchtext')?>" placeholder="검색어" />
@@ -21,6 +24,7 @@ $_Link = "page=".$_request->getGet('page');
       <div class="col-sm-6 text-end">
         <a class="btn btn-primary" href="/admin/shop/shopRegiste">신규등록</a>
       </div>
+      <? } ?>
     </div>
     <div class="table-responsive text-nowrap">
       <table class="table table-hover table-bordered table-sm">
@@ -48,7 +52,9 @@ $_Link = "page=".$_request->getGet('page');
             <td><?=$lt->cntKiosk?></td>
             <td>
               <a class="btn btn-sm btn-info" href="/admin/shop/shopModify?oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 수정</a>
+              <? if($session->member_grade >= 90) { ?>
               <a class="btn btn-sm btn-danger" href="javascript:delConfirm('/admin/shop/delShop?oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
+              <? } ?>
             </td>
           </tr>
 				  <? $rowNum++; } ?>
