@@ -202,8 +202,10 @@ class ShopModel extends Model
 			$org_width = $imagesize[0];
 			$org_height = $imagesize[1];
 
-      $trg_width = 600;
-      $trg_height = 600;
+      $trg_width = 1080;
+      $trg_height = 1676;
+
+			list($trg_width, $trg_height) = colImageSize($org_width, $org_height, $trg_width, $trg_height);
 
 			$target = imagecreatetruecolor($trg_width, $trg_height);
 
@@ -286,8 +288,10 @@ class ShopModel extends Model
 			$org_width = $imagesize[0];
 			$org_height = $imagesize[1];
 
-      $trg_width = 600;
-      $trg_height = 600;
+      $trg_width = 1080;
+      $trg_height = 1676;
+
+			list($trg_width, $trg_height) = colImageSize($org_width, $org_height, $trg_width, $trg_height);
 
 			$target = imagecreatetruecolor($trg_width, $trg_height);
 

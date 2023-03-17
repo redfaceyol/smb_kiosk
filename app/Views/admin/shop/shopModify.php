@@ -115,7 +115,7 @@ $_Link = "";
         </div>
 
         <div class="row mb-3">
-          <label class="col-sm-2 col-form-label" for="imagefile">업장이미지</label>
+          <label class="col-sm-2 col-form-label" for="imagefile">업장이미지 (1080 * 1676)</label>
           <div class="col-sm-6">
             <input class="form-control" type="file" id="imagefile" name="imagefile" />
           </div>

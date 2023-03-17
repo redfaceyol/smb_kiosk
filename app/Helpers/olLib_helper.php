@@ -49,4 +49,20 @@ function indentation($depth) {
 	}
 	return $returnVal;
 }
+
+//이미지 함수
+//비율 유지하여 최적 크기 계산
+function colImageSize($srcWidth, $srcHeight, $trgWidth, $trgHeight) {
+	if($srcWidth > $trgWidth) {
+    $ratio = $trgWidth / $srcWidth;
+    $trgWidth = $trgWidth * $ratio;
+    $trgHeight = $trgHeight * $ratio;
+  }
+  if($srcHeight > $trgHeight) {
+    $ratio = $trgHeight / $srcHeight;
+    $trgHeight = $trgHeight * $ratio;
+    $trgWidth = $trgWidth * $ratio;
+  }
+  return array($trgWidth, $trgHeight);
+}
 ?>

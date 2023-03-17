@@ -37,7 +37,29 @@ class Menu extends BaseController
 
   public function index()
   {
-    $this->svc_response->redirect('/admin/menu/shopList');
+    $this->svc_response->redirect('/admin/menu/categoryList');
+  }
+
+  public function categoryList()
+  {
+    $data = $this->menu_model->getCategoryList();
+    $data["_request"] = $this->svc_request;
+
+    return view('admin/common/html_header', $data).
+           view('admin/common/menu', $data).
+           view('admin/menu/categoryList', $data).
+           view('admin/common/html_footer', $data);
+  }
+
+  public function categoryRegiste()
+  {
+    $data = $this->menu_model->getShopList();
+    $data["_request"] = $this->svc_request;
+
+    return view('admin/common/html_header', $data).
+           view('admin/common/menu', $data).
+           view('admin/menu/categoryRegiste', $data).
+           view('admin/common/html_footer', $data);
   }
 
   public function shopList()
