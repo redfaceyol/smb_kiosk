@@ -44,12 +44,17 @@ $session = \Config\Services::session();
               <ul class="menu-sub">
                 <li class="menu-item">
                   <a href="/admin/menu/categoryList" class="menu-link">
-                    <div data-i18n="Vertical Form">카테고리 관리</div>
+                    <div data-i18n="Category">카테고리 관리</div>
                   </a>
                 </li>
                 <li class="menu-item">
-                  <a href="form-layouts-horizontal.html" class="menu-link">
-                    <div data-i18n="Horizontal Form">Horizontal Form</div>
+                  <a href="/admin/menu/menuList" class="menu-link">
+                    <div data-i18n="Menu">메뉴 관리</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/menu/optionList" class="menu-link">
+                    <div data-i18n="Option">옵션 관리</div>
                   </a>
                 </li>
               </ul>

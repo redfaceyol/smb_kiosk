@@ -20,21 +20,28 @@ class MenuModel extends Model
 		$this->session = session();
 	}
 
-	public function getShopList()
+	public function findShop()
 	{
-		$sql = "select * from shop where 1=1 ";		
-		$sql .= " order by registe_datetime desc";
-    $query = $this->db->query($sql);
-    $result = $query->getResult();
+		$sql = "select id, title from shop where (id like '%".$this->request->getPost('searchshop')."%' OR title like '%".$this->request->getPost('searchshop')."%') order by title";
 
-		$returnVal = $result;
- 
-		return $returnVal;
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+
+    $result = null;
+
+		if($rows) {
+			$result = $query->getResult();
+		}
+
+		$resultVal["status"] = "OK";
+		$resultVal["list"] = $result;
+
+		return $resultVal;
 	}
 
 	public function getCategoryList()
 	{
-		$sql = "select category.*, shop.title, (select count(id) from menu where category=category.id) as cnt_menu from category, shop where shop=shop.id order by shop, sort";
+		$sql = "select category.*, shop.title as shop_title, (select count(id) from menu where category=category.id) as cnt_menu from category, shop where shop=shop.id order by shop, sort";
 
 		$query = $this->db->query($sql);
 
@@ -48,44 +55,86 @@ class MenuModel extends Model
 		return $returnVal;
 	}
 
+	public function postCategory()
+	{
+    $builder = $this->db->table('category');
+
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from category where shop='".$this->request->getPost('shop')."'");
+		$max_sort_result = $max_sort_query->getResult();
+		$max_sort = $max_sort_result["0"]->max_sort;
+
+		$data = [
+			'shop' => $this->request->getPost('shop'), 
+			'title' => $this->request->getPost('title'),
+			'sort' => $max_sort, 
+			'view' => '1', 
+		];
+
+    $builder->set('registe_datetime', "now()", false);
+    $builder->set($data);
+		$builder->insert();
+
+		$this->session->setFlashdata('message', 'primary|카테고리관리|등록되었습니다.');
+
+		$this->response->redirect("/admin/menu/categoryList?");
+	}
+
+	public function getCategoryData()
+	{
+		$returnVal = null;
+
+		$sql = "select category.*, shop.title as shop_title from category, shop where shop=shop.id and category.id='".$this->request->getGet('cid')."'";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+
+		if($rows) {
+			$row = $query->getResultArray();
+
+			$returnVal = $row[0];
+		}
+
+		return $returnVal;
+	}
+
+	public function putCategory()
+	{
+    $builder = $this->db->table('category');
+
+		$data = [
+			'shop' => $this->request->getPost('shop'), 
+			'title' => $this->request->getPost('title'), 
+		];
+		
+		$builder->where('id', $this->request->getPost('cid'));
+		$builder->update($data);
+
+		$this->session->setFlashdata('message', 'primary|카테고리관리|수정되었습니다.');
+
+		$this->response->redirect("/admin/menu/categoryModify?cid=".$this->request->getPost('cid')."&ccid=".md5($this->request->getPost('cid')));
+	}
+
+	public function delCategory()
+	{
+    $builder = $this->db->table('category');
+
+		$builder->where('id', $this->request->getGet('cid'));
+		$builder->delete();
+
+		$this->session->setFlashdata('message', 'danger|카테고리관리|삭제되었습니다.');
+
+		$this->response->redirect("/admin/menu/categoryList?page=".$this->request->getGet('page'));
+	}
+
 	public function getMenuList()
 	{
-		$sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid, image, takeoutprice from menu where shop='".$this->request->getGet('sid')."' and depth='1' order by sort";
+		$sql = "select menu.*, category.title from menu, category where category=category.id order by menu.sort";
 
 		$query = $this->db->query($sql);
 
     $rows = $query->getNumRows();
     $result = $query->getResult();
 
-		$menulist = array();
-
-		for($i=0; $i<$rows; $i++) {
-			array_push($menulist, $result[$i]);
-
-			$d2_sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid, image, takeoutprice from menu where shop='".$this->request->getGet('sid')."' and upperid='".$result[$i]->id."' and depth='2' order by sort";
-
-			$d2_query = $this->db->query($d2_sql);
-
-			$d2_rows = $d2_query->getNumRows();
-			$d2_result = $d2_query->getResult();
-
-			for($j=0; $j<$d2_rows; $j++) {
-				array_push($menulist, $d2_result[$j]);
-
-				$d3_sql = "select id, shop, title, price, sort, view, depth, imageversion, upperid, image, takeoutprice from menu where shop='".$this->request->getGet('sid')."' and upperid='".$d2_result[$j]->id."' and depth='3' order by sort";
-
-				$d3_query = $this->db->query($d3_sql);
-
-				$d3_rows = $d3_query->getNumRows();
-				$d3_result = $d3_query->getResult();
-
-				for($k=0; $k<$d3_rows; $k++) {
-					array_push($menulist, $d3_result[$k]);					
-				}
-			}
-		}
-
-		$returnVal["list"] = $menulist;
+		$returnVal["list"] = $result;
 
 		//print_r($menulist);exit;
  

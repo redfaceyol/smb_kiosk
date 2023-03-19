@@ -53,7 +53,6 @@ class Menu extends BaseController
 
   public function categoryRegiste()
   {
-    $data = $this->menu_model->getShopList();
     $data["_request"] = $this->svc_request;
 
     return view('admin/common/html_header', $data).
@@ -61,6 +60,54 @@ class Menu extends BaseController
            view('admin/menu/categoryRegiste', $data).
            view('admin/common/html_footer', $data);
   }
+
+  public function findShop()
+  {
+		$result = $this->menu_model->findShop();
+		
+		echo json_encode($result);
+  }
+
+	public function postCategory()
+	{
+		$this->menu_model->postCategory();
+	}
+
+  public function categoryModify()
+  {
+    if(md5($this->svc_request->getGet('cid')) == $this->svc_request->getGet('ccid')) {
+      $data["categoryData"] = $this->menu_model->getCategoryData();
+      $data["_request"] = $this->svc_request;
+
+      return view('admin/common/html_header', $data).
+            view('admin/common/menu', $data).
+            view('admin/menu/categoryModify', $data).
+            view('admin/common/html_footer', $data);
+    }
+    else {
+      alert('잘못된 호출입니다.', "/admin/menu/categoryList");
+    }
+  }
+
+	public function putCategory()
+	{
+    if(md5($this->svc_request->getPost('cid')) == $this->svc_request->getPost('ccid')) {
+      $this->menu_model->putCategory();
+    }
+    else {
+      alert('잘못된 호출입니다.', "/admin/menu/categoryList");
+    }
+	}
+
+	public function delCategory()
+	{
+    if(md5($this->svc_request->getGet('cid')) == $this->svc_request->getGet('ccid')) {
+		  $this->menu_model->delCategory();
+    }
+    else {
+      alert('잘못된 호출입니다.', "/admin/menu/categoryList");
+    }
+	}
 
   public function shopList()
   {

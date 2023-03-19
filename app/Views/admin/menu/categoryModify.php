@@ -8,7 +8,9 @@ $_Link = "page=".$_request->getGet('page');
 
   <!-- Basic Bootstrap Table -->
   <div class="card">
-    <form name="regForm" id="regForm" method="post" action="/admin/menu/postCategory" enctype="multipart/form-data">
+    <form name="regForm" id="regForm" method="post" action="/admin/menu/putCategory" enctype="multipart/form-data">
+      <input type="hidden" name="cid" value="<?=$categoryData["id"]?>">
+      <input type="hidden" name="ccid" value="<?=md5($categoryData["id"])?>">
       <div class="card-body">
 
         <div class="row mb-3">
@@ -30,7 +32,7 @@ $_Link = "page=".$_request->getGet('page');
         <div class="row mb-3">
           <label class="col-sm-2 col-form-label" for="shop_name">매장명</label>
           <div class="col-sm-3">
-            <input type="text" readonly class="form-control" id="shop_name" name="shop_name" value="" />
+            <input type="text" readonly class="form-control" id="shop_name" name="shop_name" value="<?=$categoryData["shop_title"]?>" />
             <input type="hidden" class="form-control" id="shop" name="shop" value="" />
           </div>
         </div>
@@ -38,13 +40,13 @@ $_Link = "page=".$_request->getGet('page');
         <div class="row mb-3">
           <label class="col-sm-2 col-form-label" for="title">카테고리명</label>
           <div class="col-sm-3">
-            <input type="text" class="form-control" id="title" name="title" value="" />
+            <input type="text" class="form-control" id="title" name="title" value="<?=$categoryData["title"]?>" />
           </div>
         </div>
 
       </div>
       <div class="card-footer pt-0">
-        <a href="javascript:chkForm()" class="btn btn-primary">등록</a>
+        <a href="javascript:chkForm()" class="btn btn-primary">수정</a>
         <a href="/admin/menu/categoryList?<?=$_Link?>" class="btn btn-secondary">목록</a>
       </div>
     </form>
@@ -64,7 +66,7 @@ $_Link = "page=".$_request->getGet('page');
     }
 
     $('#regForm').submit();
-    }
+  }
 
   function findShop() {
     if(!$('#search_shop').val()) {
@@ -82,7 +84,7 @@ $_Link = "page=".$_request->getGet('page');
             $('#searchlist').html('');
 
             for(i=0; i<result.list.length; i++) {
-              $('#searchlist').append('<a class="btn btn-outline-secondary mb-3" href="javascript:selectShop(\''+result.list[i].id+'\')" style="margin-right: 10px;">'+result.list[i].title+' ( '+result.list[i].id+' )</a>');
+              $('#searchlist').append('<a class="btn btn-outline-secondary mb-3" href="javascript:selectShop(\''+result.list[i].id+'\', \''+result.list[i].title+'\')" style="margin-right: 10px;">'+result.list[i].title+' ( '+result.list[i].id+' )</a>');
             }
           }
           else {
@@ -95,24 +97,8 @@ $_Link = "page=".$_request->getGet('page');
     }
   }
 
-  function selectShop(selectId) {
-    $.ajax({
-      type: "POST",
-      url: "/admin/shop/selectShop",
-        data: "selectshop="+selectId,
-      success: function(result) {
-        eval("var result="+result);
-
-        if(result.status=="OK") {
-          $('#shop_name').val(result.result[0].title);
-          $('#shop').val(result.result[0].id);
-        }
-        else {
-        }
-      },
-      error:function(request, status, error){
-        alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      }
-    });
+  function selectShop(selectId, selectTitle) {
+    $('#shop_name').val(selectTitle);
+    $('#shop').val(selectId);
   }
 </script>

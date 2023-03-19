@@ -60,6 +60,47 @@ class KioskModel extends Model
     return $resultVal;
   }
 
+  public function loadCategory()
+  {
+    $resultVal = array();
+
+    try {
+      if($this->request->getGet('sid')) {
+        $shop_sql = "select * from shop where shop.id='".$this->request->getGet('sid')."'";
+        $shop_query = $this->db->query($shop_sql);
+        $shop_rows = $shop_query->getNumRows();
+
+        if($shop_rows) {
+          $resultVal['code'] = "100";
+
+          $category_sql = "select id, shop, title, sort, view, registe_datetime from category where view=1 and shop='".$this->request->getGet('sid')."' order by sort";
+          $category_query = $this->db->query($category_sql);
+          $category_result = $category_query->getResult();
+
+          $resultVal['category_list'] = $category_result;
+        }
+        else {
+          $resultVal['code'] = "510";
+          $resultVal['msg'] = "등록되지 않은 매장아이디";
+        }
+      }
+      else {
+        $resultVal['code'] = "500";
+        $resultVal['msg'] = "입력된 매장아이디 없음";
+      }
+    }
+    catch(Exception $e) {
+      $resultVal['code'] = "599";
+      $resultVal['msg'] = $e->getMessage();
+    } 
+
+    return $resultVal;
+  }
+
+
+
+
+
   public function loadMenu1()
   {
     $resultVal = array();

@@ -13,7 +13,7 @@ $_Link = "page=".$_request->getGet('page');
       <div class="col-sm-6 row">
       </div>
       <div class="col-sm-6 text-end">
-        <a class="btn btn-primary" href="/admin/menu/categoryRegiste?sid=<?=$_request->getGet('sid')?>&depth=1&uid=0&<?=$_Link?>">카테고리 등록</a>
+        <a class="btn btn-primary" href="/admin/menu/categoryRegiste?<?=$_Link?>">카테고리 등록</a>
       </div>
     </div>
     <div class="table-responsive text-nowrap">
@@ -32,16 +32,17 @@ $_Link = "page=".$_request->getGet('page');
 					<? $rowNum = 1; foreach($list as $lt) { ?>
           <tr>
             <td></td>
-            <td><?=indentation($lt->depth)?><?=$lt->title?></td>
-            <td><?=$lt->price?></td>
-            <td><?=$lt->takeoutprice?></td>
-            <td><img src="<?=($lt->image?"/image/menu/".$lt->id."/".$lt->id.".jpg":"")?>" height="50"></td>
+            <td><?=$lt->shop_title?></td>
+            <td><?=$lt->title?></td>
+            <td><?=($lt->view=="1"?"사용":"미사용")?></td>
+            <td><?=$lt->cnt_menu?></td>
             <td>
-              <a class="btn btn-sm btn-info" href="/admin/menu/menuModify?sid=<?=$_request->getGet('sid')?>&oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 수정</a>
-              <a class="btn btn-sm btn-danger" href="javascript:delConfirm('/admin/menu/delMenu?sid=<?=$_request->getGet('sid')?>&oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
-              <? if($lt->depth<3) { ?>
-              <a class="btn btn-sm btn-primary" href="/admin/menu/menuRegiste?sid=<?=$_request->getGet('sid')?>&depth=<?=($lt->depth+1)?>&uid=<?=$lt->id?>&<?=$_Link?>"><?=($lt->depth+1)?>단계 메뉴등록</a>
-              <? } ?>
+              <a class="btn btn-sm btn-info" href="/admin/menu/categoryModify?cid=<?=$lt->id?>&ccid=<?=md5($lt->id)?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 수정</a>
+              <? if($lt->cnt_menu > 0) {?>
+              <a class="btn btn-sm btn-danger disabled" href="#" disabled><i class="bx bx-trash-alt me-1"></i> 삭제</a>
+              <? } else {?>                
+              <a class="btn btn-sm btn-danger" href="javascript:delConfirm('/admin/menu/delCategory?cid=<?=$lt->id?>&ccid=<?=md5($lt->id)?>&<?=$_Link?>')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
+              <? }?>
             </td>
           </tr>
 				  <? $rowNum++; } ?>

@@ -13,7 +13,7 @@ $_Link = "page=".$_request->getGet('page');
       <div class="col-sm-6 row">
       </div>
       <div class="col-sm-6 text-end">
-        <a class="btn btn-primary" href="/admin/menu/menuRegiste?sid=<?=$_request->getGet('sid')?>&depth=1&uid=0&<?=$_Link?>">1단계 메뉴등록</a>
+        <a class="btn btn-primary" href="/admin/menu/menuRegiste?<?=$_Link?>">메뉴등록</a>
       </div>
     </div>
     <div class="table-responsive text-nowrap">
@@ -21,9 +21,11 @@ $_Link = "page=".$_request->getGet('page');
         <thead>
           <tr>
             <th width="80"></th>
-            <th width="800">메뉴명</th>
-            <th width="100">매장가격</th>
-            <th width="100">포장가격</th>
+            <th width="200">매장명</th>
+            <th width="200">카테고리</th>
+            <th width="300">메뉴명</th>
+            <th width="150">매장가격</th>
+            <th width="150">포장가격</th>
             <th width="100">이미지</th>
             <th width="180">관리</th> 
           </tr>
@@ -32,7 +34,7 @@ $_Link = "page=".$_request->getGet('page');
 					<? $rowNum = 1; foreach($list as $lt) { ?>
           <tr>
             <td></td>
-            <td><?=indentation($lt->depth)?><?=$lt->title?></td>
+            <td><?=$lt->title?></td>
             <td><?=$lt->price?></td>
             <td><?=$lt->takeoutprice?></td>
             <td><img src="<?=($lt->image?"/image/menu/".$lt->id."/".$lt->id.".jpg":"")?>" height="50"></td>
