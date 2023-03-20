@@ -121,9 +121,9 @@ class MenuModel extends Model
 			for($i=0; $i<$rows; $i++) {
 				$menus = array();
 
-				array_push($menus, array('text' => "메뉴추가", 'tag' => 'menu-add', 'icon' => 'bx bx-edit-alt', 'backColor' => '#bebebe', 'color' => '#fafafa'));
+				array_push($menus, array('text' => "메뉴추가", 'tag' => 'menu-add|'.$result[$i]->id, 'icon' => 'bx bx-edit-alt', 'backColor' => '#bebebe', 'color' => '#fafafa'));
 
-				array_push($arrList, array('text' => $result[$i]->title, 'tag' => $result[$i]->id, 'nodes' => $menus));
+				array_push($arrList, array('text' => $result[$i]->title, 'tag' => 'category|'.$result[$i]->id, 'nodes' => $menus));
 			}
 		}
 
@@ -144,7 +144,7 @@ class MenuModel extends Model
 
 		$data = [
 			'shop' => $this->request->getPost('shop'), 
-			'title' => $this->request->getPost('title'),
+			'title' => $this->request->getPost('category_title'),
 			'sort' => $max_sort, 
 			'view' => '1', 
 		];
@@ -153,9 +153,62 @@ class MenuModel extends Model
     $builder->set($data);
 		$builder->insert();
 
-		$this->session->setFlashdata('message', 'primary|카테고리관리|등록되었습니다.');
+		$_Link = "page=".$this->request->getGet('page');
 
-		$this->response->redirect("/admin/menu/categoryList?");
+		$this->session->setFlashdata('message', 'primary|메뉴관리|등록되었습니다.');
+
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('shop')."&".$_Link);
+	}
+
+	public function ajaxLoadCategory() 
+	{
+		$sql = "select *, (select count(id) from menu where category=category.id) as menu_cnt, md5(id) as ccid from category where shop='".$this->request->getPost('sid')."' and id='".$this->request->getPost('cid')."'";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+		$result = null;
+
+		$resultVal["status"] = "OK";
+
+		if($rows) {
+			$result = $query->getResult();
+		}
+
+		$resultVal["data"] = $result[0];
+
+		return $resultVal;
+	}
+
+	public function putCategory()
+	{
+    $builder = $this->db->table('category');
+
+		$data = [
+			'shop' => $this->request->getPost('shop'), 
+			'title' => $this->request->getPost('category_title'), 
+		];
+		
+		$builder->where('id', $this->request->getPost('cid'));
+		$builder->update($data);
+
+		$_Link = "page=".$this->request->getGet('page');
+
+		$this->session->setFlashdata('message', 'primary|카테고리관리|수정되었습니다.');
+
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('shop')."&".$_Link);
+	}
+
+	public function delCategory()
+	{
+    $builder = $this->db->table('category');
+
+		$builder->where('id', $this->request->getGet('cid'));
+		$builder->delete();
+
+		$_Link = "page=".$this->request->getGet('page');
+
+		$this->session->setFlashdata('message', 'danger|카테고리관리|삭제되었습니다.');
+
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&".$_Link);
 	}
 
 
@@ -214,35 +267,6 @@ class MenuModel extends Model
 		}
 
 		return $returnVal;
-	}
-
-	public function putCategory()
-	{
-    $builder = $this->db->table('category');
-
-		$data = [
-			'shop' => $this->request->getPost('shop'), 
-			'title' => $this->request->getPost('title'), 
-		];
-		
-		$builder->where('id', $this->request->getPost('cid'));
-		$builder->update($data);
-
-		$this->session->setFlashdata('message', 'primary|카테고리관리|수정되었습니다.');
-
-		$this->response->redirect("/admin/menu/categoryModify?cid=".$this->request->getPost('cid')."&ccid=".md5($this->request->getPost('cid')));
-	}
-
-	public function delCategory()
-	{
-    $builder = $this->db->table('category');
-
-		$builder->where('id', $this->request->getGet('cid'));
-		$builder->delete();
-
-		$this->session->setFlashdata('message', 'danger|카테고리관리|삭제되었습니다.');
-
-		$this->response->redirect("/admin/menu/categoryList?page=".$this->request->getGet('page'));
 	}
 
 	public function getMenuList()

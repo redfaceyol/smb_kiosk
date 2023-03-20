@@ -71,9 +71,27 @@ class Menu extends BaseController
 	public function prcCategory()
 	{
     if($this->svc_request->getPost('opt')=="u") {
+      $this->menu_model->putCategory();
     }
     else {
 		  $this->menu_model->postCategory();
+    }
+	}
+
+  public function ajaxLoadCategory()
+  {
+		$result = $this->menu_model->ajaxLoadCategory();
+		
+		echo json_encode($result);
+  }
+
+	public function delCategory()
+	{
+    if(md5($this->svc_request->getGet('cid')) == $this->svc_request->getGet('ccid')) {
+		  $this->menu_model->delCategory();
+    }
+    else {
+      alert('잘못된 호출입니다.', "/admin/menu/categoryList");
     }
 	}
 
@@ -131,16 +149,6 @@ class Menu extends BaseController
 	{
     if(md5($this->svc_request->getPost('cid')) == $this->svc_request->getPost('ccid')) {
       $this->menu_model->putCategory();
-    }
-    else {
-      alert('잘못된 호출입니다.', "/admin/menu/categoryList");
-    }
-	}
-
-	public function delCategory()
-	{
-    if(md5($this->svc_request->getGet('cid')) == $this->svc_request->getGet('ccid')) {
-		  $this->menu_model->delCategory();
     }
     else {
       alert('잘못된 호출입니다.', "/admin/menu/categoryList");
