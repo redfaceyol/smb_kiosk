@@ -61,6 +61,9 @@
 		<!-- Daum Address -->
 		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
+    <!-- bootstrap-treeview -->
+    <script src="/assets/plugins/bootstrap-treeview/bootstrap-treeview.min.js"></script>
+
     <!-- Vendors JS -->
 
     <!-- Main JS -->

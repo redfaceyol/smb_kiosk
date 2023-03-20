@@ -30,6 +30,9 @@
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="/assets/vendors/libs/perfect-scrollbar/perfect-scrollbar.css" />
 
+    <!-- bootstrap-treeview -->
+    <link rel="stylesheet" href="/assets/plugins/bootstrap-treeview/bootstrap-treeview.min.css" />
+
     <!-- Page CSS -->
 
     <!-- Helpers -->

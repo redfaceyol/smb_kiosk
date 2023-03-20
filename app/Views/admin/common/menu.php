@@ -37,27 +37,10 @@ $session = \Config\Services::session();
               </a>
             </li>
             <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-detail"></i>
+              <a href="/admin/menu" class="menu-link" >
+                <i class="menu-icon tf-icons bx bx-file"></i>
                 <div data-i18n="Menu">메뉴 관리</div>
               </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="/admin/menu/categoryList" class="menu-link">
-                    <div data-i18n="Category">카테고리 관리</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="/admin/menu/menuList" class="menu-link">
-                    <div data-i18n="Menu">메뉴 관리</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="/admin/menu/optionList" class="menu-link">
-                    <div data-i18n="Option">옵션 관리</div>
-                  </a>
-                </li>
-              </ul>
             </li>
             <li class="menu-item">
               <a href="/admin/kiosk" class="menu-link" >

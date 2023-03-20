@@ -37,8 +37,51 @@ class Menu extends BaseController
 
   public function index()
   {
-    $this->svc_response->redirect('/admin/menu/categoryList');
+    $this->svc_response->redirect('/admin/menu/shopList');
   }
+
+  public function shopList()
+  {
+    $data = $this->menu_model->getShopList();
+    $data["_request"] = $this->svc_request;
+
+    return view('admin/common/html_header', $data).
+           view('admin/common/menu', $data).
+           view('admin/menu/shopList', $data).
+           view('admin/common/html_footer', $data);
+  }
+
+  public function menuManage()
+  {
+    $data["_request"] = $this->svc_request;
+
+    return view('admin/common/html_header', $data).
+           view('admin/common/menu', $data).
+           view('admin/menu/menuManage', $data).
+           view('admin/common/html_footer', $data);
+  }
+
+  public function ajaxGetMenus()
+  {
+		$result = $this->menu_model->ajaxGetMenus();
+		
+		echo json_encode($result);
+  }
+
+	public function prcCategory()
+	{
+    if($this->svc_request->getPost('opt')=="u") {
+    }
+    else {
+		  $this->menu_model->postCategory();
+    }
+	}
+
+
+
+
+
+
 
   public function categoryList()
   {
@@ -67,11 +110,6 @@ class Menu extends BaseController
 		
 		echo json_encode($result);
   }
-
-	public function postCategory()
-	{
-		$this->menu_model->postCategory();
-	}
 
   public function categoryModify()
   {
@@ -108,17 +146,6 @@ class Menu extends BaseController
       alert('잘못된 호출입니다.', "/admin/menu/categoryList");
     }
 	}
-
-  public function shopList()
-  {
-    $data = $this->menu_model->getShopList();
-    $data["_request"] = $this->svc_request;
-
-    return view('admin/common/html_header', $data).
-           view('admin/common/menu', $data).
-           view('admin/menu/shopList', $data).
-           view('admin/common/html_footer', $data);
-  }
 
   public function menuList()
   {

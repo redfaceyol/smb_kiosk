@@ -94,3 +94,7 @@ function checkCorporateRegistrationNumber(value) {
 
 	return false;
 }
+
+$().ready(function() {
+	fncPageReady();
+});
