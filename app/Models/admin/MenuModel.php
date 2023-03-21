@@ -107,7 +107,7 @@ class MenuModel extends Model
 
 	public function ajaxGetMenus()
 	{
-		$sql = "select * from category where shop='".$this->request->getPost('sid')."'";
+		$sql = "select * from category where shop='".$this->request->getPost('sid')."' order by sort";
 		$query = $this->db->query($sql);
 		$rows = $query->getNumRows();
 
@@ -119,7 +119,19 @@ class MenuModel extends Model
 			$result = $query->getResult();
 
 			for($i=0; $i<$rows; $i++) {
+				$sql2 = "select * from menu where shop='".$this->request->getPost('sid')."' and category='".$result[$i]->id."' order by sort";
+				$query2 = $this->db->query($sql2);
+				$rows2 = $query2->getNumRows();
+				
 				$menus = array();
+
+				if($rows2){
+					$result2 = $query2->getResult();
+		
+					for($j=0; $j<$rows2; $j++) {
+						array_push($menus, array('text' => $result2[$j]->title, 'tag' => 'menu|'.$result2[$j]->id));
+					}
+				}
 
 				array_push($menus, array('text' => "메뉴추가", 'tag' => 'menu-add|'.$result[$i]->id, 'icon' => 'bx bx-edit-alt', 'backColor' => '#bebebe', 'color' => '#fafafa'));
 
@@ -138,12 +150,12 @@ class MenuModel extends Model
 	{
     $builder = $this->db->table('category');
 
-		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from category where shop='".$this->request->getPost('shop')."'");
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from category where shop='".$this->request->getPost('sid')."'");
 		$max_sort_result = $max_sort_query->getResult();
 		$max_sort = $max_sort_result["0"]->max_sort;
 
 		$data = [
-			'shop' => $this->request->getPost('shop'), 
+			'shop' => $this->request->getPost('sid'), 
 			'title' => $this->request->getPost('category_title'),
 			'sort' => $max_sort, 
 			'view' => '1', 
@@ -157,7 +169,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'primary|메뉴관리|등록되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('shop')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&".$_Link);
 	}
 
 	public function ajaxLoadCategory() 
@@ -183,7 +195,7 @@ class MenuModel extends Model
     $builder = $this->db->table('category');
 
 		$data = [
-			'shop' => $this->request->getPost('shop'), 
+			'shop' => $this->request->getPost('sid'), 
 			'title' => $this->request->getPost('category_title'), 
 		];
 		
@@ -194,7 +206,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'primary|카테고리관리|수정되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('shop')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&".$_Link);
 	}
 
 	public function delCategory()
@@ -210,6 +222,440 @@ class MenuModel extends Model
 
 		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&".$_Link);
 	}
+
+	public function postMenu($imgdata)
+	{
+    $builder = $this->db->table('menu');
+
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from menu where shop='".$this->request->getPost('sid')."'");
+		$max_sort_result = $max_sort_query->getResult();
+		$max_sort = $max_sort_result["0"]->max_sort;
+
+		$data = [
+			'shop' => $this->request->getPost('sid'), 
+			'category' => $this->request->getPost('cid'), 
+			'title' => $this->request->getPost('title'), 
+      'price' => $this->request->getPost('price'),
+      'shopview' => $this->request->getPost('shop_view'),
+			'takeoutprice' => $this->request->getPost('takeoutprice'),
+			'takeoutview' => $this->request->getPost('takeout_view'),
+			'description' => $this->request->getPost('description'),
+			'sort' => $max_sort, 
+			'view' => '1', 
+			'imageversion' => time(), 
+			'useoption' => $this->request->getPost('use_option'),
+		];
+    
+		if(isset($imgdata["imagefile"]) && $imgdata["imagefile"]["upload_data"]->getTempName()) {
+			$imagesize = getimagesize($imgdata["imagefile"]["upload_data"]->getTempName());
+
+			$org_width = $imagesize[0];
+			$org_height = $imagesize[1];
+
+      $trg_width = 600;
+      $trg_height = 600;
+
+      $trg2_width = 256;
+      $trg2_height = 256;
+
+			$target = imagecreatetruecolor($trg_width, $trg_height);
+			$target2 = imagecreatetruecolor($trg2_width, $trg2_height);
+
+			if($imagesize[2] == 1)
+			{
+				$source = imagecreatefromgif($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagegif($target);
+				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagegif($target2);
+				$imgdata_bn2 = ob_get_clean();
+			}
+			else if($imagesize[2] == 2)
+			{
+				$source = imagecreatefromjpeg($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagejpeg($target, null, 100);
+				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagejpeg($target2, null, 100);
+				$imgdata_bn2 = ob_get_clean();
+			}
+			else if($imagesize[2] == 3)
+			{
+				$source = imagecreatefrompng($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagepng($target, null, 0);
+				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagepng($target2, null, 0);
+				$imgdata_bn2 = ob_get_clean();
+			}
+
+			imagedestroy($source);
+			imagedestroy($target);
+			imagedestroy($target2);
+
+			$data['image'] = $imgdata_bn;
+			$data['thumbimage'] = $imgdata_bn2;
+		}
+
+    $builder->set('registe_datetime', "now()", false);
+    $builder->set($data);
+		$builder->insert();
+
+		$_Link = "page=".$this->request->getGet('page');
+
+		$this->session->setFlashdata('message', 'primary|메뉴관리|등록되었습니다.');
+
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&".$_Link);
+	}
+
+	public function ajaxLoadMenu() 
+	{
+		$sql = "select id, shop, category, title, price, takeoutprice, shopview, takeoutview, sort, view, imageversion, soldout, description, useoption, registe_datetime, (select id from category where category=category.id) as category_id, (select title from category where category=category.id) as category_title, md5(id) as cmid, if(isnull(image), '', concat('/image/menu/', id, '/', id, '.jpg')) as imgpath from menu where shop='".$this->request->getPost('sid')."' and id='".$this->request->getPost('mid')."'";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+		$result = null;
+
+		$resultVal["status"] = "OK";
+
+		if($rows) {
+			$result = $query->getResult();
+		}
+
+		$resultVal["data"] = $result[0];
+
+		return $resultVal;
+	}
+
+	public function putMenu($imgdata)
+	{
+    $builder = $this->db->table('menu');
+
+		$data = [
+			'title' => $this->request->getPost('title'), 
+      'price' => $this->request->getPost('price'),
+      'shopview' => $this->request->getPost('shop_view'),
+			'takeoutprice' => $this->request->getPost('takeoutprice'),
+			'takeoutview' => $this->request->getPost('takeout_view'),
+			'description' => $this->request->getPost('description'),
+			'useoption' => $this->request->getPost('use_option'),
+		];
+    
+		if(isset($imgdata["imagefile"]) && $imgdata["imagefile"]["upload_data"]->getTempName()) {
+			$imagesize = getimagesize($imgdata["imagefile"]["upload_data"]->getTempName());
+
+			$org_width = $imagesize[0];
+			$org_height = $imagesize[1];
+
+      $trg_width = 600;
+      $trg_height = 600;
+
+      $trg2_width = 256;
+      $trg2_height = 256;
+
+			$target = imagecreatetruecolor($trg_width, $trg_height);
+			$target2 = imagecreatetruecolor($trg2_width, $trg2_height);
+
+			if($imagesize[2] == 1)
+			{
+				$source = imagecreatefromgif($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagegif($target);
+				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagegif($target2);
+				$imgdata_bn2 = ob_get_clean();
+			}
+			else if($imagesize[2] == 2)
+			{
+				$source = imagecreatefromjpeg($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagejpeg($target, null, 100);
+				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagejpeg($target2, null, 100);
+				$imgdata_bn2 = ob_get_clean();
+			}
+			else if($imagesize[2] == 3)
+			{
+				$source = imagecreatefrompng($imgdata["imagefile"]["upload_data"]->getTempName());
+				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ob_start();
+				imagepng($target, null, 0);
+				$imgdata_bn = ob_get_clean();
+				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ob_start();
+				imagepng($target2, null, 0);
+				$imgdata_bn2 = ob_get_clean();
+			}
+
+			imagedestroy($source);
+			imagedestroy($target);
+			imagedestroy($target2);
+
+			$data['imageversion'] = time();
+			$data['image'] = $imgdata_bn;
+			$data['thumbimage'] = $imgdata_bn2;
+		}
+		
+		$builder->where('id', $this->request->getPost('mid'));
+		$builder->update($data);
+
+		$_Link = "page=".$this->request->getGet('page');
+
+		$this->session->setFlashdata('message', 'primary|메뉴관리|수정되었습니다.');
+
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&".$_Link);
+	}
+
+	public function delMenu()
+	{
+		$sql = "select * from optiongroup where shop='".$this->request->getGet('sid')."' and menu='".$this->request->getGet('mid')."'";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+
+		if($rows) {
+			$result = $query->getResult();
+
+			for($i=0; $i<$rows; $i++) {				
+				$builder = $this->db->table('option');
+	
+				$builder->where(array('shop' => $this->request->getGet('sid'), 'menu' => $this->request->getGet('mid'), 'optiongroup' => $result[$i]->id));
+				$builder->delete();
+			}
+
+			$builder = $this->db->table('optiongroup');
+
+			$builder->where(array('shop' => $this->request->getGet('sid'), 'menu' => $this->request->getGet('mid')));
+			$builder->delete();
+		}
+
+    $builder = $this->db->table('menu');
+
+		$builder->where('id', $this->request->getGet('mid'));
+		$builder->delete();
+
+		$_Link = "page=".$this->request->getGet('page');
+
+		$this->session->setFlashdata('message', 'danger|메뉴관리|삭제되었습니다.');
+
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&".$_Link);
+	}
+
+	public function ajaxGetOptions()
+	{
+		$sql = "select * from optiongroup where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' order by sort";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+
+		$returnVal["status"] = "OK";
+
+		$arrList = array();
+
+		if($rows){
+			$result = $query->getResult();
+
+			for($i=0; $i<$rows; $i++) {
+				$sql2 = "select * from option where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and optiongroup='".$result[$i]->id."' order by sort";
+				$query2 = $this->db->query($sql2);
+				$rows2 = $query2->getNumRows();
+				
+				$menus = array();
+
+				if($rows2){
+					$result2 = $query2->getResult();
+		
+					for($j=0; $j<$rows2; $j++) {
+						array_push($menus, array('text' => $result2[$j]->title, 'tag' => 'option|'.$result2[$j]->id));
+					}
+				}
+
+				array_push($menus, array('text' => "옵션추가", 'tag' => 'option-add|'.$result[$i]->id, 'icon' => 'bx bx-edit-alt', 'backColor' => '#bebebe', 'color' => '#fafafa'));
+
+				array_push($arrList, array('text' => $result[$i]->title, 'tag' => 'optiongroup|'.$result[$i]->id, 'nodes' => $menus));
+			}
+		}
+
+		array_push($arrList, array('text' => "옵션그룹추가", 'tag' => 'optiongroup-add', 'icon' => 'bx bx-edit-alt', 'backColor' => '#a2a2a2', 'color' => '#fafafa'));
+
+		$returnVal["list"] = $arrList;
+
+		return $returnVal;
+	}
+
+	public function postOptiongroup()
+	{
+    $builder = $this->db->table('optiongroup');
+
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from optiongroup where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."'");
+		$max_sort_result = $max_sort_query->getResult();
+		$max_sort = $max_sort_result["0"]->max_sort;
+
+		$data = [
+			'shop' => $this->request->getPost('sid'), 
+			'menu' => $this->request->getPost('mid'), 
+			'title' => $this->request->getPost('optiongroup_title'),
+			'choice' => $this->request->getPost('optiongroup_choice'),
+			'maxium' => $this->request->getPost('optiongroup_maxium'),
+			'sort' => $max_sort, 
+		];
+		
+    $builder->set('registe_datetime', "now()", false);
+    $builder->set($data);
+		$builder->insert();
+
+		$this->session->setFlashdata('message', 'primary|옵션그룹관리|등록되었습니다.');
+
+		$returnVal["status"] = "OK";
+
+		return $returnVal;
+	}
+
+	public function ajaxLoadOptiongroup() 
+	{
+		$sql = "select *, (select count(id) from option where optiongroup=optiongroup.id) as option_cnt, md5(id) as cogid from optiongroup where shop='".$this->request->getPost('sid')."' and id='".$this->request->getPost('ogid')."'";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+		$result = null;
+
+		$resultVal["status"] = "OK";
+
+		if($rows) {
+			$result = $query->getResult();
+		}
+
+		$resultVal["data"] = $result[0];
+
+		return $resultVal;
+	}
+
+	public function putOptiongroup()
+	{
+    $builder = $this->db->table('optiongroup');
+
+		$data = [
+			'title' => $this->request->getPost('optiongroup_title'),
+			'choice' => $this->request->getPost('optiongroup_choice'),
+			'maxium' => $this->request->getPost('optiongroup_maxium'),
+		];
+		
+		$builder->where('id', $this->request->getPost('ogid'));
+		$builder->update($data);
+
+		$this->session->setFlashdata('message', 'primary|옵션그룹관리|수정되었습니다.');
+
+		$returnVal["status"] = "OK";
+
+		return $returnVal;
+	}
+
+	public function delOptiongroup()
+	{
+    $builder = $this->db->table('optiongroup');
+
+		$builder->where('id', $this->request->getPost('ogid'));
+		$builder->delete();
+
+		$this->session->setFlashdata('message', 'danger|옵션그룹관리|삭제되었습니다.');
+
+		$returnVal["status"] = "OK";
+
+		return $returnVal;
+	}
+
+	public function postOption()
+	{
+    $builder = $this->db->table('option');
+
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from option where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and optiongroup='".$this->request->getPost('ogid')."'");
+		$max_sort_result = $max_sort_query->getResult();
+		$max_sort = $max_sort_result["0"]->max_sort;
+
+		$data = [
+			'shop' => $this->request->getPost('sid'), 
+			'menu' => $this->request->getPost('mid'), 
+			'optiongroup' => $this->request->getPost('ogid'), 
+			'title' => $this->request->getPost('option_title'),
+			'price' => $this->request->getPost('option_price'),
+			'sort' => $max_sort, 
+		];
+		
+    $builder->set('registe_datetime', "now()", false);
+    $builder->set($data);
+		$builder->insert();
+
+		$this->session->setFlashdata('message', 'primary|옵션관리|등록되었습니다.');
+
+		$returnVal["status"] = "OK";
+
+		return $returnVal;
+	}
+
+	public function ajaxLoadOption() 
+	{
+		$sql = "select *, (select id from optiongroup where optiongroup=optiongroup.id) as optiongroup_id, (select title from optiongroup where optiongroup=optiongroup.id) as optiongroup_title, md5(id) as coid from option where shop='".$this->request->getPost('sid')."' and id='".$this->request->getPost('oid')."'";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+		$result = null;
+
+		$resultVal["status"] = "OK";
+
+		if($rows) {
+			$result = $query->getResult();
+		}
+
+		$resultVal["data"] = $result[0];
+
+		return $resultVal;
+	}
+
+	public function putOption()
+	{
+    $builder = $this->db->table('option');
+
+		$data = [
+			'title' => $this->request->getPost('option_title'),
+			'price' => $this->request->getPost('option_price'),
+		];
+		
+		$builder->where('id', $this->request->getPost('oid'));
+		$builder->update($data);
+
+		$this->session->setFlashdata('message', 'primary|옵션관리|수정되었습니다.');
+
+		$returnVal["status"] = "OK";
+
+		return $returnVal;
+	}
+
+	public function delOption()
+	{
+    $builder = $this->db->table('option');
+
+		$builder->where('id', $this->request->getPost('oid'));
+		$builder->delete();
+
+		$this->session->setFlashdata('message', 'danger|옵션관리|삭제되었습니다.');
+
+		$returnVal["status"] = "OK";
+
+		return $returnVal;
+	}
+
+
+
 
 
 
@@ -319,95 +765,6 @@ class MenuModel extends Model
 		return $returnVal;
 	}
 
-	public function postMenu($imgdata)
-	{
-    $builder = $this->db->table('menu');
-
-		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from menu where shop='".$this->request->getPost('sid')."' and depth='".$this->request->getPost('depth')."'");
-		$max_sort_result = $max_sort_query->getResult();
-		$max_sort = $max_sort_result["0"]->max_sort;
-
-		$data = [
-			'shop' => $this->request->getPost('sid'), 
-			'title' => $this->request->getPost('title'), 
-      'price' => $this->request->getPost('price'),
-			'takeoutprice' => $this->request->getPost('takeoutprice'),
-			'sort' => $max_sort, 
-			'view' => '1', 
-			'depth' => $this->request->getPost('depth'), 
-			'imageversion' => time(), 
-			'upperid' => $this->request->getPost('uid'), 
-		];
-    
-		if(isset($imgdata["imagefile"]) && $imgdata["imagefile"]["upload_data"]->getTempName()) {
-			$imagesize = getimagesize($imgdata["imagefile"]["upload_data"]->getTempName());
-
-			$org_width = $imagesize[0];
-			$org_height = $imagesize[1];
-
-      $trg_width = 600;
-      $trg_height = 600;
-
-      $trg2_width = 256;
-      $trg2_height = 256;
-
-			$target = imagecreatetruecolor($trg_width, $trg_height);
-			$target2 = imagecreatetruecolor($trg2_width, $trg2_height);
-
-			if($imagesize[2] == 1)
-			{
-				$source = imagecreatefromgif($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
-				ob_start();
-				imagegif($target);
-				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
-				ob_start();
-				imagegif($target2);
-				$imgdata_bn2 = ob_get_clean();
-			}
-			else if($imagesize[2] == 2)
-			{
-				$source = imagecreatefromjpeg($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
-				ob_start();
-				imagejpeg($target, null, 100);
-				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
-				ob_start();
-				imagejpeg($target2, null, 100);
-				$imgdata_bn2 = ob_get_clean();
-			}
-			else if($imagesize[2] == 3)
-			{
-				$source = imagecreatefrompng($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
-				ob_start();
-				imagepng($target, null, 0);
-				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
-				ob_start();
-				imagepng($target2, null, 0);
-				$imgdata_bn2 = ob_get_clean();
-			}
-
-			imagedestroy($source);
-			imagedestroy($target);
-			imagedestroy($target2);
-
-			$data['image'] = $imgdata_bn;
-			$data['thumbimage'] = $imgdata_bn2;
-		}
-
-    $builder->set('registe_datetime', "now()", false);
-    $builder->set($data);
-		$builder->insert();
-
-		$this->session->setFlashdata('message', 'primary|메뉴관리|등록되었습니다.');
-
-		$this->response->redirect("/admin/menu/menuList?sid=".$this->request->getPost('sid'));
-	}
-
 	public function getMenuData()
 	{
 		$returnVal = null;
@@ -423,97 +780,6 @@ class MenuModel extends Model
 		}
 
 		return $returnVal;
-	}
-
-	public function putMenu($imgdata)
-	{
-    $builder = $this->db->table('menu');
-
-		$data = [
-			'title' => $this->request->getPost('title'), 
-      'price' => $this->request->getPost('price'),
-			'takeoutprice' => $this->request->getPost('takeoutprice'),
-		];
-    
-		if(isset($imgdata["imagefile"]) && $imgdata["imagefile"]["upload_data"]->getTempName()) {
-			$imagesize = getimagesize($imgdata["imagefile"]["upload_data"]->getTempName());
-
-			$org_width = $imagesize[0];
-			$org_height = $imagesize[1];
-
-      $trg_width = 600;
-      $trg_height = 600;
-
-      $trg2_width = 256;
-      $trg2_height = 256;
-
-			$target = imagecreatetruecolor($trg_width, $trg_height);
-			$target2 = imagecreatetruecolor($trg2_width, $trg2_height);
-
-			if($imagesize[2] == 1)
-			{
-				$source = imagecreatefromgif($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
-				ob_start();
-				imagegif($target);
-				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
-				ob_start();
-				imagegif($target2);
-				$imgdata_bn2 = ob_get_clean();
-			}
-			else if($imagesize[2] == 2)
-			{
-				$source = imagecreatefromjpeg($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
-				ob_start();
-				imagejpeg($target, null, 100);
-				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
-				ob_start();
-				imagejpeg($target2, null, 100);
-				$imgdata_bn2 = ob_get_clean();
-			}
-			else if($imagesize[2] == 3)
-			{
-				$source = imagecreatefrompng($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
-				ob_start();
-				imagepng($target, null, 0);
-				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
-				ob_start();
-				imagepng($target2, null, 0);
-				$imgdata_bn2 = ob_get_clean();
-			}
-
-			imagedestroy($source);
-			imagedestroy($target);
-			imagedestroy($target2);
-
-			$data['imageversion'] = time();
-			$data['image'] = $imgdata_bn;
-			$data['thumbimage'] = $imgdata_bn2;
-		}
-		
-		$builder->where('id', $this->request->getPost('oid'));
-		$builder->update($data);
-
-		$this->session->setFlashdata('message', 'primary|메뉴관리|수정되었습니다.');
-
-		$this->response->redirect("/admin/menu/menuModify?sid=".$this->request->getPost('sid')."&oid=".$this->request->getPost('oid')."&cid=".md5($this->request->getPost('oid')));
-	}
-
-	public function delMenu()
-	{
-    $builder = $this->db->table('menu');
-
-		$builder->where('id', $this->request->getGet('oid'));
-		$builder->delete();
-
-		$this->session->setFlashdata('message', 'danger|메뉴관리|삭제되었습니다.');
-
-		$this->response->redirect("/admin/menu/menuList?sid=".$this->request->getGet('sid')."&page=".$this->request->getGet('page'));
 	}
 }
 ?>

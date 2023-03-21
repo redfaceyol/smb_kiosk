@@ -95,6 +95,107 @@ class Menu extends BaseController
     }
 	}
 
+	public function prcMenu()
+	{
+    $validationRule = [
+      'imagefile' => [
+          'label' => 'Image File',
+          'rules' => 'uploaded[imagefile]'
+              . '|is_image[imagefile]'
+              . '|mime_in[imagefile,image/jpg,image/jpeg,image/gif,image/png,image/webp]'
+              . '|max_size[imagefile,0]'
+              . '|max_dims[imagefile,0,0]',
+      ],
+    ];
+
+    $img = $this->request->getFile('imagefile');
+
+		$data = array();
+
+		if (! $img->hasMoved()) {
+			$data["imagefile"] = array('upload_data' => $img);
+		}
+		else {
+			$data["imagefile"] = array('error' => $img->error);
+			$data["imagefile"]["upload_data"]["file_name"] = "";
+		}
+
+    if($this->svc_request->getPost('opt')=="u") {
+      $this->menu_model->putMenu($data);
+    }
+    else {
+		  $this->menu_model->postMenu($data);
+    }
+	}
+
+  public function ajaxLoadMenu()
+  {
+		$result = $this->menu_model->ajaxLoadMenu();
+		
+		echo json_encode($result);
+  }
+
+  public function delMenu()
+  {
+    if(md5($this->svc_request->getGet('mid')) == $this->svc_request->getGet('cmid')) {
+		  $this->menu_model->delMenu();
+    }
+    else {
+      alert('잘못된 호출입니다.', "/admin/menu/categoryList");
+    }
+  }
+
+  public function ajaxGetOptions()
+  {
+		$result = $this->menu_model->ajaxGetOptions();
+		
+		echo json_encode($result);
+  }
+
+	public function prcOptiongroup()
+	{
+    if($this->svc_request->getPost('opt')=="d") {
+      $result = $this->menu_model->delOptiongroup();
+    }
+    else if($this->svc_request->getPost('opt')=="u") {
+      $result = $this->menu_model->putOptiongroup();
+    }
+    else {
+		  $result = $this->menu_model->postOptiongroup();
+    }
+
+    echo json_encode($result);
+	}
+
+  public function ajaxLoadOptiongroup()
+  {
+		$result = $this->menu_model->ajaxLoadOptiongroup();
+		
+		echo json_encode($result);
+  }
+
+	public function prcOption()
+	{
+    if($this->svc_request->getPost('opt')=="d") {
+      $result = $this->menu_model->delOption();
+    }
+    else if($this->svc_request->getPost('opt')=="u") {
+      $result = $this->menu_model->putOption();
+    }
+    else {
+		  $result = $this->menu_model->postOption();
+    }
+
+    echo json_encode($result);
+	}
+
+  public function ajaxLoadOption()
+  {
+		$result = $this->menu_model->ajaxLoadOption();
+		
+		echo json_encode($result);
+  }
+
 
 
 
@@ -258,16 +359,6 @@ class Menu extends BaseController
     }
     else {
       alert('잘못된 호출입니다.', "/admin/menu/menuModify?sid=".$this->svc_request->getPost('sid')."&oid=".$this->svc_request->getPost('oid')."&cid=".md5($this->svc_request->getPost('oid'))."&page=");
-    }
-  }
-
-  public function delMenu()
-  {
-    if(md5($this->svc_request->getGet('oid')) == $this->svc_request->getGet('cid')) {
-      $this->menu_model->delMenu();
-    }
-    else {
-      alert('잘못된 호출입니다.', "/admin/menu/menuList?sid=".$this->svc_request->getGet('sid')."&page=".$this->svc_request->getGet('page'));
     }
   }
 
