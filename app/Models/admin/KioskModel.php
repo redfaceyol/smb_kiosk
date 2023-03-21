@@ -123,7 +123,7 @@ class KioskModel extends Model
 
   public function findShop()
   {
-		$sql = "select * from shop where (id like '%".$this->request->getPost('searchshop')."%' OR title like '%".$this->request->getPost('searchshop')."%') order by title";
+		$sql = "select id, password, title, region, representative, tel, zipcode, address1, address2, biznum, status, registe_datetime, shopimageversion from shop where (id like '%".$this->request->getPost('searchshop')."%' OR title like '%".$this->request->getPost('searchshop')."%') order by title";
 
 		$query = $this->db->query($sql);
 		$rows = $query->getNumRows();
@@ -142,7 +142,7 @@ class KioskModel extends Model
 
 	public function selectShop()
 	{
-		$sql = "select * from shop where id='".$this->request->getPost('selectshop')."'";
+		$sql = "select id, password, title, region, representative, tel, zipcode, address1, address2, biznum, status, registe_datetime, shopimageversion from shop where id='".$this->request->getPost('selectshop')."'";
 
 		$query = $this->db->query($sql);
 		$rows = $query->getNumRows();

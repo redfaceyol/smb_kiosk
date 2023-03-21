@@ -195,7 +195,7 @@ $_Link = "";
 
           for(i=0; i<result.kiosk_number.length; i++) {
             kiosknulberlist.push(result.kiosk_number[i].number);
-            $('#kiosknumberlist').append('<a class="btn btn-outline-secondary mb-3" href="#" style="margin-right: 10px;">'+result.kiosk_number[i].number+'</a>');
+            $('#kiosknumberlist').append('<a class="btn btn-outline-secondary mb-3 disabled" disabled href="#" style="margin-right: 10px;">'+result.kiosk_number[i].number+'</a>');
           }
         }
         else {
