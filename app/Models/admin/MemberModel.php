@@ -161,10 +161,10 @@ class MemberModel extends Model
 	{
 		$returnVal = null;
 
-		if($this->session->get('memmber_grade') >= 90) {
+		if($this->session->get('member_grade') >= 90) {
 			$sql = "select * from member where id='".$this->session->member_id."'";
 		}
-		else if($this->session->get('memmber_grade') >= 50) {
+		else if($this->session->get('member_grade') >= 50) {
 			$sql = "select * from representative where id='".$this->session->member_id."'";
 		}
 		$query = $this->db->query($sql);
@@ -181,14 +181,14 @@ class MemberModel extends Model
 
 	public function putMyinfo()
 	{
-		if($this->session->get('memmber_grade') >= 90) {
+		if($this->session->get('member_grade') >= 90) {
 			$builder = $this->db->table('member');
 
 			$data = [
 				'name'  => $this->request->getPost('name'),
 			];
 		}
-		else if($this->session->get('memmber_grade') >= 50) {
+		else if($this->session->get('member_grade') >= 50) {
 			$builder = $this->db->table('representative');
 
 			$data = [
