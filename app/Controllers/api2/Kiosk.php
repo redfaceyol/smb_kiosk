@@ -40,6 +40,27 @@ class Kiosk extends BaseController
 
         echo json_encode($data);
     }
+    
+    public function loadMenu()
+    {
+        $data = $this->kiosk_model->loadMenu();
+
+        echo json_encode($data);
+    }
+    
+    public function loadOptiongroup()
+    {
+        $data = $this->kiosk_model->loadOptiongroup();
+
+        echo json_encode($data);
+    }
+    
+    public function loadOption()
+    {
+        $data = $this->kiosk_model->loadOption();
+
+        echo json_encode($data);
+    }
 
 
 

@@ -97,6 +97,117 @@ class KioskModel extends Model
     return $resultVal;
   }
 
+  public function loadMenu()
+  {
+    $resultVal = array();
+
+    try {
+      if($this->request->getGet('sid')) {
+        $shop_sql = "select * from shop where shop.id='".$this->request->getGet('sid')."'";
+        $shop_query = $this->db->query($shop_sql);
+        $shop_rows = $shop_query->getNumRows();
+
+        if($shop_rows) {
+          $resultVal['code'] = "100";
+
+          $menu_sql = "select id, shop, category, title, if(isnull(price), '0', price) as price, if(isnull(takeoutprice), '0', takeoutprice) as takeoutprice, shopview, takeoutview, sort, view, imageversion, soldout, description, useoption, registe_datetime, if(isnull(image), '', concat('http://".$_SERVER["HTTP_HOST"]."/image/menu/', id, '/', id, '.jpg')) as imgpath from menu where view=1 and shop='".$this->request->getGet('sid')."' order by sort";
+          $menu_query = $this->db->query($menu_sql);
+          $menu_result = $menu_query->getResult();
+
+          $resultVal['menu_list'] = $menu_result;
+        }
+        else {
+          $resultVal['code'] = "510";
+          $resultVal['msg'] = "등록되지 않은 매장아이디";
+        }
+      }
+      else {
+        $resultVal['code'] = "500";
+        $resultVal['msg'] = "입력된 매장아이디 없음";
+      }
+    }
+    catch(Exception $e) {
+      $resultVal['code'] = "599";
+      $resultVal['msg'] = $e->getMessage();
+    } 
+
+    return $resultVal;
+  }
+
+  public function loadOptiongroup()
+  {
+    $resultVal = array();
+
+    try {
+      if($this->request->getGet('sid')) {
+        $shop_sql = "select * from shop where shop.id='".$this->request->getGet('sid')."'";
+        $shop_query = $this->db->query($shop_sql);
+        $shop_rows = $shop_query->getNumRows();
+
+        if($shop_rows) {
+          $resultVal['code'] = "100";
+          
+          $optiongroup_sql = "select id, shop, menu, title, choice, maxium, sort, registe_datetime from optiongroup where shop='".$this->request->getGet('sid')."' order by sort";
+          $optiongroup_query = $this->db->query($optiongroup_sql);
+          $optiongroup_result = $optiongroup_query->getResult();
+
+          $resultVal['optiongroup_list'] = $optiongroup_result;
+        }
+        else {
+          $resultVal['code'] = "510";
+          $resultVal['msg'] = "등록되지 않은 매장아이디";
+        }
+      }
+      else {
+        $resultVal['code'] = "500";
+        $resultVal['msg'] = "입력된 매장아이디 없음";
+      }
+    }
+    catch(Exception $e) {
+      $resultVal['code'] = "599";
+      $resultVal['msg'] = $e->getMessage();
+    } 
+
+    return $resultVal;
+  }
+
+  public function loadOption()
+  {
+    $resultVal = array();
+
+    try {
+      if($this->request->getGet('sid')) {
+        $shop_sql = "select * from shop where shop.id='".$this->request->getGet('sid')."'";
+        $shop_query = $this->db->query($shop_sql);
+        $shop_rows = $shop_query->getNumRows();
+
+        if($shop_rows) {
+          $resultVal['code'] = "100";
+
+          $option_sql = "select id, shop, menu, optiongroup, title, price, sort, registe_datetime from option where shop='".$this->request->getGet('sid')."' order by sort";
+          $option_query = $this->db->query($option_sql);
+          $option_result = $option_query->getResult();
+
+          $resultVal['option_list'] = $option_result;
+        }
+        else {
+          $resultVal['code'] = "510";
+          $resultVal['msg'] = "등록되지 않은 매장아이디";
+        }
+      }
+      else {
+        $resultVal['code'] = "500";
+        $resultVal['msg'] = "입력된 매장아이디 없음";
+      }
+    }
+    catch(Exception $e) {
+      $resultVal['code'] = "599";
+      $resultVal['msg'] = $e->getMessage();
+    } 
+
+    return $resultVal;
+  }
+
 
 
 
