@@ -48,6 +48,7 @@ class Menu extends BaseController
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
            view('admin/menu/shopList', $data).
+           view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }
 
@@ -58,6 +59,7 @@ class Menu extends BaseController
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
            view('admin/menu/menuManage', $data).
+           view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }
 

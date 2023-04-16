@@ -48,6 +48,7 @@ class Kiosk extends BaseController
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
            view('admin/kiosk/kioskList', $data).
+           view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }
 
@@ -59,6 +60,7 @@ class Kiosk extends BaseController
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
            view('admin/kiosk/kioskRegiste', $data).
+           view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }
 
@@ -97,6 +99,7 @@ class Kiosk extends BaseController
       return view('admin/common/html_header', $data).
             view('admin/common/menu', $data).
             view('admin/kiosk/kioskModify', $data).
+            view('admin/common/help', $data).
             view('admin/common/html_footer', $data);
     }
     else {

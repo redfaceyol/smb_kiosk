@@ -126,3 +126,9 @@ body {
   text-align: center;
   margin-top: 1rem;
 }
+
+.btn-help { margin-left: 20px; }
+
+.help_modal .modal-body > ol > li { margin-bottom: 20px; }
+.help_modal .modal-body > ol > li > div.title { font-weight: bold; }
+.help_modal .modal-body > ol > li div.descGroup { display: inline-block; margin: 5px; border: 1px solid #dedede; padding: 10px 20px 10px 10px; }

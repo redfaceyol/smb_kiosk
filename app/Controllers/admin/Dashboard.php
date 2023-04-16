@@ -35,6 +35,7 @@ class Dashboard extends BaseController
 
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
+           view('admin/dashboard', $data).
            view('admin/common/html_footer', $data);
   }
 }

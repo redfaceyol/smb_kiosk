@@ -7,7 +7,7 @@ $_Link = "page=".$_request->getGet('page');
 </style>
 
 <div class="container-fluid flex-grow-1 container-p-y">
-  <h4 class="fw-bold py-3 mb-4">메뉴 관리</h4>
+  <h4 class="fw-bold py-3 mb-4">메뉴 관리<button type="button" class="btn btn-primary btn-xs btn-help" data-bs-toggle="modal" data-bs-target="#menuHelp">Help</button></h4>
 
   <!-- Basic Bootstrap Table -->
   
@@ -179,16 +179,16 @@ $_Link = "page=".$_request->getGet('page');
                       </div>
 
                       <div id="option_set" class="settings optionsettings">
-                        <input type="hidden1" name="opt" id="opt" value="">
-                        <input type="hidden1" name="sid" id="sid" value="<?=$_request->getGet('sid')?>">
-                        <input type="hidden1" name="mid" id="mid" value="">
-                        <input type="hidden1" name="oid" id="oid" value="">
+                        <input type="hidden" name="opt" id="opt" value="">
+                        <input type="hidden" name="sid" id="sid" value="<?=$_request->getGet('sid')?>">
+                        <input type="hidden" name="mid" id="mid" value="">
+                        <input type="hidden" name="oid" id="oid" value="">
 
                         <div class="row mb-3">
                           <label class="col-sm-3 col-form-label" for="ogtitle">옵션그룹</label>
                           <div class="col-sm-8">
                             <input type="text" readonly class="form-control-plaintext" id="ogtitle" name="ogtitle" value="" />
-                            <input type="hidden1" readonly class="form-control-plaintext" id="ogid" name="ogid" value="" />
+                            <input type="hidden" readonly class="form-control-plaintext" id="ogid" name="ogid" value="" />
                           </div>
                         </div>
 

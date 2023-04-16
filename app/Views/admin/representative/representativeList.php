@@ -4,7 +4,7 @@ $_Link = "page=".$_request->getGet('page');
 <!-- Content -->
 
 <div class="container-fluid flex-grow-1 container-p-y">
-  <h4 class="fw-bold py-3 mb-4">업주 관리</h4>
+  <h4 class="fw-bold py-3 mb-4">업주 관리<button type="button" class="btn btn-primary btn-xs btn-help" data-bs-toggle="modal" data-bs-target="#representativeHelp">Help</button></h4>
 
   <!-- Basic Bootstrap Table -->
   

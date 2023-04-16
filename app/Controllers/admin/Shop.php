@@ -48,6 +48,7 @@ class Shop extends BaseController
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
            view('admin/shop/shopList', $data).
+           view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }
 
@@ -59,6 +60,7 @@ class Shop extends BaseController
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
            view('admin/shop/shopRegiste', $data).
+           view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }
 
@@ -120,6 +122,7 @@ class Shop extends BaseController
       return view('admin/common/html_header', $data).
             view('admin/common/menu', $data).
             view('admin/shop/shopModify', $data).
+            view('admin/common/help', $data).
             view('admin/common/html_footer', $data);
     }
     else {

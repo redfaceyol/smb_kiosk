@@ -48,6 +48,7 @@ class Representative extends BaseController
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
            view('admin/representative/representativeList', $data).
+           view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }
 
@@ -59,6 +60,7 @@ class Representative extends BaseController
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
            view('admin/representative/representativeRegiste', $data).
+           view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }
 
@@ -83,6 +85,7 @@ class Representative extends BaseController
       return view('admin/common/html_header', $data).
             view('admin/common/menu', $data).
             view('admin/representative/representativeModify', $data).
+            view('admin/common/help', $data).
             view('admin/common/html_footer', $data);
     }
     else {
