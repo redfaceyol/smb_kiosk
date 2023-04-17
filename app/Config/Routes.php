@@ -75,7 +75,9 @@ $routes->group('api', static function ($routes) {
 });
 
 $routes->group('api2', static function ($routes) {
-    $routes->get('docs', 'api2\Docs::index');
+    $routes->get('/', 'api2\Docs::index');
+
+    $routes->get('docs', 'api2\Docs::Docs');
 
     $routes->get('shop/(:any)', 'api2\Shop::$1');
     $routes->post('shop/(:any)', 'api2\Shop::$1');
