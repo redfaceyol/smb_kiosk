@@ -84,6 +84,8 @@ $routes->group('api2', static function ($routes) {
     
     $routes->get('kiosk/(:any)', 'api2\Kiosk::$1');
     $routes->post('kiosk/(:any)', 'api2\Kiosk::$1');
+    
+    $routes->post('pay/(:any)', 'api2\Pay::$1');
 });
 
 $routes->get('image/menu/(:num)/(:num).jpg', 'Image::menu_image/$1');
