@@ -36,6 +36,7 @@ class PayModel extends Model
               $resultVal['code'] = "100";
 
               $sql = "insert into payment (shop, kiosk, van, paystring) values('".$this->request->getPost('sid')."', '".$this->request->getPost('kioskid')."', '".$this->request->getPost('van')."', '".$this->request->getPost('paystring')."')";
+              $this->db->query($sql);
             }
             else {
               $resultVal['code'] = "511";

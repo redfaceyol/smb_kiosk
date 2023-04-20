@@ -348,6 +348,12 @@ class MenuModel extends Model
 			'description' => $this->request->getPost('description'),
 			'useoption' => $this->request->getPost('use_option'),
 		];
+
+		if($this->request->getPost('delimage')) {
+			$data['imageversion'] = time();
+			$data['image'] = null;
+			$data['thumbimage'] = null;
+		}
     
 		if(isset($imgdata["imagefile"]) && $imgdata["imagefile"]["upload_data"]->getTempName()) {
 			$imagesize = getimagesize($imgdata["imagefile"]["upload_data"]->getTempName());

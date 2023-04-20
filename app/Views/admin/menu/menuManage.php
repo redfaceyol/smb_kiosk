@@ -115,8 +115,16 @@ $_Link = "page=".$_request->getGet('page');
 
               <div class="row mb-3" id="registeImg">
                 <label class="col-sm-2 col-form-label" for="imagefile">등록이미지</label>
-                <div class="col-sm-6">
+                <div class="col-sm-3">
                   <img src="" height="200">
+                </div>
+                <div class="row col-sm-6">
+                  <label class="col-sm-3 col-form-label" for="delimage">이미지삭제</label>
+                  <div class="col-sm-4">
+                    <div class="form-check mt-2">
+                      <input class="form-check-input" type="checkbox" value="1" id="delimage" name="delimage" />
+                    </div>
+                  </div>
                 </div>
               </div>
               
@@ -420,10 +428,12 @@ function loadMenu(inMid) {
         $('#optionlist #base_ment').hide();
         setOptionTree(inMid);
 
-        $('#registeImg').show();
-
         if(result.data.imgpath) {
+          $('#registeImg').show();
           $('#registeImg img').attr('src', result.data.imgpath);
+        }
+        else {
+          $('#registeImg').hide();
         }
 
         $('#menuForm .btn-danger').remove();
