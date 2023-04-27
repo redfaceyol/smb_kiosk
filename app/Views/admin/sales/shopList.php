@@ -1,18 +1,15 @@
 <?php
-$session = \Config\Services::session();
-
 $_Link = "page=".$_request->getGet('page');
 ?>
 <!-- Content -->
 
 <div class="container-fluid flex-grow-1 container-p-y">
-  <h4 class="fw-bold py-3 mb-4">업장 관리<button type="button" class="btn btn-primary btn-xs btn-help" data-bs-toggle="modal" data-bs-target="#shopHelp">Help</button></h4>
+  <h4 class="fw-bold py-3 mb-4">메뉴 관리<button type="button" class="btn btn-primary btn-xs btn-help" data-bs-toggle="modal" data-bs-target="#menuHelp">Help</button></h4>
 
   <!-- Basic Bootstrap Table -->
   
   <div class="card">
     <div class="card-header row">
-      <? if($session->member_grade >= 90) { ?>
       <div class="col-sm-6 row">
         <div class="col-sm-6">
           <input type="text" class="form-control" id="searchtext" name="searchtext" value="<?=$_request->getGet('searchtext')?>" placeholder="검색어" />
@@ -22,9 +19,7 @@ $_Link = "page=".$_request->getGet('page');
         </div>
       </div>
       <div class="col-sm-6 text-end">
-        <a class="btn btn-primary" href="/admin/shop/shopRegiste">신규등록</a>
       </div>
-      <? } ?>
     </div>
     <div class="table-responsive text-nowrap">
       <table class="table table-hover table-bordered table-sm">
@@ -33,10 +28,8 @@ $_Link = "page=".$_request->getGet('page');
             <th width="80">No.</th>
             <th width="200">업장명</th>
             <th width="200">아이디</th>
-            <th width="200">연락처</th>
-            <th width="100">상태</th>
-            <th width="100">업주명</th>
-            <th width="100">KIOSK수</th>
+            <th width="100">등록카테고리수</th>
+            <th width="100">등록메뉴수</th>
             <th width="180">관리</th> 
           </tr>
         </thead>
@@ -46,19 +39,10 @@ $_Link = "page=".$_request->getGet('page');
             <td><?=($total_count - (($cur_page - 1) * $num_per_page) - $rowNum)?></td>
             <td><?=$lt->title?></td>
             <td><?=$lt->id?></td>
-            <td><?=$lt->tel?></td>
-            <td><?=($lt->status=="1"?"사용":($lt->status=="0"?"미사용":$lt->status))?></td>
-            <td><?=$lt->representative_name?></td>
-            <td><?=$lt->cntKiosk?></td>
+            <td><?=$lt->categorycnt?></td>
+            <td><?=$lt->menucnt?></td>
             <td>
-              <a class="btn btn-sm btn-info" href="/admin/shop/shopModify?oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 수정</a>
-              <? if($session->member_grade >= 90) { ?>
-                <? if($lt->cntKiosk > 0) { ?>
-              <a class="btn btn-sm btn-danger" href="javascript:alert('등록된 KIOSK가 있어 삭제가 불가능합니다.')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
-                <? } else { ?>
-              <a class="btn btn-sm btn-danger" href="javascript:delConfirm('/admin/shop/delShop?oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
-                <? } ?>
-              <? } ?>
+              <a class="btn btn-sm btn-info" href="/admin/menu/menuManage?sid=<?=$lt->id?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 메뉴관리</a>
             </td>
           </tr>
 				  <? $rowNum++; } ?>

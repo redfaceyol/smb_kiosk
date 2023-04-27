@@ -87,6 +87,13 @@ class Menu extends BaseController
 		echo json_encode($result);
   }
 
+  public function ajaxLoadCategoryList()
+  {
+		$result = $this->menu_model->ajaxLoadCategoryList();
+		
+		echo json_encode($result);
+  }
+
 	public function delCategory()
 	{
     if(md5($this->svc_request->getGet('cid')) == $this->svc_request->getGet('ccid')) {
@@ -145,6 +152,39 @@ class Menu extends BaseController
     else {
       alert('잘못된 호출입니다.', "/admin/menu/categoryList");
     }
+  }
+
+  public function copyMenu()
+  {
+    $this->menu_model->copyMenu();
+  }
+
+  public function prcReOrderCategory()
+  {
+    $result = $this->menu_model->prcReOrderCategory();
+		
+		echo json_encode($result);
+  }
+
+  public function prcReOrderMenu()
+  {
+    $result = $this->menu_model->prcReOrderMenu();
+		
+		echo json_encode($result);
+  }
+
+  public function prcReOrderOptiongroup()
+  {
+    $result = $this->menu_model->prcReOrderOptiongroup();
+		
+		echo json_encode($result);
+  }
+
+  public function prcReOrderOption()
+  {
+    $result = $this->menu_model->prcReOrderOption();
+		
+		echo json_encode($result);
   }
 
   public function ajaxGetOptions()

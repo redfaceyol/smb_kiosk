@@ -89,7 +89,7 @@ function checkCorporateRegistrationNumber(value) {
 			}
 
 			checkSum += parseInt((multiply[8] * valueMap[8]) / 10, 10);
-			return Math.floor(valueMap[9]) === (10 - (checkSum % 10));
+			return Math.floor(valueMap[9]) === ((10 - (checkSum % 10)) % 10);
 	}
 
 	return false;

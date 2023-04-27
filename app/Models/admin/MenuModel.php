@@ -190,6 +190,24 @@ class MenuModel extends Model
 		return $resultVal;
 	}
 
+	public function ajaxLoadCategoryList() 
+	{
+		$sql = "select * from category where shop='".$this->request->getPost('sid')."' and view='1' order by sort";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+		$result = null;
+
+		$resultVal["status"] = "OK";
+
+		if($rows) {
+			$result = $query->getResult();
+		}
+
+		$resultVal["categoryList"] = $result;
+
+		return $resultVal;
+	}
+
 	public function putCategory()
 	{
     $builder = $this->db->table('category');
@@ -212,9 +230,16 @@ class MenuModel extends Model
 	public function delCategory()
 	{
     $builder = $this->db->table('category');
+		
+		$old_sort_query = $this->db->query("select sort as old_sort, shop from category where id='".$this->request->getGet('cid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->old_sort;
+		$old_shop = $old_sort_result["0"]->shop;
 
 		$builder->where('id', $this->request->getGet('cid'));
 		$builder->delete();
+
+		$this->db->query("update category set sort=sort-1 where shop='".$old_shop."' and sort>'".$old_sort."'");
 
 		$_Link = "page=".$this->request->getGet('page');
 
@@ -227,7 +252,7 @@ class MenuModel extends Model
 	{
     $builder = $this->db->table('menu');
 
-		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from menu where shop='".$this->request->getPost('sid')."'");
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from menu where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."'");
 		$max_sort_result = $max_sort_query->getResult();
 		$max_sort = $max_sort_result["0"]->max_sort;
 
@@ -332,6 +357,11 @@ class MenuModel extends Model
 
 		$resultVal["data"] = $result[0];
 
+		$sql = "select id, title from category where shop='".$this->request->getPost('sid')."' and view='1' order by sort";
+		$query = $this->db->query($sql);
+		$result = $query->getResult();
+		$resultVal["categorys"] = $result;
+
 		return $resultVal;
 	}
 
@@ -339,7 +369,12 @@ class MenuModel extends Model
 	{
     $builder = $this->db->table('menu');
 
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from menu where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."'");
+		$max_sort_result = $max_sort_query->getResult();
+		$max_sort = $max_sort_result["0"]->max_sort;
+
 		$data = [
+			'category' => $this->request->getPost('cid'), 
 			'title' => $this->request->getPost('title'), 
       'price' => $this->request->getPost('price'),
       'shopview' => $this->request->getPost('shop_view'),
@@ -419,6 +454,17 @@ class MenuModel extends Model
 		$builder->where('id', $this->request->getPost('mid'));
 		$builder->update($data);
 
+		if($this->request->getPost('oldcid') != $this->request->getPost('cid')) 
+		{
+			$old_sort_query = $this->db->query("select sort as old_sort from menu where id='".$this->request->getPost('mid')."'");
+			$old_sort_result = $old_sort_query->getResult();
+			$old_sort = $old_sort_result["0"]->old_sort;
+
+			$this->db->query("update menu set sort='".$max_sort."' where id='".$this->request->getPost('mid')."'");
+
+			$this->db->query("update menu set sort=sort-1 where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('oldcid')."' and sort>'".$old_sort."'");
+		}
+
 		$_Link = "page=".$this->request->getGet('page');
 
 		$this->session->setFlashdata('message', 'primary|메뉴관리|수정되었습니다.');
@@ -449,15 +495,277 @@ class MenuModel extends Model
 		}
 
     $builder = $this->db->table('menu');
+		
+		$old_sort_query = $this->db->query("select sort as old_sort, shop, category from menu where id='".$this->request->getGet('mid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->old_sort;
+		$old_shop = $old_sort_result["0"]->shop;
+		$old_category = $old_sort_result["0"]->category;
 
 		$builder->where('id', $this->request->getGet('mid'));
 		$builder->delete();
+
+		$this->db->query("update menu set sort=sort-1 where shop='".$old_shop."' and category='".$old_category."' and sort>'".$old_sort."'");
 
 		$_Link = "page=".$this->request->getGet('page');
 
 		$this->session->setFlashdata('message', 'danger|메뉴관리|삭제되었습니다.');
 
 		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&".$_Link);
+	}
+
+	public function copyMenu()
+	{
+		$notselectcol = array('id');
+
+		$sql = "select * from menu where shop='".$this->request->getGet('sid')."' and id='".$this->request->getGet('mid')."'";
+		$query = $this->db->query($sql);
+
+		foreach ($query->getResultArray() as $row) {
+			$new_sql = array();
+			foreach($row as $col => $val) {
+				if(!in_array($col, $notselectcol)) {
+					if($col == "title") {
+						$val .= "_복사";
+					};
+					if($col == "registe_datetime") {
+						array_push($new_sql, "$col=now()");
+					}
+					else if($col == "image" || $col == "thumbimage") {
+						if($val) {
+							array_push($new_sql, "$col='".$val."'");	
+						}
+					} 
+					else {
+						array_push($new_sql, "$col='".$val."'");
+					}
+				}
+			}
+
+			$this->db->query("insert into menu set ".join(",", $new_sql));
+			$new_menuid = $this->db->insertID();
+
+			$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from menu where shop='".$this->request->getGet('sid')."' and category='".$this->request->getGet('cid')."'");
+			$max_sort_result = $max_sort_query->getResult();
+			$max_sort = $max_sort_result["0"]->max_sort;
+
+			$this->db->query("update menu set sort='".$max_sort."' where id='".$new_menuid."'");
+
+			$og_sql = "select * from optiongroup where shop='".$this->request->getGet('sid')."' and menu='".$this->request->getGet('mid')."'";
+			$og_query = $this->db->query($og_sql);
+	
+			foreach ($og_query->getResultArray() as $row) {
+				$new_sql = array();
+				foreach($row as $col => $val) {
+					if(!in_array($col, $notselectcol)) {
+						if($col == "menu") {
+							$val = $new_menuid;
+						};
+						if($col == "registe_datetime") {
+							array_push($new_sql, "$col=now()");
+						} 
+						else {
+							array_push($new_sql, "$col='".$val."'");
+						}
+					}
+				}
+	
+				$this->db->query("insert into optiongroup set ".join(",", $new_sql));
+				$new_ogid = $this->db->insertID();
+	
+				$o_sql = "select * from option where shop='".$this->request->getGet('sid')."' and menu='".$this->request->getGet('mid')."' and optiongroup='".$row['id']."'";
+				$o_query = $this->db->query($o_sql);
+		
+				foreach ($o_query->getResultArray() as $row) {
+					$new_sql = array();
+					foreach($row as $col => $val) {
+						if(!in_array($col, $notselectcol)) {
+							if($col == "menu") {
+								$val = $new_menuid;
+							};
+							if($col == "optiongroup") {
+								$val = $new_ogid;
+							};
+							if($col == "registe_datetime") {
+								array_push($new_sql, "$col=now()");
+							}
+							else {
+								array_push($new_sql, "$col='".$val."'");
+							}
+						}
+					}
+		
+					$this->db->query("insert into option set ".join(",", $new_sql));
+					$new_oid = $this->db->insertID();
+				}
+			}
+		}
+
+		$_Link = "page=".$this->request->getGet('page');
+
+		$this->session->setFlashdata('message', 'info|메뉴관리|복사되었습니다.');
+
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&".$_Link);
+	}
+
+	public function prcReOrderCategory()
+	{
+		$old_sort_query = $this->db->query("select sort as old_sort from category where id='".$this->request->getPost('cid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->old_sort;
+
+		$returnVal["status"] = "fail";
+
+		if($this->request->getPost('set') == "1") {
+			if($old_sort > 1) {
+				$old_id_query = $this->db->query("select id as old_id from category where shop='".$this->request->getPost('sid')."' and sort='".($old_sort - 1)."'");
+				$old_id_result = $old_id_query->getResult();
+				$old_id = $old_id_result["0"]->old_id;
+
+				$this->db->query("update category set sort=sort-1 where id='".$this->request->getPost('cid')."'");
+				$this->db->query("update category set sort=sort+1 where id='".$old_id."'");
+
+				$returnVal["status"] = "OK";
+			}
+		}
+		else if($this->request->getPost('set') == "2") {
+			$max_sort_query = $this->db->query("select max(sort) as max_sort from category where shop='".$this->request->getPost('sid')."'");
+			$max_sort_result = $max_sort_query->getResult();
+			$max_sort = $max_sort_result["0"]->max_sort;
+
+			if($old_sort < $max_sort) {
+				$old_id_query = $this->db->query("select id as old_id from category where shop='".$this->request->getPost('sid')."' and sort='".($old_sort + 1)."'");
+				$old_id_result = $old_id_query->getResult();
+				$old_id = $old_id_result["0"]->old_id;
+
+				$this->db->query("update category set sort=sort+1 where id='".$this->request->getPost('cid')."'");
+				$this->db->query("update category set sort=sort-1 where id='".$old_id."'");
+
+				$returnVal["status"] = "OK";
+			}
+		}
+
+		return $returnVal;
+	}
+
+	public function prcReOrderMenu()
+	{
+		$old_sort_query = $this->db->query("select sort as old_sort from menu where id='".$this->request->getPost('mid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->old_sort;
+
+		$returnVal["status"] = "fail";
+
+		if($this->request->getPost('set') == "1") {
+			if($old_sort > 1) {
+				$old_id_query = $this->db->query("select id as old_id from menu where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."' and sort='".($old_sort - 1)."'");
+				$old_id_result = $old_id_query->getResult();
+				$old_id = $old_id_result["0"]->old_id;
+
+				$this->db->query("update menu set sort=sort-1 where id='".$this->request->getPost('mid')."'");
+				$this->db->query("update menu set sort=sort+1 where id='".$old_id."'");
+
+				$returnVal["status"] = "OK";
+			}
+		}
+		else if($this->request->getPost('set') == "2") {
+			$max_sort_query = $this->db->query("select max(sort) as max_sort from menu where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."'");
+			$max_sort_result = $max_sort_query->getResult();
+			$max_sort = $max_sort_result["0"]->max_sort;
+
+			if($old_sort < $max_sort) {
+				$old_id_query = $this->db->query("select id as old_id from menu where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."' and sort='".($old_sort + 1)."'");
+				$old_id_result = $old_id_query->getResult();
+				$old_id = $old_id_result["0"]->old_id;
+
+				$this->db->query("update menu set sort=sort+1 where id='".$this->request->getPost('mid')."'");
+				$this->db->query("update menu set sort=sort-1 where id='".$old_id."'");
+
+				$returnVal["status"] = "OK";
+			}
+		}
+
+		return $returnVal;
+	}
+
+	public function prcReOrderOptiongroup()
+	{
+		$old_sort_query = $this->db->query("select sort as old_sort from optiongroup where id='".$this->request->getPost('ogid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->old_sort;
+
+		$returnVal["status"] = "fail";
+
+		if($this->request->getPost('set') == "1") {
+			if($old_sort > 1) {
+				$old_id_query = $this->db->query("select id as old_id from optiongroup where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and sort='".($old_sort - 1)."'");
+				$old_id_result = $old_id_query->getResult();
+				$old_id = $old_id_result["0"]->old_id;
+
+				$this->db->query("update optiongroup set sort=sort-1 where id='".$this->request->getPost('ogid')."'");
+				$this->db->query("update optiongroup set sort=sort+1 where id='".$old_id."'");
+
+				$returnVal["status"] = "OK";
+			}
+		}
+		else if($this->request->getPost('set') == "2") {
+			$max_sort_query = $this->db->query("select max(sort) as max_sort from optiongroup where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."'");
+			$max_sort_result = $max_sort_query->getResult();
+			$max_sort = $max_sort_result["0"]->max_sort;
+
+			if($old_sort < $max_sort) {
+				$old_id_query = $this->db->query("select id as old_id from optiongroup where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and sort='".($old_sort + 1)."'");
+				$old_id_result = $old_id_query->getResult();
+				$old_id = $old_id_result["0"]->old_id;
+
+				$this->db->query("update optiongroup set sort=sort+1 where id='".$this->request->getPost('ogid')."'");
+				$this->db->query("update optiongroup set sort=sort-1 where id='".$old_id."'");
+
+				$returnVal["status"] = "OK";
+			}
+		}
+
+		return $returnVal;
+	}
+
+	public function prcReOrderOption()
+	{
+		$old_sort_query = $this->db->query("select sort as old_sort from option where id='".$this->request->getPost('oid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->old_sort;
+
+		$returnVal["status"] = "fail";
+
+		if($this->request->getPost('set') == "1") {
+			if($old_sort > 1) {
+				$old_id_query = $this->db->query("select id as old_id from option where shop='".$this->request->getPost('sid')."' and optiongroup='".$this->request->getPost('ogid')."' and sort='".($old_sort - 1)."'");
+				$old_id_result = $old_id_query->getResult();
+				$old_id = $old_id_result["0"]->old_id;
+
+				$this->db->query("update option set sort=sort-1 where id='".$this->request->getPost('oid')."'");
+				$this->db->query("update option set sort=sort+1 where id='".$old_id."'");
+
+				$returnVal["status"] = "OK";
+			}
+		}
+		else if($this->request->getPost('set') == "2") {
+			$max_sort_query = $this->db->query("select max(sort) as max_sort from option where shop='".$this->request->getPost('sid')."' and optiongroup='".$this->request->getPost('ogid')."'");
+			$max_sort_result = $max_sort_query->getResult();
+			$max_sort = $max_sort_result["0"]->max_sort;
+
+			if($old_sort < $max_sort) {
+				$old_id_query = $this->db->query("select id as old_id from option where shop='".$this->request->getPost('sid')."' and optiongroup='".$this->request->getPost('ogid')."' and sort='".($old_sort + 1)."'");
+				$old_id_result = $old_id_query->getResult();
+				$old_id = $old_id_result["0"]->old_id;
+
+				$this->db->query("update option set sort=sort+1 where id='".$this->request->getPost('oid')."'");
+				$this->db->query("update option set sort=sort-1 where id='".$old_id."'");
+
+				$returnVal["status"] = "OK";
+			}
+		}
+
+		return $returnVal;
 	}
 
 	public function ajaxGetOptions()
@@ -570,9 +878,16 @@ class MenuModel extends Model
 	public function delOptiongroup()
 	{
     $builder = $this->db->table('optiongroup');
+		
+		$old_sort_query = $this->db->query("select sort as old_sort, menu from optiongroup where id='".$this->request->getPost('ogid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->old_sort;
+		$old_menu = $old_sort_result["0"]->menu;
 
 		$builder->where('id', $this->request->getPost('ogid'));
 		$builder->delete();
+
+		$this->db->query("update optiongroup set sort=sort-1 where menu='".$old_menu."' and sort>'".$old_sort."'");
 
 		$this->session->setFlashdata('message', 'danger|옵션그룹관리|삭제되었습니다.');
 
@@ -649,9 +964,16 @@ class MenuModel extends Model
 	public function delOption()
 	{
     $builder = $this->db->table('option');
+		
+		$old_sort_query = $this->db->query("select sort as old_sort, optiongroup from option where id='".$this->request->getPost('oid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->old_sort;
+		$old_optiongroup = $old_sort_result["0"]->optiongroup;
 
 		$builder->where('id', $this->request->getPost('oid'));
 		$builder->delete();
+
+		$this->db->query("update option set sort=sort-1 where optiongroup='".$old_optiongroup."' and sort>'".$old_sort."'");
 
 		$this->session->setFlashdata('message', 'danger|옵션관리|삭제되었습니다.');
 

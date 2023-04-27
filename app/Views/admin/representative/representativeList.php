@@ -48,7 +48,11 @@ $_Link = "page=".$_request->getGet('page');
             <td><?=$lt->cntKiosk?></td>
             <td>
               <a class="btn btn-sm btn-info" href="/admin/representative/representativeModify?oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 수정</a>
+              <? if($lt->cntShop > 0) { ?>
+              <a class="btn btn-sm btn-danger" href="javascript:alert('매장이 존재하여 삭제가 불가능합니다.')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
+              <? } else { ?>
               <a class="btn btn-sm btn-danger" href="javascript:delConfirm('/admin/representative/delRepresentative?oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
+              <? } ?>
             </td>
           </tr>
 				  <? $rowNum++; } ?>

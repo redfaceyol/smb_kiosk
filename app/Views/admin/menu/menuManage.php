@@ -4,6 +4,8 @@ $_Link = "page=".$_request->getGet('page');
 <!-- Content -->
 <style>
   .settings { display: none; }
+  .add_btn { margin-left: 10px; }
+  .add_btn a:hover { color: #ffffff; }
 </style>
 
 <div class="container-fluid flex-grow-1 container-p-y">
@@ -51,12 +53,13 @@ $_Link = "page=".$_request->getGet('page');
               <input type="hidden" name="opt" id="opt" value="">
               <input type="hidden" name="sid" id="sid" value="<?=$_request->getGet('sid')?>">
               <input type="hidden" name="mid" id="mid" value="">
+              <input type="hidden" name="oldcid" id="oldcid" value="">
 
               <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" for="ctitle">카테고리</label>
+                <label class="col-sm-2 col-form-label" for="cid">카테고리</label>
                 <div class="col-sm-4">
-                  <input type="text" readonly class="form-control-plaintext" id="ctitle" name="ctitle" value="" />
-                  <input type="hidden" readonly class="form-control-plaintext" id="cid" name="cid" value="" />
+                  <select id="cid" name="cid" class="form-select">
+                  </select>
                 </div>
               </div>
 
@@ -258,7 +261,10 @@ function fncPageReady() {
   });
 }
 
-function setMenuTree() {
+var selectMenuNode;
+var selectOptionNode;
+
+function setMenuTree(selectnode) {
   $.ajax({
     type: "POST",
     url: '/admin/menu/ajaxGetMenus',
@@ -282,9 +288,11 @@ function setMenuTree() {
         levels: 1,
         expandIcon: 'bx bx-plus',
         collapseIcon: 'bx bx-minus',
+        highlightSearchResults: false,
       });
       
-      $('#menus').on('nodeSelected', function(event, node) {      
+      $('#menus').on('nodeSelected', function(event, node) {
+        selectMenuNode = node;
         $('.settings').hide();
 
         if(node.tag == "category-add") {
@@ -299,10 +307,10 @@ function setMenuTree() {
           var tmptag = node.tag.split('|');
 
           if(tmptag[0] == "category") {
-            loadCategory(tmptag[1], 1);
+            loadCategory(tmptag[1]);
           }
           else if(tmptag[0] == "menu-add") {
-            loadCategory(tmptag[1], 2);
+            loadCategoryList(tmptag[1]);
 
             $('#menuForm #opt').val('');
             $('#menuForm #mid').val('');
@@ -327,6 +335,20 @@ function setMenuTree() {
           }
         }
       });
+
+      if(selectnode) {
+        /*
+        $('#menus').treeview('expandNode', $('#menus').treeview('getParent', selectnode));
+        $('#menus').treeview('selectNode', selectnode.nodeId);
+        */        
+        var searchnode = $('#menus').treeview('search',[selectnode.text, {ignoreCase: true, exactMatch: true, revealResults: true}]);
+        
+        for (var i = 0; i <searchnode.length; i++) {
+          if(selectnode.tag == searchnode[i].tag) {
+            $('#menus').treeview('selectNode', searchnode[i].nodeId);
+          }
+        };
+      }
     }
   });
 }
@@ -340,7 +362,7 @@ function prcCategory() {
   $('#categoryForm').submit();
 }
 
-function loadCategory(inCid, inType) {
+function loadCategory(inCid) {
   $.ajax({
     type: "POST",
     url: '/admin/menu/ajaxLoadCategory',
@@ -350,22 +372,63 @@ function loadCategory(inCid, inType) {
       eval("var result="+result);
 
       if(result.status=="OK") {
-        if(inType == "1") {
-          $('#categoryForm #opt').val('u');
-          $('#categoryForm #cid').val(inCid);
-          $('#categoryForm #category_title').val(result.data.title);
+        $('#categoryForm #opt').val('u');
+        $('#categoryForm #cid').val(inCid);
+        $('#categoryForm #category_title').val(result.data.title);
 
-          $('#categoryForm .btn-danger').remove();
-          if(result.data.menu_cnt<1) {
-            $('#categoryForm .btn-primary').after('<a href="javascript:delConfirm(\'/admin/menu/delCategory?sid=<?=$_request->getGet('sid')?>&cid='+inCid+'&ccid='+result.data.ccid+'&\')" class="btn btn-danger col-sm-1 offset-sm-1">삭제</a>');
-          }
+        $('#categoryForm .add_btn').remove();
+        if(result.data.menu_cnt<1) {
+          $('#categoryForm .btn-primary:last').after('<a href="javascript:delConfirm(\'/admin/menu/delCategory?sid=<?=$_request->getGet('sid')?>&cid='+inCid+'&ccid='+result.data.ccid+'&\')" class="btn btn-danger col-sm-1 offset-sm-1 add_btn">삭제</a>');
+        }
+        $('#categoryForm .btn-primary:last').after('<div class="btn-group col-sm-2 add_btn" role="group" aria-label="Basic outlined example"><a class="btn btn-outline-primary" href="javascript:reordercategory('+inCid+', 1);" onfocus="blur">↑</a><a class="btn btn-outline-primary" href="javascript:reordercategory('+inCid+', 2);" onfocus="blur">↓</a></div>');
 
-          $('#category_set').show();
+        $('#category_set').show();
+      }
+    },
+    error:function(request, status, error){
+      alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+    }
+  });
+}
+
+function reordercategory(incid, inset) {
+  $.ajax({
+    type: "POST",
+    url: '/admin/menu/prcReOrderCategory',
+    data: 'sid=<?=$_request->getGet('sid')?>' +
+          '&cid=' + incid +
+          '&set=' + inset,
+    success: function (result) {
+      eval("var result="+result);
+
+      if(result.status=="OK") {
+        setMenuTree(selectMenuNode);
+      }
+    },
+    error:function(request, status, error){
+      alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+    },
+    complete: function() {
+    }
+  });
+}
+
+function loadCategoryList(inCid) {
+  $.ajax({
+    type: "POST",
+    url: '/admin/menu/ajaxLoadCategoryList',
+    data: 'sid=<?=$_request->getGet('sid')?>',
+    success: function (result) {
+      eval("var result="+result);
+
+      if(result.status=="OK") {
+        $('#menuForm #cid').html('');
+
+        for(i=0; i<result.categoryList.length; i++) {
+          $('#menuForm #cid').append('<option value="'+result.categoryList[i].id+'">'+result.categoryList[i].title+'</option>');
         }
-        else if(inType == "2") {
-          $('#menuForm #cid').val(inCid);
-          $('#menuForm #ctitle').val(result.data.title);
-        }
+
+        $('#menuForm #cid').val(inCid);
       }
     },
     error:function(request, status, error){
@@ -393,10 +456,13 @@ function loadMenu(inMid) {
       eval("var result="+result);
 
       if(result.status=="OK") {
+        loadCategoryList(result.data.category_id);
+
+        $('#menuForm #oldcid').val(result.data.category_id);
         $('#menuForm #opt').val('u');
         $('#menuForm #mid').val(inMid);
-        $('#menuForm #ctitle').val(result.data.category_title);
-        $('#menuForm #cid').val(result.data.category_id);
+        //$('#menuForm #ctitle').val(result.data.category_title);
+        //$('#menuForm #cid').val(result.data.category_id);
         $('#menuForm #title').val(result.data.title);
         $('#menuForm #price').val(result.data.price);
         $('#menuForm #takeoutprice').val(result.data.takeoutprice);
@@ -436,8 +502,10 @@ function loadMenu(inMid) {
           $('#registeImg').hide();
         }
 
-        $('#menuForm .btn-danger').remove();
-        $('#menuForm .btn-primary:last').after('<a href="javascript:delConfirm(\'/admin/menu/delMenu?sid=<?=$_request->getGet('sid')?>&mid='+inMid+'&cmid='+result.data.cmid+'&\')" class="btn btn-danger col-sm-1 offset-sm-1">삭제</a>');
+        $('#menuForm .add_btn').remove();
+        $('#menuForm .btn-primary:last').after('<a href="javascript:delConfirm(\'/admin/menu/delMenu?sid=<?=$_request->getGet('sid')?>&mid='+inMid+'&cmid='+result.data.cmid+'&\')" class="btn btn-danger col-sm-1 add_btn">삭제</a>');
+        $('#menuForm .btn-primary:last').after('<a href="javascript:copyMenu(\'/admin/menu/copyMenu?sid=<?=$_request->getGet('sid')?>&mid='+inMid+'&cmid='+result.data.cmid+'&cid='+result.data.category_id+'\')" class="btn btn-info col-sm-1 add_btn">복사</a>');
+        $('#menuForm .btn-primary:last').after('<div class="btn-group add_btn" role="group" aria-label="Basic outlined example"><a class="btn btn-outline-primary" href="javascript:reordermenu('+result.data.category_id+', '+inMid+', 1);" onfocus="blur">↑</a><a class="btn btn-outline-primary" href="javascript:reordermenu('+result.data.category_id+', '+inMid+', 2);" onfocus="blur">↓</a></div>');
 
         $('#menu_set').show();
       }
@@ -448,7 +516,34 @@ function loadMenu(inMid) {
   });
 }
 
-function setOptionTree(mid) {
+function reordermenu(incid, inmid, inset) {
+  $.ajax({
+    type: "POST",
+    url: '/admin/menu/prcReOrderMenu',
+    data: 'sid=<?=$_request->getGet('sid')?>' +
+          '&cid=' + incid +
+          '&mid=' + inmid +
+          '&set=' + inset,
+    success: function (result) {
+      eval("var result="+result);
+
+      if(result.status=="OK") {
+        setMenuTree(selectMenuNode);
+      }
+    },
+    error:function(request, status, error){
+      alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+    },
+    complete: function() {
+    }
+  });
+}
+
+function copyMenu(url) {
+  location.href=url;
+}
+
+function setOptionTree(mid, selectnode) {
   $.ajax({
     type: "POST",
     url: '/admin/menu/ajaxGetOptions',
@@ -473,9 +568,11 @@ function setOptionTree(mid) {
         levels: 1,
         expandIcon: 'bx bx-plus',
         collapseIcon: 'bx bx-minus',
+        highlightSearchResults: false,
       });
       
-      $('#options').on('nodeSelected', function(event, node) {      
+      $('#options').on('nodeSelected', function(event, node) {    
+        selectOptionNode = node;  
         $('.optionsettings').hide();
 
         if(node.tag == "optiongroup-add") {
@@ -512,6 +609,16 @@ function setOptionTree(mid) {
           }
         }
       });
+
+      if(selectnode) {
+        var searchnode = $('#options').treeview('search', [selectnode.text, {ignoreCase: true, exactMatch: true, revealResults: true}]);
+        
+        for (var i = 0; i <searchnode.length; i++) {
+          if(selectnode.tag == searchnode[i].tag) {
+            $('#options').treeview('selectNode', searchnode[i].nodeId);
+          }
+        };
+      }
     }
   });
 }
@@ -572,10 +679,11 @@ function loadOptiongroup(inOgid, inType) {
             $('#optiongroup_set #optiongroup_choice').prop("checked", false);
           }
 
-          $('#optiongroup_set .btn-danger').remove();
+          $('#optiongroup_set .add_btn').remove();
           if(result.data.option_cnt<1) {            
-            $('#optiongroup_set .btn-primary').after('<a href="javascript:delOptiongroup(\''+inOgid+'\')" class="btn btn-danger col-sm-2 offset-sm-1">삭제</a>');
+            $('#optiongroup_set .btn-primary:last').after('<a href="javascript:delOptiongroup(\''+inOgid+'\')" class="btn btn-danger col-sm-2 add_btn">삭제</a>');
           }
+          $('#optiongroup_set .btn-primary:last').after('<div class="btn-group add_btn" role="group" aria-label="Basic outlined example"><a class="btn btn-outline-primary" href="javascript:reorderoptiongroup('+result.data.menu+', '+inOgid+', 1);" onfocus="blur">↑</a><a class="btn btn-outline-primary" href="javascript:reorderoptiongroup('+result.data.menu+', '+inOgid+', 2);" onfocus="blur">↓</a></div>');
 
           $('#optiongroup_set').show();
         }
@@ -587,6 +695,29 @@ function loadOptiongroup(inOgid, inType) {
     },
     error:function(request, status, error){
       alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+    }
+  });
+}
+
+function reorderoptiongroup(inmid, inogid, inset) {
+  $.ajax({
+    type: "POST",
+    url: '/admin/menu/prcReOrderOptiongroup',
+    data: 'sid=<?=$_request->getGet('sid')?>' +
+          '&mid=' + inmid +
+          '&ogid=' + inogid +
+          '&set=' + inset,
+    success: function (result) {
+      eval("var result="+result);
+
+      if(result.status=="OK") {
+        setOptionTree(inmid, selectOptionNode);
+      }
+    },
+    error:function(request, status, error){
+      alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+    },
+    complete: function() {
     }
   });
 }
@@ -652,14 +783,38 @@ function loadOption(inOid) {
         $('#option_set #option_title').val(result.data.title);
         $('#option_set #option_price').val(result.data.price);
                 
-        $('#option_set .btn-danger').remove();
-        $('#option_set .btn-primary:last').after('<a href="javascript:delOption(\''+inOid+'\')" class="btn btn-danger col-sm-2 offset-sm-1">삭제</a>');
+        $('#option_set .add_btn').remove();
+        $('#option_set .btn-primary:last').after('<a href="javascript:delOption(\''+inOid+'\')" class="btn btn-danger col-sm-2 add_btn">삭제</a>');
+        $('#option_set .btn-primary:last').after('<div class="btn-group add_btn" role="group" aria-label="Basic outlined example"><a class="btn btn-outline-primary" href="javascript:reorderoption('+result.data.optiongroup_id+', '+inOid+', 1);" onfocus="blur">↑</a><a class="btn btn-outline-primary" href="javascript:reorderoption('+result.data.optiongroup_id+', '+inOid+', 2);" onfocus="blur">↓</a></div>');
 
         $('#option_set').show();
       }
     },
     error:function(request, status, error){
       alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+    }
+  });
+}
+
+function reorderoption(inogid, inoid, inset) {
+  $.ajax({
+    type: "POST",
+    url: '/admin/menu/prcReOrderOption',
+    data: 'sid=<?=$_request->getGet('sid')?>' +
+          '&ogid=' + inogid +
+          '&oid=' + inoid +
+          '&set=' + inset,
+    success: function (result) {
+      eval("var result="+result);
+
+      if(result.status=="OK") {
+        setOptionTree($('#option_set #mid').val(), selectOptionNode);
+      }
+    },
+    error:function(request, status, error){
+      alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+    },
+    complete: function() {
     }
   });
 }
