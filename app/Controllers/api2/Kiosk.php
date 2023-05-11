@@ -61,11 +61,18 @@ class Kiosk extends BaseController
 
         echo json_encode($data);
     }
+    
+    public function saveSoldout()
+    {
+        $data = $this->kiosk_model->saveSoldout();
+
+        echo json_encode($data);
+    }
 
 
 
     
-    
+    /*
     public function loadMenu1()
     {
         $data = $this->kiosk_model->loadMenu1();
@@ -86,4 +93,5 @@ class Kiosk extends BaseController
 
         echo json_encode($data);
     }
+    */
 }

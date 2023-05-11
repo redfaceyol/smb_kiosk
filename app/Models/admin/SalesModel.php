@@ -104,5 +104,10 @@ class MenuModel extends Model
 
 			return $returnVal;
 	}
+
+	public function getSalesDashboard()
+	{
+		$sql = "select ";
+	}
 }
 ?>

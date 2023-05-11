@@ -51,4 +51,16 @@ class Sales extends BaseController
            view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }
+
+  public function salesDashboard()
+  {
+    $data = $this->sales_model->getSalesDashboard();
+    $data["_request"] = $this->svc_request;
+
+    return view('admin/common/html_header', $data).
+           view('admin/common/menu', $data).
+           view('admin/sales/salesDashboard', $data).
+           view('admin/common/help', $data).
+           view('admin/common/html_footer', $data);
+  }
 }

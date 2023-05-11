@@ -36,6 +36,14 @@ $session = \Config\Services::session();
                 <div data-i18n="Shop">업장 관리</div>
               </a>
             </li>
+            <!--
+            <li class="menu-item">
+              <a href="/admin/sales" class="menu-link" >
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Menu">매출 현황</div>
+              </a>
+            </li>
+            -->
             <li class="menu-item">
               <a href="/admin/menu" class="menu-link" >
                 <i class="menu-icon tf-icons bx bx-file"></i>

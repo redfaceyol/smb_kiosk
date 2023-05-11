@@ -187,7 +187,7 @@ class KioskModel extends Model
         if($shop_rows) {
           $resultVal['code'] = "100";
 
-          $option_sql = "select id, shop, menu, optiongroup, title, price, sort, registe_datetime from option where shop='".$this->request->getGet('sid')."' order by sort";
+          $option_sql = "select id, shop, menu, optiongroup, title, price, sort, soldout, registe_datetime from option where shop='".$this->request->getGet('sid')."' order by sort";
           $option_query = $this->db->query($option_sql);
           $option_result = $option_query->getResult();
 
@@ -211,10 +211,63 @@ class KioskModel extends Model
     return $resultVal;
   }
 
+  public function saveSoldout()
+  {
+    $resultVal = array();
+
+    try {
+      if($this->request->getPost('sid')) {
+        $shop_sql = "select * from shop where shop.id='".$this->request->getPost('sid')."'";
+        $shop_query = $this->db->query($shop_sql);
+        $shop_rows = $shop_query->getNumRows();
+
+        if($shop_rows) {
+          $resultVal['code'] = "100";
+
+          if($this->request->getPost('soldout')) {
+            $tmp_soldout = explode("┼", $this->request->getPost('soldout'));
+
+            foreach($tmp_soldout as $soldout_item) {
+              $tmp_soldout_item = explode("|", $soldout_item);
+
+              if($tmp_soldout_item[0] == "menu") {
+                $sql = "update menu set soldout='".$tmp_soldout_item[2]."' where id='".$tmp_soldout_item[1]."'";
+              }
+              else if($tmp_soldout_item[0] == "option") {
+                $sql = "update option set soldout='".$tmp_soldout_item[2]."' where id='".$tmp_soldout_item[1]."'";
+              }
+
+              $this->db->query($sql);
+            }
+          }
+          else {
+            $resultVal['code'] = "520";
+            $resultVal['msg'] = "품절 정보가 없음";
+          }
+        }
+        else {
+          $resultVal['code'] = "510";
+          $resultVal['msg'] = "등록되지 않은 매장아이디";
+        }
+      }
+      else {
+        $resultVal['code'] = "500";
+        $resultVal['msg'] = "입력된 매장아이디 없음";
+      }
+    }
+    catch(Exception $e) {
+      $resultVal['code'] = "599";
+      $resultVal['msg'] = $e->getMessage();
+    } 
+
+    return $resultVal;
+  }
 
 
 
 
+
+  /*
   public function loadMenu1()
   {
     $resultVal = array();
@@ -452,5 +505,6 @@ class KioskModel extends Model
 
     return $resultVal;
   }
+  */
 }
 ?>

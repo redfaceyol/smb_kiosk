@@ -523,6 +523,7 @@ class MenuModel extends Model
 
 		foreach ($query->getResultArray() as $row) {
 			$new_sql = array();
+			$imgCopy = false;
 			foreach($row as $col => $val) {
 				if(!in_array($col, $notselectcol)) {
 					if($col == "title") {
@@ -533,9 +534,10 @@ class MenuModel extends Model
 					}
 					else if($col == "image" || $col == "thumbimage") {
 						if($val) {
-							array_push($new_sql, "$col='".$val."'");	
+							$imgCopy = true;
 						}
 					} 
+					
 					else {
 						array_push($new_sql, "$col='".$val."'");
 					}
@@ -550,6 +552,8 @@ class MenuModel extends Model
 			$max_sort = $max_sort_result["0"]->max_sort;
 
 			$this->db->query("update menu set sort='".$max_sort."' where id='".$new_menuid."'");
+
+			$this->db->query("update menu set image=(select image from menu where id='".$this->request->getGet('mid')."'), thumbimage=(select thumbimage from menu where id='".$this->request->getGet('mid')."') where id='".$new_menuid."'");
 
 			$og_sql = "select * from optiongroup where shop='".$this->request->getGet('sid')."' and menu='".$this->request->getGet('mid')."'";
 			$og_query = $this->db->query($og_sql);

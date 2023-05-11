@@ -42,7 +42,7 @@ $_Link = "page=".$_request->getGet('page');
             <td><?=$lt->categorycnt?></td>
             <td><?=$lt->menucnt?></td>
             <td>
-              <a class="btn btn-sm btn-info" href="/admin/menu/menuManage?sid=<?=$lt->id?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 메뉴관리</a>
+              <a class="btn btn-sm btn-info" href="/admin/sales/salesDashboard?sid=<?=$lt->id?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 메출현황</a>
             </td>
           </tr>
 				  <? $rowNum++; } ?>
