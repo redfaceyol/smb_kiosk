@@ -101,6 +101,15 @@ $_Link = "page=".$_request->getGet('page');
                   </div>
                 </div>
               </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" for="soldout">품절</label>
+                <div class="col-sm-4">
+                  <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" value="1" id="soldout" name="soldout" />
+                  </div>
+                </div>
+              </div>
               
               <div class="row mb-3">
                 <label class="col-sm-2 col-form-label" for="description">메뉴간단설명</label>
@@ -455,7 +464,7 @@ function loadMenu(inMid) {
     success: function (result) {
       eval("var result="+result);
 
-      if(result.status=="OK") {
+      if(result.status=="OK") {console.log(result.data);
         loadCategoryList(result.data.category_id);
 
         $('#menuForm #oldcid').val(result.data.category_id);
@@ -480,6 +489,13 @@ function loadMenu(inMid) {
         }
         else {
           $('#menuForm #takeout_view').prop("checked", false);
+        }
+
+        if(result.data.soldout == "1") {
+          $('#menuForm #soldout').prop("checked", true);
+        }
+        else {
+          $('#menuForm #soldout').prop("checked", false);
         }
 
         if(result.data.useoption == "1") {

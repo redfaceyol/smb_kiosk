@@ -264,6 +264,7 @@ class MenuModel extends Model
       'shopview' => $this->request->getPost('shop_view'),
 			'takeoutprice' => $this->request->getPost('takeoutprice'),
 			'takeoutview' => $this->request->getPost('takeout_view'),
+			'soldout' => $this->request->getPost('soldout'),
 			'description' => $this->request->getPost('description'),
 			'sort' => $max_sort, 
 			'view' => '1', 
@@ -380,6 +381,7 @@ class MenuModel extends Model
       'shopview' => $this->request->getPost('shop_view'),
 			'takeoutprice' => $this->request->getPost('takeoutprice'),
 			'takeoutview' => $this->request->getPost('takeout_view'),
+			'soldout' => $this->request->getPost('soldout'),
 			'description' => $this->request->getPost('description'),
 			'useoption' => $this->request->getPost('use_option'),
 		];
