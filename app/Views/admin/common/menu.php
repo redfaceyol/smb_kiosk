@@ -95,6 +95,8 @@ $session = \Config\Services::session();
               </a>
             </li>
 
+            <li class="menu-header small"><span class="menu-header-text">v.0.1 - 2023.05.15</span></li>
+
             <? /*
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">Pages</span>

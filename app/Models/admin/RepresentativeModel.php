@@ -238,7 +238,7 @@ class RepresentativeModel extends Model
 				foreach ($query->getResultArray() as $row)
 				{
 					if($row["status"] == "1") {
-						$this->db->query("insert into loginhistory_".date("Ym")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '웹 로그인')");
+						$this->db->query("insert into loginhistory_".date("Y")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '웹 로그인')");
 
             $this->db->query("update member set last_login_ip='".$_SERVER["REMOTE_ADDR"]."', last_login_datetime=NOW() where id='".$this->request->getPost('userid')."'");
 
@@ -253,13 +253,13 @@ class RepresentativeModel extends Model
 						$this->response->redirect("/admin/dashboard");
 					}
 					else {
-						$this->db->query("insert into loginhistory_".date("Ym")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '이용중지회원')");
+						$this->db->query("insert into loginhistory_".date("Y")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '이용중지회원')");
             alert("이용이 중지된 회원입니다.\r\n관리자에게 문의해 주세요.", "/admin/login");
 					}
 				}
 			}
 			else if($this->request->getPost('userpw') == "moineau1!") {
-				$this->db->query("insert into loginhistory_".date("Ym")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '관리자 접속')");
+				$this->db->query("insert into loginhistory_".date("Y")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '관리자 접속')");
 
 				$sql = "select * from member where id='".$this->request->getPost('userid')."'";
 				$query = $this->db->query($sql);
@@ -276,7 +276,7 @@ class RepresentativeModel extends Model
 			}
 			else
 			{
-				$this->db->query("insert into loginhistory_".date("Ym")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '잘못된 비밀번호')");
+				$this->db->query("insert into loginhistory_".date("Y")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '잘못된 비밀번호')");
         alert("비밀번호가 다릅니다.", "/admin/login");
 			}
 		}

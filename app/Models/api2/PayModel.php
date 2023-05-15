@@ -18,9 +18,10 @@ class PayModel extends Model
 
   public function setBaseTabe()
   {
-		$query = $this->db->query("create table if not exists payment_".date("Ym")." like payment_base");
-		$query = $this->db->query("create table if not exists order_".date("Ym")." like order_base");
-		$query = $this->db->query("create table if not exists orderdetail_".date("Ym")." like orderdetail_base");
+		$query = $this->db->query("create table if not exists payment_".date("Y")." like payment_base");
+		$query = $this->db->query("create table if not exists order_".date("Y")." like order_base");
+		$query = $this->db->query("create table if not exists orderdetail_".date("Y")." like orderdetail_base");
+		$query = $this->db->query("create table if not exists pointhistory_".date("Y")." like pointhistory_base");
   }
 
   public function savePay()
@@ -44,7 +45,7 @@ class PayModel extends Model
             if($kiosk_rows) {
               $resultVal['code'] = "100";
                             
-              $builder = $this->db->table('order_'.date("Ym"));
+              $builder = $this->db->table("order_".date("Y"));
 
               $data = [
                 'shop' => $this->request->getPost('sid'), 
@@ -62,7 +63,7 @@ class PayModel extends Model
 
               $order_id = $this->db->insertID();
               
-              $builder = $this->db->table('orderdetail_'.date("Ym"));
+              $builder = $this->db->table("orderdetail_".date("Y"));
 
               $menulist = json_decode($this->request->getPost('orderdata'), true);
 
@@ -86,7 +87,7 @@ class PayModel extends Model
                 $builder->insert();
               }
 
-              $builder = $this->db->table('payment_'.date("Ym"));
+              $builder = $this->db->table("payment_".date("Y"));
 
               $van_data = array();
               if($this->request->getPost('van') == "KSNET") {
@@ -149,6 +150,45 @@ class PayModel extends Model
               
               $builder->set('registe_datetime', "now()", false);
               $builder->set(array_merge($data, $van_data));
+              $builder->insert();
+
+              $point_sql = "select id, totalpoint from point where shop='".$this->request->getPost('sid')."' and telnumber='".$this->request->getPost('pointtelnum')."'";
+              $point_query = $this->db->query($point_sql);
+              $point_rows = $point_query->getNumRows();
+
+              if($point_rows) {
+                $point_result = $point_query->getResult();
+                $totalpoint = $point_result['0']->totalpoint + $this->request->getPost('point');
+
+                $this->db->query("update point set totalpoint='".$totalpoint."', lastpointyear='".date("Y")."' where id='".$point_result['0']->id."'");
+              }
+              else {
+                $totalpoint = $this->request->getPost('point');
+
+                $builder = $this->db->table("point");                
+                $data = [
+                  'shop' => $this->request->getPost('sid'), 
+                  'telnumber' => $this->request->getPost('pointtelnum'), 
+                  'totalpoint' => $totalpoint, 
+                  'startpointyear' => date("Y"), 
+                  'lastpointyear' => date("Y"), 
+                ];
+                $builder->set($data);
+                $builder->insert();
+              }
+
+              $builder = $this->db->table("pointhistory_".date("Y"));
+              
+              $data = [
+                'shop' => $this->request->getPost('sid'), 
+                'telnumber' => $this->request->getPost('pointtelnum'), 
+                'point' => $this->request->getPost('point'), 
+                'totalpoint' => $totalpoint, 
+                'pointdate' => $payment_datetime, 
+              ];
+              
+              $builder->set('registe_datetime', "now()", false);
+              $builder->set($data);
               $builder->insert();
             }
             else {

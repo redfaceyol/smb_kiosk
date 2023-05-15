@@ -174,7 +174,7 @@ $_Link = "page=".$_request->getGet('page');
                         </div>
               
                         <div class="row mb-3">
-                          <label class="col-sm-3 col-form-label" for="optiongroup_choice">선택항목</label>
+                          <label class="col-sm-3 col-form-label" for="optiongroup_choice">필수항목</label>
                           <div class="col-sm-4">
                             <div class="form-check mt-2">
                               <input class="form-check-input" type="checkbox" value="1" id="optiongroup_choice" name="optiongroup_choice" />
@@ -186,7 +186,7 @@ $_Link = "page=".$_request->getGet('page');
                           <label class="col-sm-3 col-form-label" for="optiongroup_maxium">최대입력수량</label>
                           <div class="col-sm-6">
                             <input type="text" class="form-control" id="optiongroup_maxium" name="optiongroup_maxium" value="0" onkeydown="onlyNumber(this)" />
-                            <br>* 없을경우 0으로 입력해주세요.
+                            <br>* 없을경우 0으로 입력해주세요. 필수항목에만 적용됩니다.
                           </div>
                         </div>
               
@@ -599,7 +599,7 @@ function setOptionTree(mid, selectnode) {
           $('#optiongroup_set #optiongroup_maxium').val('0');
           $('#optiongroup_set .btn-danger').remove();
 
-          $('#optiongroup_set #optiongroup_choice').prop("checked", false);
+          $('#optiongroup_set #optiongroup_choice').prop("checked", true);
 
           $('#optiongroup_set').show();
         }
