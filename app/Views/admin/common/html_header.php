@@ -29,6 +29,7 @@
 
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="/assets/vendors/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="/assets/vendors/libs/apex-charts/apex-charts.css" />
 
     <!-- bootstrap-treeview -->
     <link rel="stylesheet" href="/assets/plugins/bootstrap-treeview/bootstrap-treeview.min.css" />

@@ -54,7 +54,28 @@ class Sales extends BaseController
 
   public function salesDashboard()
   {
-    $data = $this->sales_model->getSalesDashboard();
+    $tmpdata = $this->sales_model->getSalesDashboard();
+
+    $datenow = date_create(date("Y-m-d"));
+    
+    for($i=0; $i<7; $i++) {
+      $rsltDataDate[$i] = date_format($datenow,"d");
+
+      foreach($tmpdata["dailysalelist"] as $tmpitem) {
+        if($tmpitem->payment_day == $rsltDataDate[$i]) {
+          $rsltDataVal[$i] = $tmpitem->amount;
+        }
+      }
+
+      if(!isset($rsltDataVal[$i])) {
+        $rsltDataVal[$i] = 0;
+      }
+      
+      date_sub($datenow, date_interval_create_from_date_string("1 days"));
+    }
+
+    $data["dailydays"] = $rsltDataDate;
+    $data["dailyvals"] = $rsltDataVal;
     $data["_request"] = $this->svc_request;
 
     return view('admin/common/html_header', $data).

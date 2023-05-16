@@ -25,7 +25,7 @@ class MenuModel extends Model
 			$page_per_block = 10;
 			$num_per_page = 10;
 
-			$sql = "select shop.*, (select count(id) from category where shop=shop.id ) as categorycnt, (select count(id) from menu where shop=shop.id) as menucnt from shop where 1=1";
+			$sql = "select shop.*, (select count(id) from kiosk where shop=shop.id ) as kioskcnt, (SELECT sum(amount) FROM payment_".date("Y")." where shop=shop.id and DATE_FORMAT(payment_datetime, '%Y%m%d')='".date("Ymd")."' and (van='KSNET' and authnumber!='1000')) as totalsales from shop where 1=1";
 
 			if($this->request->getGet('searchtext')) {
 				$sql .= " and (title like '%".$this->request->getGet('searchtext')."%' or shop.id like '%".$this->request->getGet('searchtext')."%') ";
@@ -107,7 +107,13 @@ class MenuModel extends Model
 
 	public function getSalesDashboard()
 	{
-		$sql = "select ";
+		$sql = "select sum(amount) amount, payment_day from ( SELECT amount, DATE_FORMAT(payment_datetime, '%Y%m%d') as payment_date, DATE_FORMAT(payment_datetime, '%d') as payment_day FROM payment_2023 where shop='".$this->request->getGet('sid')."' and (van='KSNET' and authnumber!='1000')) A where payment_date>=SUBDATE(now(), 7) group by payment_date";
+		$query = $this->db->query($sql);
+		$result = $query->getResult();
+
+		$returnVal["dailysalelist"] = $result;
+ 
+		return $returnVal;
 	}
 }
 ?>

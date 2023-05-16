@@ -63,6 +63,10 @@ $routes->group('admin', static function ($routes) {
     $routes->get('sales/(:any)', 'admin\Sales::$1');
     $routes->post('sales/(:any)', 'admin\Sales::$1');
     
+    $routes->get('point', 'admin\Point::index');
+    $routes->get('point/(:any)', 'admin\Point::$1');
+    $routes->post('point/(:any)', 'admin\Point::$1');
+    
     $routes->get('myaccount', 'admin\MyAccount::index');
     $routes->get('myaccount/(:any)', 'admin\MyAccount::$1');
     $routes->post('myaccount/(:any)', 'admin\MyAccount::$1');

@@ -54,6 +54,7 @@
     <script src="/assets/vendors/libs/popper/popper.js"></script>
     <script src="/assets/vendors/js/bootstrap.js"></script>
     <script src="/assets/vendors/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendors/libs/apex-charts/apexcharts.js"></script>
 
     <script src="/assets/vendors/js/menu.js"></script>
     <!-- endbuild -->

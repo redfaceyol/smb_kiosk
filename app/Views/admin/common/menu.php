@@ -36,14 +36,12 @@ $session = \Config\Services::session();
                 <div data-i18n="Shop">업장 관리</div>
               </a>
             </li>
-            <!--
             <li class="menu-item">
-              <a href="/admin/sales" class="menu-link" >
+              <a href="/admin/kiosk" class="menu-link" >
                 <i class="menu-icon tf-icons bx bx-file"></i>
-                <div data-i18n="Menu">매출 현황</div>
+                <div data-i18n="Kiosk">KIOSK 관리</div>
               </a>
             </li>
-            -->
             <li class="menu-item">
               <a href="/admin/menu" class="menu-link" >
                 <i class="menu-icon tf-icons bx bx-file"></i>
@@ -51,9 +49,15 @@ $session = \Config\Services::session();
               </a>
             </li>
             <li class="menu-item">
-              <a href="/admin/kiosk" class="menu-link" >
+              <a href="/admin/sales" class="menu-link" >
                 <i class="menu-icon tf-icons bx bx-file"></i>
-                <div data-i18n="Kiosk">KIOSK 관리</div>
+                <div data-i18n="Sales">매출 현황</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/admin/point" class="menu-link" >
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Point">포인트 관리</div>
               </a>
             </li>
 
@@ -66,15 +70,15 @@ $session = \Config\Services::session();
               </a>
             </li>
             <li class="menu-item">
-              <a href="/admin/menu" class="menu-link" >
-                <i class="menu-icon tf-icons bx bx-file"></i>
-                <div data-i18n="Menu">메뉴 관리</div>
-              </a>
-            </li>
-            <li class="menu-item">
               <a href="/admin/kiosk" class="menu-link" >
                 <i class="menu-icon tf-icons bx bx-file"></i>
                 <div data-i18n="Kiosk">KIOSK 관리</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/admin/menu" class="menu-link" >
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Menu">메뉴 관리</div>
               </a>
             </li>
 
@@ -95,7 +99,7 @@ $session = \Config\Services::session();
               </a>
             </li>
 
-            <li class="menu-header small"><span class="menu-header-text">v.0.1 - 2023.05.15</span></li>
+            <li class="menu-header small"><span class="menu-header-text">v.0.2 - 2023.05.16</span></li>
 
             <? /*
             <li class="menu-header small text-uppercase">
