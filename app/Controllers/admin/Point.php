@@ -51,4 +51,14 @@ class Point extends BaseController
            view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }
+
+  public function delPoint()
+  {
+    if(md5($this->svc_request->getGet('oid')) == $this->svc_request->getGet('cid')) {
+      $this->point_model->delPoint();
+    }
+    else {
+      alert('잘못된 호출입니다.', "/admin/point/pointList?page=".$this->svc_request->getGet('page'));
+    }
+  }
 }

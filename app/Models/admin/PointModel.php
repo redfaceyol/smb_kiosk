@@ -104,5 +104,17 @@ class PointModel extends Model
  
 		return $returnVal;
 	}
+
+	public function delPoint()
+	{
+    $builder = $this->db->table('point');
+
+		$builder->where('id', $this->request->getGet('oid'));
+		$builder->delete();
+
+		$this->session->setFlashdata('message', 'danger|포인트관리|삭제되었습니다.');
+
+		$this->response->redirect("/admin/point/pointList?page=".$this->request->getGet('page'));
+	}
 }
 ?>
