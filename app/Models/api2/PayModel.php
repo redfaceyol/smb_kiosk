@@ -152,44 +152,46 @@ class PayModel extends Model
               $builder->set(array_merge($data, $van_data));
               $builder->insert();
 
-              $point_sql = "select id, totalpoint from point where shop='".$this->request->getPost('sid')."' and telnumber='".$this->request->getPost('pointtelnum')."'";
-              $point_query = $this->db->query($point_sql);
-              $point_rows = $point_query->getNumRows();
+              if($this->request->getPost('pointtelnum') && $this->request->getPost('point') > 0) {
+                $point_sql = "select id, totalpoint from point where shop='".$this->request->getPost('sid')."' and telnumber='".$this->request->getPost('pointtelnum')."'";
+                $point_query = $this->db->query($point_sql);
+                $point_rows = $point_query->getNumRows();
 
-              if($point_rows) {
-                $point_result = $point_query->getResult();
-                $totalpoint = $point_result['0']->totalpoint + $this->request->getPost('point');
+                if($point_rows) {
+                  $point_result = $point_query->getResult();
+                  $totalpoint = $point_result['0']->totalpoint + $this->request->getPost('point');
 
-                $this->db->query("update point set totalpoint='".$totalpoint."', lastpointyear='".date("Y")."' where id='".$point_result['0']->id."'");
-              }
-              else {
-                $totalpoint = $this->request->getPost('point');
+                  $this->db->query("update point set totalpoint='".$totalpoint."', lastpointyear='".date("Y")."' where id='".$point_result['0']->id."'");
+                }
+                else {
+                  $totalpoint = $this->request->getPost('point');
 
-                $builder = $this->db->table("point");                
+                  $builder = $this->db->table("point");                
+                  $data = [
+                    'shop' => $this->request->getPost('sid'), 
+                    'telnumber' => $this->request->getPost('pointtelnum'), 
+                    'totalpoint' => $totalpoint, 
+                    'startpointyear' => date("Y"), 
+                    'lastpointyear' => date("Y"), 
+                  ];
+                  $builder->set($data);
+                  $builder->insert();
+                }
+
+                $builder = $this->db->table("pointhistory_".date("Y"));
+                
                 $data = [
                   'shop' => $this->request->getPost('sid'), 
                   'telnumber' => $this->request->getPost('pointtelnum'), 
+                  'point' => $this->request->getPost('point'), 
                   'totalpoint' => $totalpoint, 
-                  'startpointyear' => date("Y"), 
-                  'lastpointyear' => date("Y"), 
+                  'pointdate' => $payment_datetime, 
                 ];
+                
+                $builder->set('registe_datetime', "now()", false);
                 $builder->set($data);
                 $builder->insert();
               }
-
-              $builder = $this->db->table("pointhistory_".date("Y"));
-              
-              $data = [
-                'shop' => $this->request->getPost('sid'), 
-                'telnumber' => $this->request->getPost('pointtelnum'), 
-                'point' => $this->request->getPost('point'), 
-                'totalpoint' => $totalpoint, 
-                'pointdate' => $payment_datetime, 
-              ];
-              
-              $builder->set('registe_datetime', "now()", false);
-              $builder->set($data);
-              $builder->insert();
             }
             else {
               $resultVal['code'] = "511";
