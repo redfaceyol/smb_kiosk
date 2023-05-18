@@ -135,7 +135,7 @@ class MenuModel extends Model
 
 				array_push($menus, array('text' => "메뉴추가", 'tag' => 'menu-add|'.$result[$i]->id, 'icon' => 'bx bx-edit-alt', 'backColor' => '#bebebe', 'color' => '#fafafa'));
 
-				array_push($arrList, array('text' => $result[$i]->title, 'tag' => 'category|'.$result[$i]->id, 'nodes' => $menus));
+				array_push($arrList, array('text' => $result[$i]->title, 'tag' => 'category|'.$result[$i]->id, 'nodes' => $menus, 'backColor' => '#e1fffa'));
 			}
 		}
 
@@ -804,7 +804,7 @@ class MenuModel extends Model
 
 				array_push($menus, array('text' => "옵션추가", 'tag' => 'option-add|'.$result[$i]->id, 'icon' => 'bx bx-edit-alt', 'backColor' => '#bebebe', 'color' => '#fafafa'));
 
-				array_push($arrList, array('text' => $result[$i]->title, 'tag' => 'optiongroup|'.$result[$i]->id, 'nodes' => $menus));
+				array_push($arrList, array('text' => $result[$i]->title, 'tag' => 'optiongroup|'.$result[$i]->id, 'nodes' => $menus, 'backColor' => '#e1fffa'));
 			}
 		}
 

@@ -185,8 +185,8 @@ $_Link = "page=".$_request->getGet('page');
                         <div class="row mb-3">
                           <label class="col-sm-3 col-form-label" for="optiongroup_maxium">최대입력수량</label>
                           <div class="col-sm-6">
-                            <input type="text" class="form-control" id="optiongroup_maxium" name="optiongroup_maxium" value="0" onkeydown="onlyNumber(this)" />
-                            <br>* 없을경우 0으로 입력해주세요. 필수항목에만 적용됩니다.
+                            <input type="text" class="form-control" id="optiongroup_maxium" name="optiongroup_maxium" value="1" onkeydown="onlyNumber(this)" />
+                            <br>* 0일경우 무제한 선택입니다. 필수항목에만 적용됩니다.
                           </div>
                         </div>
               

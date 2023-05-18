@@ -132,6 +132,7 @@ class PayModel extends Model
                 $card_name = trim(iconv("CP949", "UTF-8", substr($paystring, 143,  16)));
                 $card_number = trim(iconv("CP949", "UTF-8", substr($paystring, 336,  30)));
                 $authnumber = trim(iconv("CP949", "UTF-8", substr($paystring,  94,  12)));
+                $rsltStatus = trim(iconv("CP949", "UTF-8", substr($paystring,  40,  1)));
               }
 
               $data = [
@@ -152,7 +153,7 @@ class PayModel extends Model
               $builder->set(array_merge($data, $van_data));
               $builder->insert();
 
-              if($this->request->getPost('pointtelnum') && $this->request->getPost('point') > 0) {
+              if($this->request->getPost('pointtelnum') && $this->request->getPost('point') > 0 && $rsltStatus=="O") {
                 $point_sql = "select id, totalpoint from point where shop='".$this->request->getPost('sid')."' and telnumber='".$this->request->getPost('pointtelnum')."'";
                 $point_query = $this->db->query($point_sql);
                 $point_rows = $point_query->getNumRows();

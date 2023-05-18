@@ -32,7 +32,7 @@ $_Link = "page=".$_request->getGet('page');
           <tr>
             <th width="80">No.</th>
             <th width="200">업장명</th>
-            <th width="200">아이디</th>
+            <th width="200">shop ID</th>
             <th width="200">연락처</th>
             <th width="100">상태</th>
             <th width="100">업주명</th>
