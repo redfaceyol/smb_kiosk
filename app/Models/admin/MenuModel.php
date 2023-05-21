@@ -114,11 +114,15 @@ class MenuModel extends Model
 		$returnVal["status"] = "OK";
 
 		$arrList = array();
+		$arrNode = array();
+		$nodeIdx = 0;
 
 		if($rows){
 			$result = $query->getResult();
 
 			for($i=0; $i<$rows; $i++) {
+				$arrNode["c".$result[$i]->id] = $nodeIdx;
+				$nodeIdx++;
 				$sql2 = "select * from menu where shop='".$this->request->getPost('sid')."' and category='".$result[$i]->id."' order by sort";
 				$query2 = $this->db->query($sql2);
 				$rows2 = $query2->getNumRows();
@@ -129,11 +133,15 @@ class MenuModel extends Model
 					$result2 = $query2->getResult();
 		
 					for($j=0; $j<$rows2; $j++) {
+						$arrNode["m".$result2[$j]->id] = $nodeIdx;
+						$nodeIdx++;
 						array_push($menus, array('text' => $result2[$j]->title, 'tag' => 'menu|'.$result2[$j]->id));
 					}
 				}
 
 				array_push($menus, array('text' => "메뉴추가", 'tag' => 'menu-add|'.$result[$i]->id, 'icon' => 'bx bx-edit-alt', 'backColor' => '#bebebe', 'color' => '#fafafa'));
+				$arrNode["madd".$result[$i]->id] = $nodeIdx;
+				$nodeIdx++;
 
 				array_push($arrList, array('text' => $result[$i]->title, 'tag' => 'category|'.$result[$i]->id, 'nodes' => $menus, 'backColor' => '#e1fffa'));
 			}
@@ -142,6 +150,16 @@ class MenuModel extends Model
 		array_push($arrList, array('text' => "카테고리추가", 'tag' => 'category-add', 'icon' => 'bx bx-edit-alt', 'backColor' => '#a2a2a2', 'color' => '#fafafa'));
 
 		$returnVal["list"] = $arrList;
+				
+		if($this->request->getPost('newid')) {
+			$sql3 = "select * from menu where shop='".$this->request->getPost('sid')."' and id='".$this->request->getPost('newid')."'";
+			$query3 = $this->db->query($sql3);
+			$result3 = $query3->getResult();
+			//$returnVal["ex_category"] = $result3[0]->category;
+
+			$returnVal["ex_category"] = $arrNode["c".$result3[0]->category];//28;
+			$returnVal["ex_menu"] = $arrNode["m".$this->request->getPost('newid')];//30;
+		}
 
 		return $returnVal;
 	}
@@ -154,10 +172,24 @@ class MenuModel extends Model
 		$max_sort_result = $max_sort_query->getResult();
 		$max_sort = $max_sort_result["0"]->max_sort;
 
+		if($this->request->getPost('category_sort')) {
+			if($this->request->getPost('category_sort') > $max_sort) {
+				$sort = $max_sort;
+			}
+			else {
+				$sort = $this->request->getPost('category_sort');
+
+				$this->db->query("update category set sort=sort+1 where shop='".$this->request->getPost('sid')."' and sort>='".$this->request->getPost('category_sort')."'");
+			}
+		}
+		else {
+			$sort = $max_sort;
+		}
+
 		$data = [
 			'shop' => $this->request->getPost('sid'), 
 			'title' => $this->request->getPost('category_title'),
-			'sort' => $max_sort, 
+			'sort' => $sort, 
 			'view' => '1', 
 		];
 
@@ -212,9 +244,37 @@ class MenuModel extends Model
 	{
     $builder = $this->db->table('category');
 
+		$old_sort_query = $this->db->query("select sort from category where shop='".$this->request->getPost('sid')."' and id='".$this->request->getPost('cid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->sort;
+
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from category where shop='".$this->request->getPost('sid')."'");
+		$max_sort_result = $max_sort_query->getResult();
+		$max_sort = $max_sort_result["0"]->max_sort;
+
+		if($this->request->getPost('category_sort')) {
+			if($this->request->getPost('category_sort') > $max_sort) {
+				$sort = $max_sort;
+			}
+			else {
+				$sort = $this->request->getPost('category_sort');
+
+				if($old_sort > $sort) {
+					$this->db->query("update category set sort=sort+1 where shop='".$this->request->getPost('sid')."' and sort>='".$sort."' and sort<'".$old_sort."'");
+				}
+				else if($old_sort < $sort){
+					$this->db->query("update category set sort=sort-1 where shop='".$this->request->getPost('sid')."' and sort<='".$sort."' and sort>'".$old_sort."'");
+				}
+			}
+		}
+		else {
+			$sort = $max_sort;
+		}
+
 		$data = [
 			'shop' => $this->request->getPost('sid'), 
 			'title' => $this->request->getPost('category_title'), 
+			'sort' => $sort, 
 		];
 		
 		$builder->where('id', $this->request->getPost('cid'));
@@ -256,10 +316,25 @@ class MenuModel extends Model
 		$max_sort_result = $max_sort_query->getResult();
 		$max_sort = $max_sort_result["0"]->max_sort;
 
+		if($this->request->getPost('sort')) {
+			if($this->request->getPost('sort') > $max_sort) {
+				$sort = $max_sort;
+			}
+			else {
+				$sort = $this->request->getPost('sort');
+
+				$this->db->query("update menu set sort=sort+1 where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."' and sort>='".$this->request->getPost('sort')."'");
+			}
+		}
+		else {
+			$sort = $max_sort;
+		}
+
 		$data = [
 			'shop' => $this->request->getPost('sid'), 
 			'category' => $this->request->getPost('cid'), 
 			'title' => $this->request->getPost('title'), 
+			'sort' => $sort, 
       'price' => $this->request->getPost('price'),
       'shopview' => $this->request->getPost('shop_view'),
 			'takeoutprice' => $this->request->getPost('takeoutprice'),
@@ -336,7 +411,9 @@ class MenuModel extends Model
     $builder->set($data);
 		$builder->insert();
 
-		$_Link = "page=".$this->request->getGet('page');
+		$menu_idx = $this->db->insertID();
+
+		$_Link = "page=".$this->request->getGet('page')."&newid=".$menu_idx;
 
 		$this->session->setFlashdata('message', 'primary|메뉴관리|등록되었습니다.');
 
@@ -369,14 +446,49 @@ class MenuModel extends Model
 	public function putMenu($imgdata)
 	{
     $builder = $this->db->table('menu');
+		
+		$prev_old_sort_query = $this->db->query("select sort as old_sort from menu where id='".$this->request->getPost('mid')."'");
+		$prev_old_sort_result = $prev_old_sort_query->getResult();
+		$prev_old_sort = $prev_old_sort_result["0"]->old_sort;
+
+		if($this->request->getPost('oldcid') == $this->request->getPost('cid')) {
+			$old_sort_query = $this->db->query("select sort from menu where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."' and id='".$this->request->getPost('mid')."'");
+			$old_sort_result = $old_sort_query->getResult();
+			$old_sort = $old_sort_result["0"]->sort;
+		}
 
 		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from menu where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."'");
 		$max_sort_result = $max_sort_query->getResult();
 		$max_sort = $max_sort_result["0"]->max_sort;
 
+		if($this->request->getPost('sort')) {
+			if($this->request->getPost('sort') > $max_sort) {
+				$sort = $max_sort;
+			}
+			else {
+				$sort = $this->request->getPost('sort');
+
+				if($this->request->getPost('oldcid') != $this->request->getPost('cid')) {
+					$this->db->query("update menu set sort=sort+1 where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."' and sort>='".$sort."'");
+				}
+				else {
+					if($old_sort > $sort) {
+						$this->db->query("update menu set sort=sort+1 where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."' and sort>='".$sort."' and sort<'".$old_sort."'");
+					}
+					else if($old_sort < $sort){
+						$this->db->query("update menu set sort=sort-1 where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('cid')."' and sort<='".$sort."' and sort>'".$old_sort."'");
+					}
+				}
+			}
+		}
+		else {
+			$sort = $max_sort;
+		}
+
 		$data = [
 			'category' => $this->request->getPost('cid'), 
 			'title' => $this->request->getPost('title'), 
+			'sort' => $sort, 
       'price' => $this->request->getPost('price'),
       'shopview' => $this->request->getPost('shop_view'),
 			'takeoutprice' => $this->request->getPost('takeoutprice'),
@@ -458,13 +570,7 @@ class MenuModel extends Model
 
 		if($this->request->getPost('oldcid') != $this->request->getPost('cid')) 
 		{
-			$old_sort_query = $this->db->query("select sort as old_sort from menu where id='".$this->request->getPost('mid')."'");
-			$old_sort_result = $old_sort_query->getResult();
-			$old_sort = $old_sort_result["0"]->old_sort;
-
-			$this->db->query("update menu set sort='".$max_sort."' where id='".$this->request->getPost('mid')."'");
-
-			$this->db->query("update menu set sort=sort-1 where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('oldcid')."' and sort>'".$old_sort."'");
+			$this->db->query("update menu set sort=sort-1 where shop='".$this->request->getPost('sid')."' and category='".$this->request->getPost('oldcid')."' and sort>'".$prev_old_sort."'");
 		}
 
 		$_Link = "page=".$this->request->getGet('page');
@@ -607,7 +713,7 @@ class MenuModel extends Model
 			}
 		}
 
-		$_Link = "page=".$this->request->getGet('page');
+		$_Link = "page=".$this->request->getGet('page')."&newid=".$new_menuid;
 
 		$this->session->setFlashdata('message', 'info|메뉴관리|복사되었습니다.');
 
@@ -783,11 +889,15 @@ class MenuModel extends Model
 		$returnVal["status"] = "OK";
 
 		$arrList = array();
+		$arrNode = array();
+		$nodeIdx = 0;
 
 		if($rows){
 			$result = $query->getResult();
 
 			for($i=0; $i<$rows; $i++) {
+				$arrNode["og".$result[$i]->id] = $nodeIdx;
+				$nodeIdx++;
 				$sql2 = "select * from option where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and optiongroup='".$result[$i]->id."' order by sort";
 				$query2 = $this->db->query($sql2);
 				$rows2 = $query2->getNumRows();
@@ -798,11 +908,15 @@ class MenuModel extends Model
 					$result2 = $query2->getResult();
 		
 					for($j=0; $j<$rows2; $j++) {
+						$arrNode["o".$result2[$j]->id] = $nodeIdx;
+						$nodeIdx++;
 						array_push($menus, array('text' => $result2[$j]->title, 'tag' => 'option|'.$result2[$j]->id));
 					}
 				}
 
 				array_push($menus, array('text' => "옵션추가", 'tag' => 'option-add|'.$result[$i]->id, 'icon' => 'bx bx-edit-alt', 'backColor' => '#bebebe', 'color' => '#fafafa'));
+				$arrNode["ogadd".$result[$i]->id] = $nodeIdx;
+				$nodeIdx++;
 
 				array_push($arrList, array('text' => $result[$i]->title, 'tag' => 'optiongroup|'.$result[$i]->id, 'nodes' => $menus, 'backColor' => '#e1fffa'));
 			}
@@ -811,6 +925,15 @@ class MenuModel extends Model
 		array_push($arrList, array('text' => "옵션그룹추가", 'tag' => 'optiongroup-add', 'icon' => 'bx bx-edit-alt', 'backColor' => '#a2a2a2', 'color' => '#fafafa'));
 
 		$returnVal["list"] = $arrList;
+				
+		if($this->request->getPost('newoid')) {
+			$sql3 = "select * from option where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and id='".$this->request->getPost('newoid')."'";
+			$query3 = $this->db->query($sql3);
+			$result3 = $query3->getResult();
+
+			$returnVal["ex_optiongroup"] = $arrNode["og".$result3[0]->optiongroup];
+			$returnVal["ex_option"] = $arrNode["o".$this->request->getPost('newoid')];
+		}
 
 		return $returnVal;
 	}
@@ -823,10 +946,25 @@ class MenuModel extends Model
 		$max_sort_result = $max_sort_query->getResult();
 		$max_sort = $max_sort_result["0"]->max_sort;
 
+		if($this->request->getPost('optiongroup_sort')) {
+			if($this->request->getPost('optiongroup_sort') > $max_sort) {
+				$sort = $max_sort;
+			}
+			else {
+				$sort = $this->request->getPost('optiongroup_sort');
+
+				$this->db->query("update optiongroup set sort=sort+1 where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and sort>='".$this->request->getPost('optiongroup_sort')."'");
+			}
+		}
+		else {
+			$sort = $max_sort;
+		}
+
 		$data = [
 			'shop' => $this->request->getPost('sid'), 
 			'menu' => $this->request->getPost('mid'), 
 			'title' => $this->request->getPost('optiongroup_title'),
+			'sort' => $sort, 
 			'choice' => $this->request->getPost('optiongroup_choice'),
 			'maxium' => $this->request->getPost('optiongroup_maxium'),
 			'sort' => $max_sort, 
@@ -865,8 +1003,36 @@ class MenuModel extends Model
 	{
     $builder = $this->db->table('optiongroup');
 
+		$old_sort_query = $this->db->query("select sort from optiongroup where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and id='".$this->request->getPost('ogid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->sort;
+
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from optiongroup where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."'");
+		$max_sort_result = $max_sort_query->getResult();
+		$max_sort = $max_sort_result["0"]->max_sort;
+
+		if($this->request->getPost('optiongroup_sort')) {
+			if($this->request->getPost('optiongroup_sort') > $max_sort) {
+				$sort = $max_sort;
+			}
+			else {
+				$sort = $this->request->getPost('optiongroup_sort');
+
+				if($old_sort > $sort) {
+					$this->db->query("update optiongroup set sort=sort+1 where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and sort>='".$sort."' and sort<'".$old_sort."'");
+				}
+				else if($old_sort < $sort){
+					$this->db->query("update optiongroup set sort=sort-1 where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and sort<='".$sort."' and sort>'".$old_sort."'");
+				}
+			}
+		}
+		else {
+			$sort = $max_sort;
+		}
+
 		$data = [
 			'title' => $this->request->getPost('optiongroup_title'),
+			'sort' => $sort, 
 			'choice' => $this->request->getPost('optiongroup_choice'),
 			'maxium' => $this->request->getPost('optiongroup_maxium'),
 		];
@@ -910,11 +1076,26 @@ class MenuModel extends Model
 		$max_sort_result = $max_sort_query->getResult();
 		$max_sort = $max_sort_result["0"]->max_sort;
 
+		if($this->request->getPost('option_sort')) {
+			if($this->request->getPost('option_sort') > $max_sort) {
+				$sort = $max_sort;
+			}
+			else {
+				$sort = $this->request->getPost('option_sort');
+
+				$this->db->query("update option set sort=sort+1 where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and optiongroup='".$this->request->getPost('ogid')."' and sort>='".$this->request->getPost('option_sort')."'");
+			}
+		}
+		else {
+			$sort = $max_sort;
+		}
+
 		$data = [
 			'shop' => $this->request->getPost('sid'), 
 			'menu' => $this->request->getPost('mid'), 
 			'optiongroup' => $this->request->getPost('ogid'), 
 			'title' => $this->request->getPost('option_title'),
+			'sort' => $sort, 
 			'price' => $this->request->getPost('option_price'),
 			'sort' => $max_sort, 
 		];
@@ -923,9 +1104,12 @@ class MenuModel extends Model
     $builder->set($data);
 		$builder->insert();
 
+		$new_idx = $this->db->insertID();
+
 		$this->session->setFlashdata('message', 'primary|옵션관리|등록되었습니다.');
 
 		$returnVal["status"] = "OK";
+		$returnVal["newoid"] = $new_idx;
 
 		return $returnVal;
 	}
@@ -952,8 +1136,36 @@ class MenuModel extends Model
 	{
     $builder = $this->db->table('option');
 
+		$old_sort_query = $this->db->query("select sort from option where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and optiongroup='".$this->request->getPost('ogid')."' and id='".$this->request->getPost('oid')."'");
+		$old_sort_result = $old_sort_query->getResult();
+		$old_sort = $old_sort_result["0"]->sort;
+
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from option where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and optiongroup='".$this->request->getPost('ogid')."'");
+		$max_sort_result = $max_sort_query->getResult();
+		$max_sort = $max_sort_result["0"]->max_sort;
+
+		if($this->request->getPost('option_sort')) {
+			if($this->request->getPost('option_sort') > $max_sort) {
+				$sort = $max_sort;
+			}
+			else {
+				$sort = $this->request->getPost('option_sort');
+
+				if($old_sort > $sort) {
+					$this->db->query("update option set sort=sort+1 where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and optiongroup='".$this->request->getPost('ogid')."' and sort>='".$sort."' and sort<'".$old_sort."'");
+				}
+				else if($old_sort < $sort){
+					$this->db->query("update option set sort=sort-1 where shop='".$this->request->getPost('sid')."' and menu='".$this->request->getPost('mid')."' and optiongroup='".$this->request->getPost('ogid')."' and sort<='".$sort."' and sort>'".$old_sort."'");
+				}
+			}
+		}
+		else {
+			$sort = $max_sort;
+		}
+
 		$data = [
 			'title' => $this->request->getPost('option_title'),
+			'sort' => $sort, 
 			'price' => $this->request->getPost('option_price'),
 		];
 		
@@ -963,6 +1175,7 @@ class MenuModel extends Model
 		$this->session->setFlashdata('message', 'primary|옵션관리|수정되었습니다.');
 
 		$returnVal["status"] = "OK";
+		$returnVal["newoid"] = $this->request->getPost('oid');
 
 		return $returnVal;
 	}

@@ -41,7 +41,19 @@ $_Link = "page=".$_request->getGet('page');
                 <div class="col-sm-4">
                   <input type="text" class="form-control" id="category_title" name="category_title" value="" />
                 </div>
-                <a href="javascript:prcCategory()" class="btn btn-primary col-sm-1">저장</a>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" for="category_sort">순서</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" id="category_sort" name="category_sort" value="" />
+                </div>
+              </div>
+
+              <div class="row mb-3 text-center">
+                <div class="col-sm-12">
+                  <a href="javascript:prcCategory()" class="btn btn-primary col-sm-1">저장</a>
+                </div>
               </div>
 
             </form>
@@ -67,6 +79,13 @@ $_Link = "page=".$_request->getGet('page');
                 <label class="col-sm-2 col-form-label" for="title">메뉴명</label>
                 <div class="col-sm-4">
                   <input type="text" class="form-control" id="title" name="title" value="" />
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" for="sort">순서</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" id="sort" name="sort" value="" />
                 </div>
               </div>
 
@@ -172,6 +191,13 @@ $_Link = "page=".$_request->getGet('page');
                             <input type="text" class="form-control" id="optiongroup_title" name="optiongroup_title" value="" />
                           </div>
                         </div>
+
+                        <div class="row mb-3">
+                          <label class="col-sm-3 col-form-label" for="optiongroup_sort">옵션그룹순서</label>
+                          <div class="col-sm-8">
+                            <input type="text" class="form-control" id="optiongroup_sort" name="optiongroup_sort" value="" />
+                          </div>
+                        </div>
               
                         <div class="row mb-3">
                           <label class="col-sm-3 col-form-label" for="optiongroup_choice">필수항목</label>
@@ -192,7 +218,7 @@ $_Link = "page=".$_request->getGet('page');
               
                         <div class="row mb-3">
                           <div class="col-sm-12 text-center">
-                            <a href="javascript:prcOptiongroup()" class="btn btn-primary col-sm-2">옵션 저장</a>
+                            <a href="javascript:prcOptiongroup()" class="btn btn-primary col-sm-3">옵션 저장</a>
                           </div>
                         </div>
 
@@ -220,6 +246,13 @@ $_Link = "page=".$_request->getGet('page');
                         </div>
 
                         <div class="row mb-3">
+                          <label class="col-sm-3 col-form-label" for="option_sort">옵션순서</label>
+                          <div class="col-sm-8">
+                            <input type="text" class="form-control" id="option_sort" name="option_sort" value="" />
+                          </div>
+                        </div>
+
+                        <div class="row mb-3">
                           <label class="col-sm-3 col-form-label" for="option_price">금액</label>
                           <div class="col-sm-4">
                             <input type="text" class="form-control" id="option_price" name="option_price" value="0" onkeydown="onlyNumber(this)" />
@@ -228,7 +261,7 @@ $_Link = "page=".$_request->getGet('page');
 
                         <div class="row mb-3">
                           <div class="col-sm-12 text-center">
-                            <a href="javascript:prcOption()" class="btn btn-primary col-sm-2">옵션 저장</a>
+                            <a href="javascript:prcOption()" class="btn btn-primary col-sm-3">옵션 저장</a>
                           </div>
                         </div>
 
@@ -277,12 +310,15 @@ function setMenuTree(selectnode) {
   $.ajax({
     type: "POST",
     url: '/admin/menu/ajaxGetMenus',
-    data: 'sid=<?=$_request->getGet('sid')?>',
+    data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&newid=<?=$_request->getGet('newid')?>',
     success: function (result) {
       eval("var result="+result);
 
       if(result.status=="OK") {
         resultVal = JSON.stringify(result.list);
+        ex_category = result.ex_category;
+        ex_menu = result.ex_menu;
       }
       else {
       }
@@ -308,6 +344,7 @@ function setMenuTree(selectnode) {
           $('#categoryForm #opt').val('');
           $('#categoryForm #cid').val('');
           $('#categoryForm #category_title').val('');
+          $('#categoryForm #category_sort').val('');
           $('#categoryForm .btn-danger').remove();
 
           $('#category_set').show();
@@ -324,6 +361,7 @@ function setMenuTree(selectnode) {
             $('#menuForm #opt').val('');
             $('#menuForm #mid').val('');
             $('#menuForm #title').val('');
+            $('#menuForm #sort').val('');
             $('#menuForm #price').val('');
             $('#menuForm #takeoutprice').val('');
             $('#menuForm #description').val('');
@@ -358,6 +396,12 @@ function setMenuTree(selectnode) {
           }
         };
       }
+      
+      <? if($_request->getGet('newid')) { ?>
+      $('#menus').treeview('expandNode', [ ex_category, { levels: 2, silent: true } ]);
+      $('#menus').treeview('selectNode', [ ex_menu, { silent: true } ]);
+      loadMenu(<?=$_request->getGet('newid')?>);
+      <? } ?>
     }
   });
 }
@@ -384,6 +428,7 @@ function loadCategory(inCid) {
         $('#categoryForm #opt').val('u');
         $('#categoryForm #cid').val(inCid);
         $('#categoryForm #category_title').val(result.data.title);
+        $('#categoryForm #category_sort').val(result.data.sort);
 
         $('#categoryForm .add_btn').remove();
         if(result.data.menu_cnt<1) {
@@ -473,6 +518,7 @@ function loadMenu(inMid) {
         //$('#menuForm #ctitle').val(result.data.category_title);
         //$('#menuForm #cid').val(result.data.category_id);
         $('#menuForm #title').val(result.data.title);
+        $('#menuForm #sort').val(result.data.sort);
         $('#menuForm #price').val(result.data.price);
         $('#menuForm #takeoutprice').val(result.data.takeoutprice);
         $('#menuForm #description').val(result.data.description);
@@ -559,17 +605,23 @@ function copyMenu(url) {
   location.href=url;
 }
 
-function setOptionTree(mid, selectnode) {
+function setOptionTree(mid, selectnode, newoid) {
+  if(!newoid) {
+    newoid = "";
+  }
   $.ajax({
     type: "POST",
     url: '/admin/menu/ajaxGetOptions',
     data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&newoid='+newoid+
           '&mid=' + mid,
     success: function (result) {
       eval("var result="+result);
 
       if(result.status=="OK") {
         resultVal = JSON.stringify(result.list);
+        ex_optiongroup = result.ex_optiongroup;
+        ex_option = result.ex_option;
       }
       else {
       }
@@ -596,7 +648,8 @@ function setOptionTree(mid, selectnode) {
           $('#optiongroup_set #mid').val(mid);
           $('#optiongroup_set #ogid').val('');
           $('#optiongroup_set #optiongroup_title').val('');
-          $('#optiongroup_set #optiongroup_maxium').val('0');
+          $('#optiongroup_set #optiongroup_sort').val('');
+          $('#optiongroup_set #optiongroup_maxium').val('1');
           $('#optiongroup_set .btn-danger').remove();
 
           $('#optiongroup_set #optiongroup_choice').prop("checked", true);
@@ -616,6 +669,7 @@ function setOptionTree(mid, selectnode) {
             $('#option_set #mid').val(mid);
             $('#option_set #oid').val('');
             $('#option_set #option_title').val('');
+            $('#option_set #option_sort').val('');            
             $('#option_set #option_price').val('0');
 
             $('#option_set').show();
@@ -635,6 +689,12 @@ function setOptionTree(mid, selectnode) {
           }
         };
       }
+      
+      if(newoid) {
+        $('#options').treeview('expandNode', [ ex_optiongroup, { levels: 2, silent: true } ]);
+        $('#options').treeview('selectNode', [ ex_option, { silent: true } ]);
+        loadOption(newoid);
+      }
     }
   });
 }
@@ -653,6 +713,7 @@ function prcOptiongroup() {
           '&mid=' + $('#optiongroup_set #mid').val() +
           '&ogid=' + $('#optiongroup_set #ogid').val() +
           '&optiongroup_title=' + $('#optiongroup_set #optiongroup_title').val() +
+          '&optiongroup_sort=' + $('#optiongroup_set #optiongroup_sort').val() +
           '&optiongroup_choice=' + ($('#optiongroup_set #optiongroup_choice').is(":checked")?"1":"") +
           '&optiongroup_maxium=' + $('#optiongroup_set #optiongroup_maxium').val(),
     success: function (result) {
@@ -686,6 +747,7 @@ function loadOptiongroup(inOgid, inType) {
           $('#optiongroup_set #mid').val(result.data.menu);
           $('#optiongroup_set #ogid').val(inOgid);
           $('#optiongroup_set #optiongroup_title').val(result.data.title);
+          $('#optiongroup_set #optiongroup_sort').val(result.data.sort);
           $('#optiongroup_set #optiongroup_maxium').val(result.data.maxium);
 
           if(result.data.choice == "1") {
@@ -765,13 +827,14 @@ function prcOption() {
           '&oid=' + $('#option_set #oid').val() +
           '&ogid=' + $('#option_set #ogid').val() +
           '&option_title=' + $('#option_set #option_title').val() +
+          '&option_sort=' + $('#option_set #option_sort').val() +
           '&option_price=' + $('#option_set #option_price').val(),
     success: function (result) {
       eval("var result="+result);
 
       if(result.status=="OK") {
         $('.optionsettings').hide();
-        setOptionTree($('#option_set #mid').val());
+        setOptionTree($('#option_set #mid').val(), null, result.newoid);
       }
     },
     error:function(request, status, error){
@@ -797,6 +860,7 @@ function loadOption(inOid) {
         $('#option_set #ogtitle').val(result.data.optiongroup_title);
         $('#option_set #ogid').val(result.data.optiongroup_id);
         $('#option_set #option_title').val(result.data.title);
+        $('#option_set #option_sort').val(result.data.sort);
         $('#option_set #option_price').val(result.data.price);
                 
         $('#option_set .add_btn').remove();
