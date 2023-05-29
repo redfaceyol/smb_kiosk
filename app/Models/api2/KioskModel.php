@@ -16,6 +16,15 @@ class KioskModel extends Model
 		$this->request = service('request');
 	}
 
+  public function setBaseTabe()
+  {
+		$query = $this->db->query("create table if not exists payment_".date("Y")." like payment_base");
+		$query = $this->db->query("create table if not exists order_".date("Y")." like order_base");
+		$query = $this->db->query("create table if not exists orderdetail_".date("Y")." like orderdetail_base");
+		$query = $this->db->query("create table if not exists pointhistory_".date("Y")." like pointhistory_base");
+		$query = $this->db->query("create table if not exists kioskstatus_".date("Y")." like kioskstatus_base");
+  }
+
   public function shopCheck()
   {
     $resultVal = array();
@@ -35,8 +44,6 @@ class KioskModel extends Model
           $resultVal['tel'] = $shop_result['0']->tel."";
           $resultVal['address1'] = $shop_result['0']->address1."";
           $resultVal['address2'] = $shop_result['0']->address2."";
-          $resultVal['usepoint'] = "1";
-          $resultVal['pointrate'] = "5.00";
           $resultVal['representative_name'] = $shop_result['0']->representative_name."";
           $resultVal['shopimageversion'] = $shop_result['0']->shopimageversion."";
           $resultVal['imgpath'] = "http://".$_SERVER["HTTP_HOST"]."/image/shop/".$this->request->getGet('sid').".jpg";
@@ -152,7 +159,7 @@ class KioskModel extends Model
         if($shop_rows) {
           $resultVal['code'] = "100";
           
-          $optiongroup_sql = "select id, shop, menu, title, choice, maxium, sort, registe_datetime from optiongroup where shop='".$this->request->getGet('sid')."' order by sort";
+          $optiongroup_sql = "select id, shop, menu, title, choice, maxium, sort, duplication, registe_datetime from optiongroup where shop='".$this->request->getGet('sid')."' order by sort";
           $optiongroup_query = $this->db->query($optiongroup_sql);
           $optiongroup_result = $optiongroup_query->getResult();
 
@@ -215,6 +222,8 @@ class KioskModel extends Model
 
   public function saveSoldout()
   {
+    $this->setBaseTabe();
+
     $resultVal = array();
 
     try {
@@ -245,6 +254,86 @@ class KioskModel extends Model
           else {
             $resultVal['code'] = "520";
             $resultVal['msg'] = "품절 정보가 없음";
+          }
+        }
+        else {
+          $resultVal['code'] = "510";
+          $resultVal['msg'] = "등록되지 않은 매장아이디";
+        }
+      }
+      else {
+        $resultVal['code'] = "500";
+        $resultVal['msg'] = "입력된 매장아이디 없음";
+      }
+    }
+    catch(Exception $e) {
+      $resultVal['code'] = "599";
+      $resultVal['msg'] = $e->getMessage();
+    } 
+
+    return $resultVal;
+  }
+
+  public function saveKioskStatus()
+  {
+    $this->setBaseTabe();
+
+    $resultVal = array();
+
+    try {
+      if($this->request->getPost('sid')) {
+        $shop_sql = "select * from shop where shop.id='".$this->request->getPost('sid')."'";
+        $shop_query = $this->db->query($shop_sql);
+        $shop_rows = $shop_query->getNumRows();
+
+        if($shop_rows) {
+          if($this->request->getPost('kioskid')) {
+            $kiosk_sql = "select * from kiosk where kiosk.id='".$this->request->getPost('kioskid')."'";
+            $kiosk_query = $this->db->query($kiosk_sql);
+            $kiosk_rows = $kiosk_query->getNumRows();
+
+            if($kiosk_rows) {
+              $resultVal['code'] = "100";
+                            
+              $builder = $this->db->table("kioskstatus_".date("Y"));
+
+              $data_kioskstatus = [
+                'shop' => $this->request->getPost('sid'), 
+                'kiosk' => $this->request->getPost('kioskid'), 
+                'total_sapce' => $this->request->getPost('totalSize'), 
+                'used_space' => $this->request->getPost('usedSize'), 
+                'kiosk_version' => $this->request->getPost('version'), 
+              ];
+              
+              $builder->set('registe_time', "now()", false);
+              $builder->set('registe_date', "now()", false);
+              $builder->set($data_kioskstatus);
+              $builder->insert();
+
+              $builder = $this->db->table("kiosk");
+
+              $data_kiosk = array();
+              if($this->request->getPost('version')) {
+                $data_kiosk["kiosk_version"] = $this->request->getPost('version');
+              }
+              if($this->request->getPost('totalSize')) {
+                $data_kiosk["total_space"] = $this->request->getPost('totalSize');
+              }
+              if($this->request->getPost('usedSize')) {
+                $data_kiosk["used_space"] = $this->request->getPost('usedSize');
+              }
+		
+              $builder->where('id', $this->request->getPost('kioskid'));
+              $builder->update($data_kiosk);
+            }
+            else {
+              $resultVal['code'] = "511";
+              $resultVal['msg'] = "등록되지 않은 키오스크아이디";
+            }
+          }
+          else {
+            $resultVal['code'] = "501";
+            $resultVal['msg'] = "입력된 키오스크아이디 없음";
           }
         }
         else {

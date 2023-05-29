@@ -68,6 +68,13 @@ class Kiosk extends BaseController
 
         echo json_encode($data);
     }
+    
+    public function saveKioskStatus()
+    {
+        $data = $this->kiosk_model->saveKioskStatus();
+
+        echo json_encode($data);
+    }
 
 
 

@@ -967,6 +967,7 @@ class MenuModel extends Model
 			'sort' => $sort, 
 			'choice' => $this->request->getPost('optiongroup_choice'),
 			'maxium' => $this->request->getPost('optiongroup_maxium'),
+			'duplication' => $this->request->getPost('optiongroup_duplication'),
 			'sort' => $max_sort, 
 		];
 		
@@ -1035,6 +1036,8 @@ class MenuModel extends Model
 			'sort' => $sort, 
 			'choice' => $this->request->getPost('optiongroup_choice'),
 			'maxium' => $this->request->getPost('optiongroup_maxium'),
+			'maxium' => $this->request->getPost('optiongroup_maxium'),
+			'duplication' => $this->request->getPost('optiongroup_duplication'),
 		];
 		
 		$builder->where('id', $this->request->getPost('ogid'));

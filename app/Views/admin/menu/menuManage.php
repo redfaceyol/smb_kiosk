@@ -215,6 +215,16 @@ $_Link = "page=".$_request->getGet('page');
                             <br>* 0일경우 무제한 선택입니다. 필수항목에만 적용됩니다.
                           </div>
                         </div>
+                        
+                        <div class="row mb-3">
+                          <label class="col-sm-3 col-form-label" for="optiongroup_duplication">중복선택</label>
+                          <div class="col-sm-6">
+                            <div class="form-check mt-2">
+                              <input class="form-check-input" type="checkbox" value="1" id="optiongroup_duplication" name="optiongroup_duplication" />
+                            </div>
+                            * 동일 옵션의 중복선택에 대한 설정입니다.
+                          </div>
+                        </div>
               
                         <div class="row mb-3">
                           <div class="col-sm-12 text-center">
@@ -653,6 +663,7 @@ function setOptionTree(mid, selectnode, newoid) {
           $('#optiongroup_set .btn-danger').remove();
 
           $('#optiongroup_set #optiongroup_choice').prop("checked", true);
+          $('#optiongroup_set #optiongroup_duplication').prop("checked", false);
 
           $('#optiongroup_set').show();
         }
@@ -715,7 +726,8 @@ function prcOptiongroup() {
           '&optiongroup_title=' + $('#optiongroup_set #optiongroup_title').val() +
           '&optiongroup_sort=' + $('#optiongroup_set #optiongroup_sort').val() +
           '&optiongroup_choice=' + ($('#optiongroup_set #optiongroup_choice').is(":checked")?"1":"") +
-          '&optiongroup_maxium=' + $('#optiongroup_set #optiongroup_maxium').val(),
+          '&optiongroup_maxium=' + $('#optiongroup_set #optiongroup_maxium').val() +
+          '&optiongroup_duplication=' + ($('#optiongroup_set #optiongroup_duplication').is(":checked")?"1":"") ,
     success: function (result) {
       eval("var result="+result);
 
@@ -755,6 +767,13 @@ function loadOptiongroup(inOgid, inType) {
           }
           else {
             $('#optiongroup_set #optiongroup_choice').prop("checked", false);
+          }
+
+          if(result.data.duplication == "1") {
+            $('#optiongroup_set #optiongroup_duplication').prop("checked", true);
+          }
+          else {
+            $('#optiongroup_set #optiongroup_duplication').prop("checked", false);
           }
 
           $('#optiongroup_set .add_btn').remove();

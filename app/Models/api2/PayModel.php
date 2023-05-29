@@ -22,6 +22,7 @@ class PayModel extends Model
 		$query = $this->db->query("create table if not exists order_".date("Y")." like order_base");
 		$query = $this->db->query("create table if not exists orderdetail_".date("Y")." like orderdetail_base");
 		$query = $this->db->query("create table if not exists pointhistory_".date("Y")." like pointhistory_base");
+		$query = $this->db->query("create table if not exists kioskstatus_".date("Y")." like kioskstatus_base");
   }
 
   public function savePay()
@@ -145,6 +146,7 @@ class PayModel extends Model
                 'card_name' => $card_name, 
                 'card_number' => $card_number, 
                 'authnumber' => $authnumber, 
+                'installment' => $this->request->getPost('installment'), 
                 'van' => $this->request->getPost('van'), 
                 'paystring' => $this->request->getPost('paystring'), 
               ];
