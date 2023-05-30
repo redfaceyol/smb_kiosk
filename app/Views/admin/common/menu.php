@@ -99,7 +99,7 @@ $session = \Config\Services::session();
               </a>
             </li>
 
-            <li class="menu-header small"><span class="menu-header-text">v.0.6 - 2023.05.29</span></li>
+            <li class="menu-header small"><span class="menu-header-text">v.0.7 - 2023.05.30</span></li>
 
             <? /*
             <li class="menu-header small text-uppercase">

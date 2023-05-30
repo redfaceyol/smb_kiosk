@@ -135,6 +135,13 @@ class PayModel extends Model
                 $authnumber = trim(iconv("CP949", "UTF-8", substr($paystring,  94,  12)));
                 $rsltStatus = trim(iconv("CP949", "UTF-8", substr($paystring,  40,  1)));
               }
+              else if($this->request->getPost('van') == "ZERO") {
+                $payment_datetime = $this->request->getPost('paydate');
+                $card_name = "";
+                $card_number = "";
+                $authnumber = $this->request->getPost('authnum');
+                $rsltStatus = "";
+              }
 
               $data = [
                 'shop' => $this->request->getPost('sid'), 

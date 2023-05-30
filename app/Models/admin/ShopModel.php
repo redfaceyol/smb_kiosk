@@ -184,8 +184,10 @@ class ShopModel extends Model
 	{
     $builder = $this->db->table('shop');
 
+		$shopId = $this->generateId();
+
 		$data = [
-			'id' => $this->generateId(), 
+			'id' => $shopId, 
 			'title' => $this->request->getPost('title'), 
       'representative' => $this->request->getPost('representative'),
 			'tel' => $this->request->getPost('tel'), 
@@ -193,6 +195,7 @@ class ShopModel extends Model
 			'address1' => $this->request->getPost('address1'), 
 			'address2' => $this->request->getPost('address2'), 
 			'biznum' => $this->request->getPost('biznum'), 
+			'shop_addinfo' => $this->request->getPost('shop_addinfo'), 
 			'status' => '1', 
 		];
     
@@ -246,10 +249,45 @@ class ShopModel extends Model
     $builder->set($data);
 		$builder->insert();
 
+		for($i=0; $i<$this->request->getPost('kiosk'); $i++) {
+			
+			$builder = $this->db->table('kiosk');
+
+			$data = [
+				'id' => $this->generateKioskId(), 
+				'shop' => $shopId,
+				'number' => ($i+1), 
+				'types' => '1', 
+				'status' => '1', 
+			];
+	
+			$builder->set('registe_datetime', "now()", false);
+			$builder->set($data);
+			$builder->insert();
+		}
+
 		$this->session->setFlashdata('message', 'primary|업장관리|등록되었습니다.');
 
 		$this->response->redirect("/admin/shop/shopList");
 	}
+
+  public function generateKioskId()
+  {
+    $rslt = true;
+
+    while($rslt) {
+      $genid = rand(10000,99999);
+
+      $query = $this->db->query("select id from kiosk where id='".$genid."'");
+
+      if($query->getNumRows() == 0)
+      {
+        $rslt = false;
+      }
+    }
+
+    return $genid;
+  }
 
 	public function getShopData()
 	{
@@ -280,6 +318,7 @@ class ShopModel extends Model
 			'address1' => $this->request->getPost('address1'), 
 			'address2' => $this->request->getPost('address2'), 
 			'biznum' => $this->request->getPost('biznum'), 
+			'shop_addinfo' => $this->request->getPost('shop_addinfo'), 
 		];
     
 		if(isset($imgdata["imagefile"]) && $imgdata["imagefile"]["upload_data"]->getTempName()) {

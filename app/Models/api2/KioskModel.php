@@ -44,6 +44,7 @@ class KioskModel extends Model
           $resultVal['tel'] = $shop_result['0']->tel."";
           $resultVal['address1'] = $shop_result['0']->address1."";
           $resultVal['address2'] = $shop_result['0']->address2."";
+          $resultVal['shop_addinfo'] = $shop_result['0']->shop_addinfo."";
           $resultVal['representative_name'] = $shop_result['0']->representative_name."";
           $resultVal['shopimageversion'] = $shop_result['0']->shopimageversion."";
           $resultVal['imgpath'] = "http://".$_SERVER["HTTP_HOST"]."/image/shop/".$this->request->getGet('sid').".jpg";

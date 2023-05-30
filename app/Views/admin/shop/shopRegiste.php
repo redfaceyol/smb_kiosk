@@ -107,9 +107,23 @@ $_Link = "";
         </div>
 
         <div class="row mb-3">
+          <label class="col-sm-2 col-form-label" for="shop_addinfo">영수증추가안내</label>
+          <div class="col-sm-6">
+            <textarea type="text" class="form-control" id="shop_addinfo" name="shop_addinfo" rows="5"></textarea>
+          </div>
+        </div>
+
+        <div class="row mb-3">
           <label class="col-sm-2 col-form-label" for="imagefile">업장이미지 (1080 * 1676)</label>
           <div class="col-sm-6">
             <input class="form-control" type="file" id="imagefile" name="imagefile" />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label" for="kiosk">KIOSK 수</label>
+          <div class="col-sm-3">
+            <input type="text" class="form-control" id="kiosk" name="kiosk" value="1" placeholder="" onkeydown="onlyNumber(this)" />
           </div>
         </div>
 
