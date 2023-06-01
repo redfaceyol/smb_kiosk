@@ -16,6 +16,12 @@ function onlyNumber(obj) {
 	}); 
 }
 
+function onlyNumber2(obj) {
+	$(obj).keyup(function(){
+		$(this).val($(this).val().replace(/[^0-9\-]/g,""));
+	}); 
+}
+
 function isCellPhone(p) {
 	p = p.split('-').join('');
 	var regPhone = /^((01[1|6|7|8|9])[1-9]+[0-9]{6,7})|(010[1-9][0-9]{7})$/;

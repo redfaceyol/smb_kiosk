@@ -265,7 +265,7 @@ $_Link = "page=".$_request->getGet('page');
                         <div class="row mb-3">
                           <label class="col-sm-3 col-form-label" for="option_price">금액</label>
                           <div class="col-sm-4">
-                            <input type="text" class="form-control" id="option_price" name="option_price" value="0" onkeydown="onlyNumber(this)" />
+                            <input type="text" class="form-control" id="option_price" name="option_price" value="0" onkeydown="onlyNumber2(this)" />
                           </div>
                         </div>
 
