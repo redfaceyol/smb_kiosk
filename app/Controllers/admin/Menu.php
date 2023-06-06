@@ -52,8 +52,21 @@ class Menu extends BaseController
            view('admin/common/html_footer', $data);
   }
 
+  public function kioskList()
+  {
+    $data["kioskDataList"] = $this->menu_model->getKioskList();
+    $data["_request"] = $this->svc_request;
+
+    return view('admin/common/html_header', $data).
+           view('admin/common/menu', $data).
+           view('admin/menu/kioskList', $data).
+           view('admin/common/help', $data).
+           view('admin/common/html_footer', $data);
+  }
+
   public function menuManage()
   {
+    $data["kioskData"] = $this->menu_model->getKioskData();
     $data["_request"] = $this->svc_request;
 
     return view('admin/common/html_header', $data).
@@ -236,6 +249,33 @@ class Menu extends BaseController
 		$result = $this->menu_model->ajaxLoadOption();
 		
 		echo json_encode($result);
+  }
+
+  public function delAllMenu()
+  {
+    if(md5($this->svc_request->getGet('kid')) == $this->svc_request->getGet('ckid')) {
+		  $this->menu_model->delAllMenu();
+    }
+    else {
+      alert('잘못된 호출입니다.', "/admin/menu/kioskList?sid=".$this->svc_request->getGet('sid')."&kid=".$this->svc_request->getGet('kid')."&page=".$this->svc_request->getGet('page'));
+    }
+  }
+
+  public function copyKioskMenu()
+  {
+		$this->menu_model->copyKioskMenu();
+  }
+
+  public function searchShop()
+  {
+		$result = $this->menu_model->searchShop();
+		
+		echo json_encode($result);
+  }
+
+  public function copyShopMenu()
+  {
+		$this->menu_model->copyShopMenu();
   }
 
 

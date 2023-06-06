@@ -1,88 +1,96 @@
 <?php
-$_Link = "";
+$session = \Config\Services::session();
+
+$_Link = "page=".$_request->getGet('page');
 ?>
 <!-- Content -->
-
+<style>
+  .progress { height: 1.5rem; font-size: 1rem; }
+</style>
 <div class="container-fluid flex-grow-1 container-p-y">
   <h4 class="fw-bold py-3 mb-4">KIOSK 관리<button type="button" class="btn btn-primary btn-xs btn-help" data-bs-toggle="modal" data-bs-target="#kioskHelp">Help</button></h4>
 
+  
+  <div class="row">
+    <? if($session->member_grade >= 90) { ?>
+    <div class="col-sm-6 row">      
+      <label class="col-sm-2 col-form-label" for="shop_title">업장</label>
+      <div class="col-sm-6">
+        <input type="text" readonly class="form-control" id="shop_title" name="shop_title" value="<?=$kioskDataList["shop_title"]?>" />
+      </div>
+    </div>
+    <div class="col-sm-6 text-end">
+      <a class="btn btn-primary" href="/admin/kiosk/postKiosk?sid=<?=$_request->getGet('sid')?>&<?=$_Link?>">신규등록</a>
+      <a href="/admin/kiosk/shopList?<?=$_Link?>" class="btn btn-secondary">목록</a>
+    </div>
+    <? } ?>
+  </div>
+  <? foreach($kioskDataList["list"] as $kioskData) { ?>
+  
   <!-- Basic Bootstrap Table -->
-  <div class="card">
+  <div class="card mt-3">
     <form name="modForm" id="modForm" method="post" action="/admin/kiosk/putKiosk">
-      <input type="hidden" name="oid" value="<?=$kioskData["id"]?>">
-      <input type="hidden" name="cid" value="<?=md5($kioskData["id"])?>">
+      <input type="hidden" name="sid" value="<?=$_request->getGet('sid')?>">
+      <input type="hidden" name="kid" value="<?=$kioskData["id"]?>">
       <div class="card-body">
-
-        <!--div class="row mb-3">
-          <label class="col-sm-2 col-form-label" for="id">아이디</label>
-          <div class="col-sm-3 mb-3 mb-sm-0">
-            <input type="text" class="form-control" id="id" name="id" value="" onChange="$('#id_check').val('0');"/>
-            <input type="hidden" id="id_check" name="id_check" value="0"/>
-            <div id="idHelp" class="form-text display-none"></div>
-          </div>
-          <div class="col-sm-5">
-            <a href="javascript:checkID('kiosk', 'id', 'id_check')" class="btn btn-secondary">중복확인</a>
-          </div>
-        </!--div-->
-
-        <div class="row mb-3">
-          <label class="col-sm-2 col-form-label" for="search_shop">업장 검색</label>
-          <div class="col-sm-2 mb-3 mb-sm-0">
-            <input type="text" class="form-control" id="search_shop" name="search_shop" value=""/>
-          </div>
-          <div class="col-sm-1">
-            <a class="btn btn-secondary" href="javascript:findShop()">검색</a>
-          </div>
-        </div>
-
-        <div class="row mb-0">
-          <label class="col-sm-2 col-form-label"></label>
-          <div class="col-sm-10" id="searchlist">
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <label class="col-sm-2 col-form-label" for="shop_title">업장</label>
-          <div class="col-sm-3">
-            <input type="text" readonly class="form-control" id="shop_title" name="shop_title" value="<?=$kioskData["shop_title"]?>" />
-            <input type="hidden" class="form-control" id="shop" name="shop" value="<?=$kioskData["shop"]?>" />
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <label class="col-sm-2 col-form-label" for="kiosktype">KIOSK 타입</label>
-          <div class="col-sm-3">
-            <select class="form-select" id="kiosktype" name="kiosktype">
-              <option value="">선택해주세요.</option>
-              <option value="1" <?=($kioskData["types"]=="1"?"selected":"")?>>KIOSK</option>
-              <option value="2" <?=($kioskData["types"]=="2"?"selected":"")?>>Table Order</option>
-            </select>
-          </div>
-        </div>
 
         <div class="row mb-3">
           <label class="col-sm-2 col-form-label" for="kiosknumber">KIOSK 번호</label>
           <div class="col-sm-3">
-            <input type="text" class="form-control" id="kiosknumber" name="kiosknumber" value="<?=$kioskData["number"]?>" onkeydown="onlyNumber(this)" />
+            <input type="text" readonly class="form-control" id="kiosknumber" name="kiosknumber" value="<?=$kioskData["number"]?>" />
+          </div>
+          <label class="col-sm-3 col-form-label text-end" for="kioskid">KIOSK ID</label>
+          <div class="col-sm-3">
+            <input type="text" readonly class="form-control" id="kioskid" name="kioskid" value="<?=$kioskData["id"]?>" />
           </div>
         </div>
 
         <div class="row mb-3">
-          <label class="col-sm-2 col-form-label" for="kiosknumber">이용중인 KIOSK 번호</label>
-          <div class="col-sm-10" id="kiosknumberlist">
-            <? for($i=0; $i<sizeof($kioskData["kiosk_number"]); $i++) { ?>
-            <a class="btn btn-outline-secondary mb-3" href="#" style="margin-right: 10px;"><?=$kioskData["kiosk_number"][$i]->number?></a>
-            <? } ?>
+          <label class="col-sm-2 col-form-label" for="kiosknumber">KIOSK 설치 버전</label>
+          <div class="col-sm-3">
+            <input type="text" readonly class="form-control" id="kiosknumber" name="kiosknumber" value="<?=$kioskData["kiosk_version"]?>" style="<?=($kioskData["kiosk_version"]!=$kioskData["maxVersion"]?"color:red":"")?>" />
+          </div>
+          <label class="col-sm-3 col-form-label text-end" for="kiosknumber">전체 최신 버전</label>
+          <div class="col-sm-3">
+            <input type="text" readonly class="form-control" id="kiosknumber" name="kiosknumber" value="<?=$kioskData["maxVersion"]?>"  />
+          </div>
+        </div>
+
+        <?php
+        $sizeper = ($kioskData["total_space"]>0 ? round(($kioskData["used_space"]/$kioskData["total_space"])*100) : 0);
+        ?>
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label" for="kiosknumber">KIOSK HDD 용량</label>
+          <div class="col-sm-10">
+            <div class="progress mt-2 mb-2">
+              <div class="progress-bar <?=($sizeper>75?"bg-danger":"")?>" role="progressbar" style="width: <?=$sizeper?>%">
+                <?=$sizeper?>%
+              </div>
+            </div>
+            <div class="row"><div class="col-sm-6 text-start"><?=formatBytes($kioskData["used_space"])?></div><div class="col-sm-6 text-end"><?=formatBytes($kioskData["total_space"])?></div></div>
+          </div>
+        </div>
+
+        <div class="row mb-0">
+          <label class="col-sm-2 col-form-label" for="kiosknumber">마지막 업데이트</label>
+          <div class="col-sm-3">
+            <input type="text" readonly class="form-control" id="kiosknumber" name="kiosknumber" value="<?=$kioskData["lastupdate_datetime"]?>" style="<?=((time() - strtotime($kioskData["lastupdate_datetime"])>(60 * 30))?"color:red":"")?>" />
           </div>
         </div>
 
       </div>
-      <div class="card-footer pt-0">
-        <a href="javascript:chkForm()" class="btn btn-primary">수정</a>
-        <a href="/admin/kiosk/kioskList?<?=$_Link?>" class="btn btn-secondary">목록</a>
+      <div class="card-footer pt-0 text-end">
+        <? if($kioskData["existMenu"] < 1) { ?>
+        <a class="btn btn-sm btn-danger" href="javascript:delConfirm('/admin/kiosk/delKiosk?sid=<?=$_request->getGet('sid')?>&oid=<?=$kioskData["id"]?>&cid=<?=md5($kioskData["id"])?>&<?=$_Link?>')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
+        <? } else { ?>
+        <a class="btn btn-sm btn-danger" href="javascript:alert('메뉴가 존재하여 삭제가 불가능합니다. 메뉴 먼저 삭제해주세요.')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
+        <? } ?>
       </div>
     </form>
   </div>
+
+  <? } ?>
+
 </div>
 <!-- / Content -->
 <script>

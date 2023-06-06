@@ -25,7 +25,7 @@ class MenuModel extends Model
 			$page_per_block = 10;
 			$num_per_page = 10;
 
-			$sql = "select shop.*, (select count(id) from category where shop=shop.id ) as categorycnt, (select count(id) from menu where shop=shop.id) as menucnt from shop where 1=1";
+			$sql = "select shop.*, (select count(id) from kiosk where shop=shop.id ) as kioskcnt, (select count(kiosk) from (select kiosk, shop from category group by kiosk) A1 where shop=shop.id ) as existMenu, (select count(id) from category where shop=shop.id ) as categorycnt, (select count(id) from menu where shop=shop.id) as menucnt from shop where 1=1";
 
 			if($this->request->getGet('searchtext')) {
 				$sql .= " and (title like '%".$this->request->getGet('searchtext')."%' or shop.id like '%".$this->request->getGet('searchtext')."%') ";
@@ -105,9 +105,43 @@ class MenuModel extends Model
 			return $returnVal;
 	}
 
+	public function getKioskList()
+	{
+		$returnVal = null;
+
+		$sql = "select kiosk.*, shop.title as shop_title, (select count(id) from category where shop=shop.id and kiosk=kiosk.id) as cntCategory, (select count(menu.id) from menu, category WHERE category=category.id and category.shop=shop.id AND kiosk=kiosk.id) AS cntMenu from kiosk, shop where shop=shop.id and shop='".$this->request->getGet('sid')."' order by kiosk.number";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+
+		if($rows) {
+			$row = $query->getResultArray();
+
+			$returnVal = $row;
+		}
+
+		return $returnVal;
+	}
+
+	public function getKioskData()
+	{
+		$returnVal = null;
+
+		$sql = "select kiosk.*, shop.title as shop_title from kiosk, shop where shop=shop.id and shop='".$this->request->getGet('sid')."' and kiosk.id='".$this->request->getGet('kid')."'";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+
+		if($rows) {
+			$row = $query->getResultArray();
+
+			$returnVal = $row;
+		}
+
+		return $returnVal;
+	}
+
 	public function ajaxGetMenus()
 	{
-		$sql = "select * from category where shop='".$this->request->getPost('sid')."' order by sort";
+		$sql = "select * from category where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."' order by sort";
 		$query = $this->db->query($sql);
 		$rows = $query->getNumRows();
 
@@ -168,7 +202,7 @@ class MenuModel extends Model
 	{
     $builder = $this->db->table('category');
 
-		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from category where shop='".$this->request->getPost('sid')."'");
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from category where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."'");
 		$max_sort_result = $max_sort_query->getResult();
 		$max_sort = $max_sort_result["0"]->max_sort;
 
@@ -179,7 +213,7 @@ class MenuModel extends Model
 			else {
 				$sort = $this->request->getPost('category_sort');
 
-				$this->db->query("update category set sort=sort+1 where shop='".$this->request->getPost('sid')."' and sort>='".$this->request->getPost('category_sort')."'");
+				$this->db->query("update category set sort=sort+1 where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."' and sort>='".$this->request->getPost('category_sort')."'");
 			}
 		}
 		else {
@@ -188,6 +222,7 @@ class MenuModel extends Model
 
 		$data = [
 			'shop' => $this->request->getPost('sid'), 
+			'kiosk' => $this->request->getPost('kid'), 
 			'title' => $this->request->getPost('category_title'),
 			'sort' => $sort, 
 			'view' => '1', 
@@ -201,12 +236,12 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'primary|메뉴관리|등록되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
 	}
 
 	public function ajaxLoadCategory() 
 	{
-		$sql = "select *, (select count(id) from menu where category=category.id) as menu_cnt, md5(id) as ccid from category where shop='".$this->request->getPost('sid')."' and id='".$this->request->getPost('cid')."'";
+		$sql = "select *, (select count(id) from menu where category=category.id) as menu_cnt, md5(id) as ccid from category where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."' and id='".$this->request->getPost('cid')."'";
 		$query = $this->db->query($sql);
 		$rows = $query->getNumRows();
 		$result = null;
@@ -224,7 +259,7 @@ class MenuModel extends Model
 
 	public function ajaxLoadCategoryList() 
 	{
-		$sql = "select * from category where shop='".$this->request->getPost('sid')."' and view='1' order by sort";
+		$sql = "select * from category where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."' and view='1' order by sort";
 		$query = $this->db->query($sql);
 		$rows = $query->getNumRows();
 		$result = null;
@@ -244,11 +279,11 @@ class MenuModel extends Model
 	{
     $builder = $this->db->table('category');
 
-		$old_sort_query = $this->db->query("select sort from category where shop='".$this->request->getPost('sid')."' and id='".$this->request->getPost('cid')."'");
+		$old_sort_query = $this->db->query("select sort from category where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."' and id='".$this->request->getPost('cid')."'");
 		$old_sort_result = $old_sort_query->getResult();
 		$old_sort = $old_sort_result["0"]->sort;
 
-		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from category where shop='".$this->request->getPost('sid')."'");
+		$max_sort_query = $this->db->query("select ifnull(max(sort)+1, 1) as max_sort from category where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."'");
 		$max_sort_result = $max_sort_query->getResult();
 		$max_sort = $max_sort_result["0"]->max_sort;
 
@@ -260,10 +295,10 @@ class MenuModel extends Model
 				$sort = $this->request->getPost('category_sort');
 
 				if($old_sort > $sort) {
-					$this->db->query("update category set sort=sort+1 where shop='".$this->request->getPost('sid')."' and sort>='".$sort."' and sort<'".$old_sort."'");
+					$this->db->query("update category set sort=sort+1 where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."' and sort>='".$sort."' and sort<'".$old_sort."'");
 				}
 				else if($old_sort < $sort){
-					$this->db->query("update category set sort=sort-1 where shop='".$this->request->getPost('sid')."' and sort<='".$sort."' and sort>'".$old_sort."'");
+					$this->db->query("update category set sort=sort-1 where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."' and sort<='".$sort."' and sort>'".$old_sort."'");
 				}
 			}
 		}
@@ -273,6 +308,7 @@ class MenuModel extends Model
 
 		$data = [
 			'shop' => $this->request->getPost('sid'), 
+			'kiosk' => $this->request->getPost('kid'), 
 			'title' => $this->request->getPost('category_title'), 
 			'sort' => $sort, 
 		];
@@ -284,28 +320,29 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'primary|카테고리관리|수정되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
 	}
 
 	public function delCategory()
 	{
     $builder = $this->db->table('category');
 		
-		$old_sort_query = $this->db->query("select sort as old_sort, shop from category where id='".$this->request->getGet('cid')."'");
+		$old_sort_query = $this->db->query("select sort as old_sort, shop, kiosk from category where id='".$this->request->getGet('cid')."'");
 		$old_sort_result = $old_sort_query->getResult();
 		$old_sort = $old_sort_result["0"]->old_sort;
 		$old_shop = $old_sort_result["0"]->shop;
+		$old_kiosk = $old_sort_result["0"]->kiosk;
 
 		$builder->where('id', $this->request->getGet('cid'));
 		$builder->delete();
 
-		$this->db->query("update category set sort=sort-1 where shop='".$old_shop."' and sort>'".$old_sort."'");
+		$this->db->query("update category set sort=sort-1 where shop='".$old_shop."' and kiosk='".$old_kiosk."' and sort>'".$old_sort."'");
 
 		$_Link = "page=".$this->request->getGet('page');
 
 		$this->session->setFlashdata('message', 'danger|카테고리관리|삭제되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
 	}
 
 	public function postMenu($imgdata)
@@ -417,7 +454,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'primary|메뉴관리|등록되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
 	}
 
 	public function ajaxLoadMenu() 
@@ -435,7 +472,7 @@ class MenuModel extends Model
 
 		$resultVal["data"] = $result[0];
 
-		$sql = "select id, title from category where shop='".$this->request->getPost('sid')."' and view='1' order by sort";
+		$sql = "select id, title from category where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."' and view='1' order by sort";
 		$query = $this->db->query($sql);
 		$result = $query->getResult();
 		$resultVal["categorys"] = $result;
@@ -577,7 +614,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'primary|메뉴관리|수정되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
 	}
 
 	public function delMenu()
@@ -619,7 +656,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'danger|메뉴관리|삭제되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
 	}
 
 	public function copyMenu()
@@ -717,7 +754,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'info|메뉴관리|복사되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
 	}
 
 	public function prcReOrderCategory()
@@ -730,7 +767,7 @@ class MenuModel extends Model
 
 		if($this->request->getPost('set') == "1") {
 			if($old_sort > 1) {
-				$old_id_query = $this->db->query("select id as old_id from category where shop='".$this->request->getPost('sid')."' and sort='".($old_sort - 1)."'");
+				$old_id_query = $this->db->query("select id as old_id from category where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."' and sort='".($old_sort - 1)."'");
 				$old_id_result = $old_id_query->getResult();
 				$old_id = $old_id_result["0"]->old_id;
 
@@ -741,12 +778,12 @@ class MenuModel extends Model
 			}
 		}
 		else if($this->request->getPost('set') == "2") {
-			$max_sort_query = $this->db->query("select max(sort) as max_sort from category where shop='".$this->request->getPost('sid')."'");
+			$max_sort_query = $this->db->query("select max(sort) as max_sort from category where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."'");
 			$max_sort_result = $max_sort_query->getResult();
 			$max_sort = $max_sort_result["0"]->max_sort;
 
 			if($old_sort < $max_sort) {
-				$old_id_query = $this->db->query("select id as old_id from category where shop='".$this->request->getPost('sid')."' and sort='".($old_sort + 1)."'");
+				$old_id_query = $this->db->query("select id as old_id from category where shop='".$this->request->getPost('sid')."' and kiosk='".$this->request->getPost('kid')."' and sort='".($old_sort + 1)."'");
 				$old_id_result = $old_id_query->getResult();
 				$old_id = $old_id_result["0"]->old_id;
 
@@ -1202,6 +1239,215 @@ class MenuModel extends Model
 		$returnVal["status"] = "OK";
 
 		return $returnVal;
+	}
+
+	public function delAllMenu()
+	{
+		$sql = "delete from option where shop='".$this->request->getGet('sid')."' and menu in (select menu.id from menu, category where category=category.id and category.shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('kid')."')";
+		$this->db->query($sql);
+		
+		$sql = "delete from optiongroup where shop='".$this->request->getGet('sid')."' and menu in (select menu.id from menu, category where category=category.id and category.shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('kid')."')";
+		$this->db->query($sql);
+		
+		$sql = "delete from menu where shop='".$this->request->getGet('sid')."' and category in (select id from category where shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('kid')."')";
+		$this->db->query($sql);
+		
+		$sql = "delete from category where shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('kid')."'";
+		$this->db->query($sql);
+
+		$this->session->setFlashdata('message', 'danger|메뉴관리|삭제되었습니다.');
+
+		$this->response->redirect("/admin/menu/kioskList?sid=".$this->request->getGet('sid'));
+	}
+
+	public function copyKioskMenu()
+	{
+    //기존 메뉴 삭제
+		$sql = "delete from option where shop='".$this->request->getGet('sid')."' and menu in (select menu.id from menu, category where category=category.id and category.shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('targetkid')."')";
+		$this->db->query($sql);
+		
+		$sql = "delete from optiongroup where shop='".$this->request->getGet('sid')."' and menu in (select menu.id from menu, category where category=category.id and category.shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('targetkid')."')";
+		$this->db->query($sql);
+		
+		$sql = "delete from menu where shop='".$this->request->getGet('sid')."' and category in (select id from category where shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('targetkid')."')";
+		$this->db->query($sql);
+		
+		$sql = "delete from category where shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('targetkid')."'";
+		$this->db->query($sql);
+
+		//메뉴복사
+		$sql1 = "select * from category where shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('sourcekid')."'";
+		$query1 = $this->db->query($sql1);
+		$rows1 = $query1->getNumRows();
+
+		if($rows1){
+			$result1 = $query1->getResult();
+
+			for($i=0; $i<$rows1; $i++) {//id, shop, kiosk, title, sort, view, registe_datetime
+				$isql = "insert into category (shop, kiosk, title, sort, view, registe_datetime) values ('".$this->request->getGet('sid')."', '".$this->request->getGet('targetkid')."', '".$result1[$i]->title."', '".$result1[$i]->sort."', '".$result1[$i]->view."', now())";
+				$this->db->query($isql);
+
+				$new_categoryid = $this->db->insertID();
+
+				$sql2 = "select * from menu where shop='".$this->request->getGet('sid')."' and category='".$result1[$i]->id."'";
+				$query2 = $this->db->query($sql2);
+				$rows2 = $query2->getNumRows();
+
+				if($rows2){
+					$result2 = $query2->getResult();
+
+					for($j=0; $j<$rows2; $j++) {//id, shop, category, title, price, takeoutprice, shopview, takeoutview, image, thumbimage, sort, view, imageversion, soldout, description, useoption, registe_datetime
+						$isql = "insert into menu (shop, category, title, price, takeoutprice, shopview, takeoutview, sort, view, imageversion, soldout, description, useoption, registe_datetime) values ('".$this->request->getGet('sid')."', '".$new_categoryid."', '".$result2[$j]->title."', '".$result2[$j]->price."', '".$result2[$j]->takeoutprice."', '".$result2[$j]->shopview."', '".$result2[$j]->takeoutview."', '".$result2[$j]->sort."', '".$result2[$j]->view."', '".$result2[$j]->imageversion."', '".$result2[$j]->soldout."', '".$result2[$j]->description."', '".$result2[$j]->useoption."', now())";
+						$this->db->query($isql);
+
+						$new_menuid = $this->db->insertID();						
+
+						$this->db->query("update menu set image=(select image from menu where id='".$result2[$j]->id."'), thumbimage=(select thumbimage from menu where id='".$result2[$j]->id."') where id='".$new_menuid."'");
+
+						$sql3 = "select * from optiongroup where shop='".$this->request->getGet('sid')."' and menu='".$result2[$j]->id."'";
+						$query3 = $this->db->query($sql3);
+						$rows3 = $query3->getNumRows();
+		
+						if($rows3){
+							$result3 = $query3->getResult();
+		
+							for($k=0; $k<$rows3; $k++) {//id, shop, menu, title, choice, duplication, maxium, sort, registe_datetime
+								$isql = "insert into optiongroup (shop, menu, title, choice, duplication, maxium, sort, registe_datetime) values ('".$this->request->getGet('sid')."', '".$new_menuid."', '".$result3[$k]->title."', '".$result3[$k]->choice."', '".$result3[$k]->duplication."', '".$result3[$k]->maxium."', '".$result3[$k]->sort."', now())";
+								$this->db->query($isql);
+		
+								$new_optiongroupid = $this->db->insertID();
+
+								$sql4 = "select * from option where shop='".$this->request->getGet('sid')."' and menu='".$result2[$j]->id."' and optiongroup='".$result3[$k]->id."'";
+								$query4 = $this->db->query($sql4);
+								$rows4 = $query4->getNumRows();
+				
+								if($rows4){
+									$result4 = $query4->getResult();
+				
+									for($l=0; $l<$rows4; $l++) {//id, shop, menu, optiongroup, title, price, soldout, sort, registe_datetime
+										$isql = "insert into option (shop, menu, optiongroup, title, price, soldout, sort, registe_datetime) values ('".$this->request->getGet('sid')."', '".$new_menuid."', '".$new_optiongroupid."', '".$result4[$l]->title."', '".$result4[$l]->price."', '".$result4[$l]->soldout."', '".$result4[$l]->sort."', now())";
+										$this->db->query($isql);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$this->session->setFlashdata('message', 'danger|메뉴관리|복사되었습니다.');
+
+		$this->response->redirect("/admin/menu/kioskList?sid=".$this->request->getGet('sid'));
+	}
+
+	public function searchShop()
+	{
+		$sql = "select kiosk.*, shop.title as shop_title from kiosk, shop where shop=shop.id and shop<>'".$this->request->getPost('sid')."' and shop in (select id from shop where title like '%".$this->request->getPost('searchTitle')."%') order by shop.title, number";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+		$result = array();
+
+		$resultVal["status"] = "OK";
+
+		if($rows) {
+			$result = $query->getResult();
+		}
+
+		$resultVal["list"] = $result;
+
+		return $resultVal;
+	}
+
+	public function copyShopMenu()
+	{
+    //기존 메뉴 삭제
+		$sql = "delete from option where shop='".$this->request->getGet('sid')."'";
+		$this->db->query($sql);
+		
+		$sql = "delete from optiongroup where shop='".$this->request->getGet('sid')."'";
+		$this->db->query($sql);
+		
+		$sql = "delete from menu where shop='".$this->request->getGet('sid')."'";
+		$this->db->query($sql);
+		
+		$sql = "delete from category where shop='".$this->request->getGet('sid')."'";
+		$this->db->query($sql);
+
+		//메뉴복사
+		$sql = "select id from kiosk where shop='".$this->request->getGet('sid')."'";
+		$query = $this->db->query($sql);
+		$rows = $query->getNumRows();
+
+		if($rows){
+			$result = $query->getResult();
+
+			for($h=0; $h<$rows; $h++) {
+				$sql1 = "select * from category where kiosk='".$this->request->getGet('sourcekid')."'";
+				$query1 = $this->db->query($sql1);
+				$rows1 = $query1->getNumRows();
+
+				if($rows1){
+					$result1 = $query1->getResult();
+
+					for($i=0; $i<$rows1; $i++) {//id, shop, kiosk, title, sort, view, registe_datetime
+						$isql = "insert into category (shop, kiosk, title, sort, view, registe_datetime) values ('".$this->request->getGet('sid')."', '".$result[$h]->id."', '".$result1[$i]->title."', '".$result1[$i]->sort."', '".$result1[$i]->view."', now())";
+						$this->db->query($isql);
+
+						$new_categoryid = $this->db->insertID();
+
+						$sql2 = "select * from menu where category='".$result1[$i]->id."'";
+						$query2 = $this->db->query($sql2);
+						$rows2 = $query2->getNumRows();
+
+						if($rows2){
+							$result2 = $query2->getResult();
+
+							for($j=0; $j<$rows2; $j++) {//id, shop, category, title, price, takeoutprice, shopview, takeoutview, image, thumbimage, sort, view, imageversion, soldout, description, useoption, registe_datetime
+								$isql = "insert into menu (shop, category, title, price, takeoutprice, shopview, takeoutview, sort, view, imageversion, soldout, description, useoption, registe_datetime) values ('".$this->request->getGet('sid')."', '".$new_categoryid."', '".$result2[$j]->title."', '".$result2[$j]->price."', '".$result2[$j]->takeoutprice."', '".$result2[$j]->shopview."', '".$result2[$j]->takeoutview."', '".$result2[$j]->sort."', '".$result2[$j]->view."', '".$result2[$j]->imageversion."', '".$result2[$j]->soldout."', '".$result2[$j]->description."', '".$result2[$j]->useoption."', now())";
+								$this->db->query($isql);
+
+								$new_menuid = $this->db->insertID();						
+
+								$this->db->query("update menu set image=(select image from menu where id='".$result2[$j]->id."'), thumbimage=(select thumbimage from menu where id='".$result2[$j]->id."') where id='".$new_menuid."'");
+
+								$sql3 = "select * from optiongroup where menu='".$result2[$j]->id."'";
+								$query3 = $this->db->query($sql3);
+								$rows3 = $query3->getNumRows();
+				
+								if($rows3){
+									$result3 = $query3->getResult();
+				
+									for($k=0; $k<$rows3; $k++) {//id, shop, menu, title, choice, duplication, maxium, sort, registe_datetime
+										$isql = "insert into optiongroup (shop, menu, title, choice, duplication, maxium, sort, registe_datetime) values ('".$this->request->getGet('sid')."', '".$new_menuid."', '".$result3[$k]->title."', '".$result3[$k]->choice."', '".$result3[$k]->duplication."', '".$result3[$k]->maxium."', '".$result3[$k]->sort."', now())";
+										$this->db->query($isql);
+				
+										$new_optiongroupid = $this->db->insertID();
+
+										$sql4 = "select * from option where menu='".$result2[$j]->id."' and optiongroup='".$result3[$k]->id."'";
+										$query4 = $this->db->query($sql4);
+										$rows4 = $query4->getNumRows();
+						
+										if($rows4){
+											$result4 = $query4->getResult();
+						
+											for($l=0; $l<$rows4; $l++) {//id, shop, menu, optiongroup, title, price, soldout, sort, registe_datetime
+												$isql = "insert into option (shop, menu, optiongroup, title, price, soldout, sort, registe_datetime) values ('".$this->request->getGet('sid')."', '".$new_menuid."', '".$new_optiongroupid."', '".$result4[$l]->title."', '".$result4[$l]->price."', '".$result4[$l]->soldout."', '".$result4[$l]->sort."', now())";
+												$this->db->query($isql);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$this->session->setFlashdata('message', 'danger|메뉴관리|복사되었습니다.');
+
+		$this->response->redirect("/admin/menu/kioskList?sid=".$this->request->getGet('sid'));
 	}
 
 

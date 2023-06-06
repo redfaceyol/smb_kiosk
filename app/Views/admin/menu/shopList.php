@@ -28,8 +28,8 @@ $_Link = "page=".$_request->getGet('page');
             <th width="80">No.</th>
             <th width="200">업장명</th>
             <th width="200">아이디</th>
-            <th width="100">등록카테고리수</th>
-            <th width="100">등록메뉴수</th>
+            <th width="100">Kiosk 수</th>
+            <th width="100">메뉴등록 Kiosk수</th>
             <th width="180">관리</th> 
           </tr>
         </thead>
@@ -39,10 +39,10 @@ $_Link = "page=".$_request->getGet('page');
             <td><?=($total_count - (($cur_page - 1) * $num_per_page) - $rowNum)?></td>
             <td><?=$lt->title?></td>
             <td><?=$lt->id?></td>
-            <td><?=$lt->categorycnt?></td>
-            <td><?=$lt->menucnt?></td>
+            <td><?=$lt->kioskcnt?></td>
+            <td><?=$lt->existMenu?></td>
             <td>
-              <a class="btn btn-sm btn-info" href="/admin/menu/menuManage?sid=<?=$lt->id?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 메뉴관리</a>
+              <a class="btn btn-sm btn-info" href="/admin/menu/kioskList?sid=<?=$lt->id?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 메뉴관리</a>
             </td>
           </tr>
 				  <? $rowNum++; } ?>

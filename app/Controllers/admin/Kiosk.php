@@ -37,7 +37,19 @@ class Kiosk extends BaseController
 
   public function index()
   {
-    $this->svc_response->redirect('/admin/kiosk/kioskList');
+    $this->svc_response->redirect('/admin/kiosk/shopList');
+  }
+
+  public function shopList()
+  {
+    $data = $this->kiosk_model->getShopList();
+    $data["_request"] = $this->svc_request;
+
+    return view('admin/common/html_header', $data).
+           view('admin/common/menu', $data).
+           view('admin/kiosk/shopList', $data).
+           view('admin/common/help', $data).
+           view('admin/common/html_footer', $data);
   }
 
   public function kioskList()
@@ -89,6 +101,18 @@ class Kiosk extends BaseController
 	{
 		$this->kiosk_model->postKiosk();
 	}
+
+  public function kioskManage()
+  {
+    $data["kioskDataList"] = $this->kiosk_model->getKioskAllData();
+    $data["_request"] = $this->svc_request;
+
+    return view('admin/common/html_header', $data).
+          view('admin/common/menu', $data).
+          view('admin/kiosk/kioskManage', $data).
+          view('admin/common/help', $data).
+          view('admin/common/html_footer', $data);
+  }
 
   public function kioskModify()
   {

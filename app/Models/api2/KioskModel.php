@@ -323,7 +323,8 @@ class KioskModel extends Model
               if($this->request->getPost('usedSize')) {
                 $data_kiosk["used_space"] = $this->request->getPost('usedSize');
               }
-		
+              
+              $builder->set('lastupdate_datetime', "now()", false);		
               $builder->where('id', $this->request->getPost('kioskid'));
               $builder->update($data_kiosk);
             }

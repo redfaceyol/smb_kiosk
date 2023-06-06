@@ -99,7 +99,7 @@ $session = \Config\Services::session();
               </a>
             </li>
 
-            <li class="menu-header small"><span class="menu-header-text">v.0.8 - 2023.06.01</span></li>
+            <li class="menu-header small"><span class="menu-header-text">v.0.10 - 2023.06.06</span></li>
 
             <? /*
             <li class="menu-header small text-uppercase">
@@ -138,6 +138,28 @@ $session = \Config\Services::session();
 
         <!-- Layout container -->
         <div class="layout-page">
+
+          <!-- Navbar -->
+
+          <nav
+            class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme d-xl-none"
+            id="layout-navbar"
+          >
+            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+              <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                <i class="bx bx-menu bx-sm"></i>
+              </a>
+            </div>
+            <div class="app-brand title">
+              <a href="/admin/dashboard" class="app-brand-link">
+                <span class="app-brand-text title menu-text fw-bolder ms-2">SMB KIOSK</span>
+              </a>
+            </div>
+
+          </nav>
+
+          <!-- / Navbar -->
+
 
           <!-- Content wrapper -->
           <div class="content-wrapper">

@@ -1,5 +1,5 @@
 <?php
-$_Link = "page=".$_request->getGet('page');
+$_Link = "sid=".$_request->getGet('sid')."&kid=".$_request->getGet('kid')."&page=".$_request->getGet('page');
 ?>
 <!-- Content -->
 <style>
@@ -17,10 +17,11 @@ $_Link = "page=".$_request->getGet('page');
     <div class="card-header row">
       <div class="col-sm-6 row">
         <h5 class="card-title">
-          매장 : test
+          매장 : <?=$kioskData[0]["shop_title"]?>, Kiosk ID : <?=$kioskData[0]["id"]?>, Kiosk 번호 : <?=$kioskData[0]["number"]?>
         </h5>
       </div>
       <div class="col-sm-6 text-end">
+        <a class="btn btn-secondary" style="margin-right: 5px;" href="/admin/menu/kioskList?<?=$_Link?>"> Kiosk목록</a>
       </div>
     </div>
     <div class="card-body">
@@ -34,6 +35,7 @@ $_Link = "page=".$_request->getGet('page');
             <form name="categoryForm" id="categoryForm" method="post" action="/admin/menu/prcCategory?<?=$_Link?>" enctype="multipart/form-data">
               <input type="hidden" name="opt" id="opt" value="">
               <input type="hidden" name="sid" id="sid" value="<?=$_request->getGet('sid')?>">
+              <input type="hidden" name="kid" id="kid" value="<?=$_request->getGet('kid')?>">
               <input type="hidden" name="cid" id="cid" value="">
 
               <div class="row mb-3">
@@ -52,7 +54,7 @@ $_Link = "page=".$_request->getGet('page');
 
               <div class="row mb-3 text-center">
                 <div class="col-sm-12">
-                  <a href="javascript:prcCategory()" class="btn btn-primary col-sm-1">저장</a>
+                  <a href="javascript:prcCategory()" class="btn btn-primary col-sm-2">저장</a>
                 </div>
               </div>
 
@@ -64,6 +66,7 @@ $_Link = "page=".$_request->getGet('page');
             <form name="menuForm" id="menuForm" method="post" action="/admin/menu/prcMenu?<?=$_Link?>" enctype="multipart/form-data">
               <input type="hidden" name="opt" id="opt" value="">
               <input type="hidden" name="sid" id="sid" value="<?=$_request->getGet('sid')?>">
+              <input type="hidden" name="kid" id="kid" value="<?=$_request->getGet('kid')?>">
               <input type="hidden" name="mid" id="mid" value="">
               <input type="hidden" name="oldcid" id="oldcid" value="">
 
@@ -182,6 +185,7 @@ $_Link = "page=".$_request->getGet('page');
                       <div id="optiongroup_set" class="settings optionsettings">
                         <input type="hidden" name="opt" id="opt" value="">
                         <input type="hidden" name="sid" id="sid" value="<?=$_request->getGet('sid')?>">
+                        <input type="hidden" name="kid" id="kid" value="<?=$_request->getGet('kid')?>">
                         <input type="hidden" name="mid" id="mid" value="">
                         <input type="hidden" name="ogid" id="ogid" value="">
 
@@ -237,6 +241,7 @@ $_Link = "page=".$_request->getGet('page');
                       <div id="option_set" class="settings optionsettings">
                         <input type="hidden" name="opt" id="opt" value="">
                         <input type="hidden" name="sid" id="sid" value="<?=$_request->getGet('sid')?>">
+                        <input type="hidden" name="kid" id="kid" value="<?=$_request->getGet('kid')?>">
                         <input type="hidden" name="mid" id="mid" value="">
                         <input type="hidden" name="oid" id="oid" value="">
 
@@ -321,6 +326,7 @@ function setMenuTree(selectnode) {
     type: "POST",
     url: '/admin/menu/ajaxGetMenus',
     data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&kid=<?=$_request->getGet('kid')?>'+
           '&newid=<?=$_request->getGet('newid')?>',
     success: function (result) {
       eval("var result="+result);
@@ -430,6 +436,7 @@ function loadCategory(inCid) {
     type: "POST",
     url: '/admin/menu/ajaxLoadCategory',
     data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&kid=<?=$_request->getGet('kid')?>'+
           '&cid=' + inCid,
     success: function (result) {
       eval("var result="+result);
@@ -459,7 +466,8 @@ function reordercategory(incid, inset) {
   $.ajax({
     type: "POST",
     url: '/admin/menu/prcReOrderCategory',
-    data: 'sid=<?=$_request->getGet('sid')?>' +
+    data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&kid=<?=$_request->getGet('kid')?>'+
           '&cid=' + incid +
           '&set=' + inset,
     success: function (result) {
@@ -481,7 +489,8 @@ function loadCategoryList(inCid) {
   $.ajax({
     type: "POST",
     url: '/admin/menu/ajaxLoadCategoryList',
-    data: 'sid=<?=$_request->getGet('sid')?>',
+    data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&kid=<?=$_request->getGet('kid')?>',
     success: function (result) {
       eval("var result="+result);
 
@@ -515,6 +524,7 @@ function loadMenu(inMid) {
     type: "POST",
     url: '/admin/menu/ajaxLoadMenu',
     data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&kid=<?=$_request->getGet('kid')?>'+
           '&mid=' + inMid,
     success: function (result) {
       eval("var result="+result);
@@ -592,7 +602,8 @@ function reordermenu(incid, inmid, inset) {
   $.ajax({
     type: "POST",
     url: '/admin/menu/prcReOrderMenu',
-    data: 'sid=<?=$_request->getGet('sid')?>' +
+    data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&kid=<?=$_request->getGet('kid')?>'+
           '&cid=' + incid +
           '&mid=' + inmid +
           '&set=' + inset,
@@ -623,6 +634,7 @@ function setOptionTree(mid, selectnode, newoid) {
     type: "POST",
     url: '/admin/menu/ajaxGetOptions',
     data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&kid=<?=$_request->getGet('kid')?>'+
           '&newoid='+newoid+
           '&mid=' + mid,
     success: function (result) {
@@ -721,6 +733,7 @@ function prcOptiongroup() {
     url: '/admin/menu/prcOptiongroup',
     data: 'opt=' + $('#optiongroup_set #opt').val() +
           '&sid=' + $('#optiongroup_set #sid').val() +
+          '&kid=' + $('#optiongroup_set #kid').val() +
           '&mid=' + $('#optiongroup_set #mid').val() +
           '&ogid=' + $('#optiongroup_set #ogid').val() +
           '&optiongroup_title=' + $('#optiongroup_set #optiongroup_title').val() +
@@ -749,6 +762,7 @@ function loadOptiongroup(inOgid, inType) {
     type: "POST",
     url: '/admin/menu/ajaxLoadOptiongroup',
     data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&kid=<?=$_request->getGet('kid')?>'+
           '&ogid=' + inOgid,
     success: function (result) {
       eval("var result="+result);
@@ -801,6 +815,7 @@ function reorderoptiongroup(inmid, inogid, inset) {
     type: "POST",
     url: '/admin/menu/prcReOrderOptiongroup',
     data: 'sid=<?=$_request->getGet('sid')?>' +
+          '&kid=<?=$_request->getGet('kid')?>'+
           '&mid=' + inmid +
           '&ogid=' + inogid +
           '&set=' + inset,
@@ -842,6 +857,7 @@ function prcOption() {
     url: '/admin/menu/prcOption',
     data: 'opt=' + $('#option_set #opt').val() +
           '&sid=' + $('#option_set #sid').val() +
+          '&kid=' + $('#option_set #kid').val() +
           '&mid=' + $('#option_set #mid').val() +
           '&oid=' + $('#option_set #oid').val() +
           '&ogid=' + $('#option_set #ogid').val() +
@@ -869,6 +885,7 @@ function loadOption(inOid) {
     type: "POST",
     url: '/admin/menu/ajaxLoadOption',
     data: 'sid=<?=$_request->getGet('sid')?>'+
+          '&kid=<?=$_request->getGet('kid')?>'+
           '&oid=' + inOid,
     success: function (result) {
       eval("var result="+result);
@@ -900,6 +917,7 @@ function reorderoption(inogid, inoid, inset) {
     type: "POST",
     url: '/admin/menu/prcReOrderOption',
     data: 'sid=<?=$_request->getGet('sid')?>' +
+          '&kid=<?=$_request->getGet('kid')?>'+
           '&ogid=' + inogid +
           '&oid=' + inoid +
           '&set=' + inset,
