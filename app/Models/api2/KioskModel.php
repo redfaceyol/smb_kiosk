@@ -84,13 +84,29 @@ class KioskModel extends Model
         $shop_rows = $shop_query->getNumRows();
 
         if($shop_rows) {
-          $resultVal['code'] = "100";
+          if($this->request->getGet('kid')) {
+            $kiosk_sql = "select * from kiosk where kiosk.id='".$this->request->getGet('kid')."'";
+            $kiosk_query = $this->db->query($kiosk_sql);
+            $kiosk_rows = $kiosk_query->getNumRows();
+    
+            if($kiosk_rows) {
+              $resultVal['code'] = "100";
 
-          $category_sql = "select id, shop, title, sort, view, registe_datetime from category where view=1 and shop='".$this->request->getGet('sid')."' order by sort";
-          $category_query = $this->db->query($category_sql);
-          $category_result = $category_query->getResult();
+              $category_sql = "select id, shop, title, sort, view, registe_datetime from category where view=1 and shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('kid')."' order by sort";
+              $category_query = $this->db->query($category_sql);
+              $category_result = $category_query->getResult();
 
-          $resultVal['category_list'] = $category_result;
+              $resultVal['category_list'] = $category_result;
+            }
+            else {
+              $resultVal['code'] = "511";
+              $resultVal['msg'] = "등록되지 않은 키오스크아이디";
+            }
+          }
+          else {
+            $resultVal['code'] = "501";
+            $resultVal['msg'] = "입력된 키오스크아이디 없음";
+          }
         }
         else {
           $resultVal['code'] = "510";
@@ -121,13 +137,29 @@ class KioskModel extends Model
         $shop_rows = $shop_query->getNumRows();
 
         if($shop_rows) {
-          $resultVal['code'] = "100";
+          if($this->request->getGet('kid')) {
+            $kiosk_sql = "select * from kiosk where kiosk.id='".$this->request->getGet('kid')."'";
+            $kiosk_query = $this->db->query($kiosk_sql);
+            $kiosk_rows = $kiosk_query->getNumRows();
+    
+            if($kiosk_rows) {
+              $resultVal['code'] = "100";
 
-          $menu_sql = "select id, shop, category, title, if(isnull(price), '0', price) as price, if(isnull(takeoutprice), '0', takeoutprice) as takeoutprice, shopview, takeoutview, sort, view, imageversion, soldout, description, useoption, registe_datetime, if(isnull(image), '', concat('http://".$_SERVER["HTTP_HOST"]."/image/menu/', id, '/', id, '.jpg')) as imgpath from menu where view=1 and shop='".$this->request->getGet('sid')."' order by sort";
-          $menu_query = $this->db->query($menu_sql);
-          $menu_result = $menu_query->getResult();
+              $menu_sql = "select menu.id, menu.shop, category, menu.title, if(isnull(price), '0', price) as price, if(isnull(takeoutprice), '0', takeoutprice) as takeoutprice, shopview, takeoutview, menu.sort, menu.view, imageversion, soldout, description, useoption, menu.registe_datetime, if(isnull(image), '', concat('http://".$_SERVER["HTTP_HOST"]."/image/menu/', menu.id, '/', menu.id, '.jpg')) as imgpath from menu, category where category=category.id and menu.view=1 and menu.shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('kid')."' order by sort";
+              $menu_query = $this->db->query($menu_sql);
+              $menu_result = $menu_query->getResult();
 
-          $resultVal['menu_list'] = $menu_result;
+              $resultVal['menu_list'] = $menu_result;
+            }
+            else {
+              $resultVal['code'] = "511";
+              $resultVal['msg'] = "등록되지 않은 키오스크아이디";
+            }
+          }
+          else {
+            $resultVal['code'] = "501";
+            $resultVal['msg'] = "입력된 키오스크아이디 없음";
+          }
         }
         else {
           $resultVal['code'] = "510";
@@ -158,13 +190,29 @@ class KioskModel extends Model
         $shop_rows = $shop_query->getNumRows();
 
         if($shop_rows) {
-          $resultVal['code'] = "100";
-          
-          $optiongroup_sql = "select id, shop, menu, title, choice, maxium, sort, duplication, registe_datetime from optiongroup where shop='".$this->request->getGet('sid')."' order by sort";
-          $optiongroup_query = $this->db->query($optiongroup_sql);
-          $optiongroup_result = $optiongroup_query->getResult();
+          if($this->request->getGet('kid')) {
+            $kiosk_sql = "select * from kiosk where kiosk.id='".$this->request->getGet('kid')."'";
+            $kiosk_query = $this->db->query($kiosk_sql);
+            $kiosk_rows = $kiosk_query->getNumRows();
+    
+            if($kiosk_rows) {
+              $resultVal['code'] = "100";
+              
+              $optiongroup_sql = "select optiongroup.id, optiongroup.shop, menu, optiongroup.title, choice, maxium, optiongroup.sort, duplication, optiongroup.registe_datetime from optiongroup, menu, category where category=category.id and menu=menu.id and optiongroup.shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('kid')."' order by optiongroup.sort";
+              $optiongroup_query = $this->db->query($optiongroup_sql);
+              $optiongroup_result = $optiongroup_query->getResult();
 
-          $resultVal['optiongroup_list'] = $optiongroup_result;
+              $resultVal['optiongroup_list'] = $optiongroup_result;
+            }
+            else {
+              $resultVal['code'] = "511";
+              $resultVal['msg'] = "등록되지 않은 키오스크아이디";
+            }
+          }
+          else {
+            $resultVal['code'] = "501";
+            $resultVal['msg'] = "입력된 키오스크아이디 없음";
+          }
         }
         else {
           $resultVal['code'] = "510";
@@ -195,13 +243,29 @@ class KioskModel extends Model
         $shop_rows = $shop_query->getNumRows();
 
         if($shop_rows) {
-          $resultVal['code'] = "100";
+          if($this->request->getGet('kid')) {
+            $kiosk_sql = "select * from kiosk where kiosk.id='".$this->request->getGet('kid')."'";
+            $kiosk_query = $this->db->query($kiosk_sql);
+            $kiosk_rows = $kiosk_query->getNumRows();
+    
+            if($kiosk_rows) {
+              $resultVal['code'] = "100";
 
-          $option_sql = "select id, shop, menu, optiongroup, title, price, sort, soldout, registe_datetime from option where shop='".$this->request->getGet('sid')."' order by sort";
-          $option_query = $this->db->query($option_sql);
-          $option_result = $option_query->getResult();
+              $option_sql = "select option.id, option.shop, option.menu, optiongroup, option.title, option.price, option.sort, option.soldout, option.registe_datetime from option, menu, category where category=category.id and menu=menu.id and option.shop='".$this->request->getGet('sid')."' and kiosk='".$this->request->getGet('kid')."' order by option.sort";
+              $option_query = $this->db->query($option_sql);
+              $option_result = $option_query->getResult();
 
-          $resultVal['option_list'] = $option_result;
+              $resultVal['option_list'] = $option_result;
+            }
+            else {
+              $resultVal['code'] = "511";
+              $resultVal['msg'] = "등록되지 않은 키오스크아이디";
+            }
+          }
+          else {
+            $resultVal['code'] = "501";
+            $resultVal['msg'] = "입력된 키오스크아이디 없음";
+          }
         }
         else {
           $resultVal['code'] = "510";

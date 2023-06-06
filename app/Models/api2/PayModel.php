@@ -68,24 +68,26 @@ class PayModel extends Model
 
               $menulist = json_decode($this->request->getPost('orderdata'), true);
 
-              foreach ($menulist["menuList"] as $menuitem) {
-                $data = [
-                  'shop' => $this->request->getPost('sid'), 
-                  'kiosk' => $this->request->getPost('kioskid'), 
-                  'order_id' => $order_id, 
-                  'order_table' => '', 
-                  'order_date' => $this->request->getPost('orderdate'), 
-                  'order_datetime' => $this->request->getPost('orderdate'), 
-                  'menu' => $menuitem["id"], 
-                  'menu_title' => $menuitem["title"], 
-                  'menu_price' => $menuitem["price"], 
-                  'menu_quantity' => $menuitem["quantity"], 
-                  'menu_option' => json_encode($menuitem["optionList"]), 
-                ];
-                
-                $builder->set('registe_datetime', "now()", false);
-                $builder->set($data);
-                $builder->insert();
+              if($menulist) {
+                foreach ($menulist["menuList"] as $menuitem) {
+                  $data = [
+                    'shop' => $this->request->getPost('sid'), 
+                    'kiosk' => $this->request->getPost('kioskid'), 
+                    'order_id' => $order_id, 
+                    'order_table' => '', 
+                    'order_date' => $this->request->getPost('orderdate'), 
+                    'order_datetime' => $this->request->getPost('orderdate'), 
+                    'menu' => $menuitem["id"], 
+                    'menu_title' => $menuitem["title"], 
+                    'menu_price' => $menuitem["price"], 
+                    'menu_quantity' => $menuitem["quantity"], 
+                    'menu_option' => json_encode($menuitem["optionList"]), 
+                  ];
+                  
+                  $builder->set('registe_datetime', "now()", false);
+                  $builder->set($data);
+                  $builder->insert();
+                }
               }
 
               $builder = $this->db->table("payment_".date("Y"));

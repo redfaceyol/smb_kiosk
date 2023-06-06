@@ -74,7 +74,7 @@ $_Link = "page=".$_request->getGet('page');
         <div class="row mb-0">
           <label class="col-sm-2 col-form-label" for="kiosknumber">마지막 업데이트</label>
           <div class="col-sm-3">
-            <input type="text" readonly class="form-control" id="kiosknumber" name="kiosknumber" value="<?=$kioskData["lastupdate_datetime"]?>" style="<?=((time() - strtotime($kioskData["lastupdate_datetime"])>(60 * 30))?"color:red":"")?>" />
+            <input type="text" readonly class="form-control" id="kiosknumber" name="kiosknumber" value="<?=$kioskData["lastupdate_datetime"]?>" style="<?=(($kioskData["lastupdate_datetime"]?(time() - strtotime($kioskData["lastupdate_datetime"])>(60 * 30)):false)?"color:red":"")?>" />
           </div>
         </div>
 
