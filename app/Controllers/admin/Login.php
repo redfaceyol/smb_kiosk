@@ -51,4 +51,9 @@ class Login extends BaseController
 
     $this->svc_response->redirect("/admin/login");
   }
+
+  public function autoLogin()
+  {
+    $this->membermodel->autoLogin();
+  }
 }

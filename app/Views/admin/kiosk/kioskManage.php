@@ -12,7 +12,6 @@ $_Link = "page=".$_request->getGet('page');
 
   
   <div class="row">
-    <? if($session->member_grade >= 90) { ?>
     <div class="col-sm-6 row">      
       <label class="col-sm-2 col-form-label" for="shop_title">업장</label>
       <div class="col-sm-6">
@@ -20,10 +19,11 @@ $_Link = "page=".$_request->getGet('page');
       </div>
     </div>
     <div class="col-sm-6 text-end">
+      <? if($session->member_grade >= 90) { ?>
       <a class="btn btn-primary" href="/admin/kiosk/postKiosk?sid=<?=$_request->getGet('sid')?>&<?=$_Link?>">신규등록</a>
+      <? } ?>
       <a href="/admin/kiosk/shopList?<?=$_Link?>" class="btn btn-secondary">목록</a>
     </div>
-    <? } ?>
   </div>
   <? foreach($kioskDataList["list"] as $kioskData) { ?>
   

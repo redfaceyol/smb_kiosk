@@ -31,6 +31,10 @@ class ShopModel extends Model
       $sql .= " and (title like '%".$this->request->getGet('searchtext')."%' or shop.id like '%".$this->request->getGet('searchtext')."%' or tel like '%".$this->request->getGet('searchtext')."%') ";
     }
 
+		if($this->session->get('member_grade') == "50") {
+			$sql .= " and representative.id='".$this->session->get('member_id')."' ";
+		}
+
 		$query = $this->db->query($sql);
     $rows = $query->getNumRows();
 

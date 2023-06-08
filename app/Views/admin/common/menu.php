@@ -81,6 +81,12 @@ $session = \Config\Services::session();
                 <div data-i18n="Menu">메뉴 관리</div>
               </a>
             </li>
+            <li class="menu-item">
+              <a href="/admin/sales" class="menu-link" >
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Sales">매출 현황</div>
+              </a>
+            </li>
 
             <? } ?>
             
@@ -99,7 +105,7 @@ $session = \Config\Services::session();
               </a>
             </li>
 
-            <li class="menu-header small"><span class="menu-header-text">v.0.10 - 2023.06.06</span></li>
+            <li class="menu-header small"><span class="menu-header-text">v.0.11 - 2023.06.08</span></li>
 
             <? /*
             <li class="menu-header small text-uppercase">
