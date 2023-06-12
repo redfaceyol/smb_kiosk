@@ -47,7 +47,12 @@ class KioskModel extends Model
           $resultVal['shop_addinfo'] = $shop_result['0']->shop_addinfo."";
           $resultVal['representative_name'] = $shop_result['0']->representative_name."";
           $resultVal['shopimageversion'] = $shop_result['0']->shopimageversion."";
-          $resultVal['imgpath'] = "http://".$_SERVER["HTTP_HOST"]."/image/shop/".$this->request->getGet('sid').".jpg";
+          if($shop_result['0']->shopimage) {
+            $resultVal['imgpath'] = "http://".$_SERVER["HTTP_HOST"]."/image/shop/".$this->request->getGet('sid').".jpg";
+          }
+          else {
+            $resultVal['imgpath'] = "";
+          }
 
           $kiosk_sql = "select * from kiosk where shop='".$this->request->getGet('sid')."' order by number";
           $kiosk_query = $this->db->query($kiosk_sql);
