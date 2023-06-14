@@ -56,6 +56,7 @@ class PayModel extends Model
                 'order_number' => $this->request->getPost('ordernumber'), 
                 'order_count' => $this->request->getPost('ordercount'), 
                 'total_amount' => $this->request->getPost('totalamount'), 
+                'takeout' => $this->request->getPost('takeout'), 
               ];
               
               $builder->set('registe_datetime', "now()", false);
