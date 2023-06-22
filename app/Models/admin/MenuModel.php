@@ -618,7 +618,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'primary|메뉴관리|수정되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&kid=".$this->request->getPost('kid')."&newid=".$this->request->getPost('mid')."&".$_Link);
 	}
 
 	public function delMenu()
