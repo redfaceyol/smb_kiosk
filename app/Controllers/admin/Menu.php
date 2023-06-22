@@ -163,7 +163,7 @@ class Menu extends BaseController
 		  $this->menu_model->delMenu();
     }
     else {
-      alert('잘못된 호출입니다.', "/admin/menu/categoryList");
+      alert('잘못된 호출입니다.', "/admin/menu/menuManage?sid=".$this->svc_request->getGet('sid')."&kid=".$this->svc_request->getGet('kid')."&page=");
     }
   }
 

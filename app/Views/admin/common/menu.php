@@ -105,7 +105,7 @@ $session = \Config\Services::session();
               </a>
             </li>
 
-            <li class="menu-header small"><span class="menu-header-text">v.0.11 - 2023.06.08</span></li>
+            <li class="menu-header small"><span class="menu-header-text">v.0.12 - 2023.06.22</span></li>
 
             <? /*
             <li class="menu-header small text-uppercase">

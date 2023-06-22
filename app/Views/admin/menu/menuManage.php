@@ -585,8 +585,8 @@ function loadMenu(inMid) {
         }
 
         $('#menuForm .add_btn').remove();
-        $('#menuForm .btn-primary:last').after('<a href="javascript:delConfirm(\'/admin/menu/delMenu?sid=<?=$_request->getGet('sid')?>&mid='+inMid+'&cmid='+result.data.cmid+'&\')" class="btn btn-danger col-sm-1 add_btn">삭제</a>');
-        $('#menuForm .btn-primary:last').after('<a href="javascript:copyMenu(\'/admin/menu/copyMenu?sid=<?=$_request->getGet('sid')?>&mid='+inMid+'&cmid='+result.data.cmid+'&cid='+result.data.category_id+'\')" class="btn btn-info col-sm-1 add_btn">복사</a>');
+        $('#menuForm .btn-primary:last').after('<a href="javascript:delConfirm(\'/admin/menu/delMenu?sid=<?=$_request->getGet('sid')?>&kid=<?=$_request->getGet('kid')?>&mid='+inMid+'&cmid='+result.data.cmid+'&\')" class="btn btn-danger col-sm-1 add_btn">삭제</a>');
+        $('#menuForm .btn-primary:last').after('<a href="javascript:copyMenu(\'/admin/menu/copyMenu?sid=<?=$_request->getGet('sid')?>&kid=<?=$_request->getGet('kid')?>&mid='+inMid+'&cmid='+result.data.cmid+'&cid='+result.data.category_id+'\')" class="btn btn-info col-sm-1 add_btn">복사</a>');
         $('#menuForm .btn-primary:last').after('<div class="btn-group add_btn" role="group" aria-label="Basic outlined example"><a class="btn btn-outline-primary" href="javascript:reordermenu('+result.data.category_id+', '+inMid+', 1);" onfocus="blur">↑</a><a class="btn btn-outline-primary" href="javascript:reordermenu('+result.data.category_id+', '+inMid+', 2);" onfocus="blur">↓</a></div>');
 
         $('#menu_set').show();

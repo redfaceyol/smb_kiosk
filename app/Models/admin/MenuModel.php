@@ -660,7 +660,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'danger|메뉴관리|삭제되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&kid=".$this->request->getGet('kid')."&".$_Link);
 	}
 
 	public function copyMenu()
@@ -758,7 +758,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'info|메뉴관리|복사되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&kid=".$this->request->getGet('kid')."&".$_Link);
 	}
 
 	public function prcReOrderCategory()
