@@ -377,6 +377,19 @@ class ShopModel extends Model
 		$builder->where('id', $this->request->getPost('oid'));
 		$builder->update($data);
 
+		if($this->request->getPost('kioskpassword')) {
+			$key = hash( 'sha256', "smbkiosk_key" );
+			$iv = substr( hash( 'sha256', "smbkiosk_iv" ), 0, 16 );
+
+			$builder = $this->db->table('kiosk');
+			$data = array();
+			$data = [
+				'kioskpassword' => base64_encode( openssl_encrypt( $this->request->getPost('kioskpassword'), "AES-256-CBC", $key, 0, $iv ) ),
+			];
+			$builder->where('shop', $this->request->getPost('oid'));
+			$builder->update($data);
+		}
+
 		$this->session->setFlashdata('message', 'primary|업장관리|수정되었습니다.');
 
 		$this->response->redirect("/admin/shop/shopModify?oid=".$this->request->getPost('oid')."&cid=".md5($this->request->getPost('oid')));

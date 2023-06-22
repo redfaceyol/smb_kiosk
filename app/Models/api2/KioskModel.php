@@ -59,6 +59,20 @@ class KioskModel extends Model
           $kiosk_result = $kiosk_query->getResult();
 
           $resultVal['kiosk_list'] = $kiosk_result;
+
+          $kiosk_pass = array();
+
+          foreach($kiosk_result as $kiosk_result_item) {            
+            $key = hash( 'sha256', "smbkiosk_key" );
+            $iv = substr( hash( 'sha256', "smbkiosk_iv" ), 0, 16 );
+
+            $tmpVal["id"] = $kiosk_result_item->id;
+            $tmpVal["pass"] = openssl_decrypt( base64_decode( $kiosk_result_item->kioskpassword ), "AES-256-CBC", $key, 0, $iv );
+
+            array_push($kiosk_pass, $tmpVal);
+          }
+
+          $resultVal['kiosk_password'] = $kiosk_pass;
         }
         else {
           $resultVal['code'] = "510";
