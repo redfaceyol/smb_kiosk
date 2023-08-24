@@ -67,7 +67,7 @@ class KioskModel extends Model
             $iv = substr( hash( 'sha256', "smbkiosk_iv" ), 0, 16 );
 
             $tmpVal["id"] = $kiosk_result_item->id;
-            $tmpVal["pass"] = openssl_decrypt( base64_decode( ($kiosk_result_item->kioskpassword?$kiosk_result_item->kioskpassword:"L0VsR05zU2lKY1BSR3JGY0YvVTU5dz09") ), "AES-256-CBC", $key, 0, $iv );
+            $tmpVal["pass"] = ($kiosk_result_item->kioskpassword ? openssl_decrypt( base64_decode( $kiosk_result_item->kioskpassword ), "AES-256-CBC", $key, 0, $iv ) : "1234");
 
             array_push($kiosk_pass, $tmpVal);
           }
