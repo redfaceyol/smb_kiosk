@@ -150,7 +150,7 @@ class App extends BaseConfig
      *
      * @deprecated use Config\Session::$driver instead.
      */
-    public string $sessionDriver = FileHandler::class;
+    //public string $sessionDriver = FileHandler::class;
 
     /**
      * --------------------------------------------------------------------------
@@ -241,7 +241,7 @@ class App extends BaseConfig
      *
      * @deprecated use Config\Session::$DBGroup instead.
      */
-    public ?string $sessionDBGroup = null;
+    //public ?string $sessionDBGroup = null;
 
     /**
      * --------------------------------------------------------------------------
@@ -252,7 +252,7 @@ class App extends BaseConfig
      *
      * @deprecated use Config\Cookie::$prefix property instead.
      */
-    public string $cookiePrefix = '';
+    //public string $cookiePrefix = '';
 
     /**
      * --------------------------------------------------------------------------
@@ -320,7 +320,7 @@ class App extends BaseConfig
      *
      * @deprecated use Config\Cookie::$samesite property instead.
      */
-    public ?string $cookieSameSite = 'Lax';
+    //public ?string $cookieSameSite = 'Lax';
 
     /**
      * --------------------------------------------------------------------------
@@ -354,7 +354,7 @@ class App extends BaseConfig
      *
      * @deprecated Use `Config\Security` $tokenName property instead of using this property.
      */
-    public string $CSRFTokenName = 'csrf_test_name';
+    //public string $CSRFTokenName = 'csrf_test_name';
 
     /**
      * --------------------------------------------------------------------------
@@ -428,7 +428,7 @@ class App extends BaseConfig
      *
      * @deprecated `Config\Cookie` $samesite property is used.
      */
-    public string $CSRFSameSite = 'Lax';
+    //public string $CSRFSameSite = 'Lax';
 
     /**
      * --------------------------------------------------------------------------
