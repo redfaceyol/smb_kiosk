@@ -85,10 +85,10 @@ $_Link = "";
 
         <div class="row mb-3">
           <label class="col-sm-2 col-form-label" for="zipcode">우편번호</label>
-          <div class="col-sm-2 mb-3 mb-sm-0">
+          <div class="col-sm-1 mb-3 mb-sm-0">
             <input type="text" readonly class="form-control" id="zipcode" name="zipcode" value="<?=$shopData["zipcode"]?>"/>
           </div>
-          <div class="col-sm-1">
+          <div class="col-sm-2">
             <a class="btn btn-secondary" href="javascript:findAddress('zipcode', 'address1', 'address2')">주소찾기</a>
           </div>
         </div>

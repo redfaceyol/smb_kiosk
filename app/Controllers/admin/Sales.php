@@ -74,8 +74,18 @@ class Sales extends BaseController
       date_sub($datenow, date_interval_create_from_date_string("1 days"));
     }
 
+    $data["startYear"] = $this->sales_model->getStartYear();
     $data["dailydays"] = $rsltDataDate;
     $data["dailyvals"] = $rsltDataVal;
+
+    $getYear = ($this->svc_request->getGet('year')?$this->svc_request->getGet('year'):date("Y"));
+    $getMonth = ($this->svc_request->getGet('month')?$this->svc_request->getGet('month'):date("n"));
+    $getDay = ($this->svc_request->getGet('day')?$this->svc_request->getGet('day'):date("j"));
+
+    $data["yearSales"] = $this->sales_model->getYearSales($getYear);
+    $data["monthSales"] = $this->sales_model->getMonthSales($getYear, $getMonth);
+    $data["daySales"] = $this->sales_model->getDaySales($getYear, $getMonth, $getDay);
+
     $data["_request"] = $this->svc_request;
 
     return view('admin/common/html_header', $data).

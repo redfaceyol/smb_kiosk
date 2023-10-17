@@ -42,7 +42,8 @@ $_Link = "page=".$_request->getGet('page');
             <td><?=$lt->kioskcnt?></td>
             <td><?=number_format(($lt->totalsales?$lt->totalsales:0))?></td>
             <td>
-              <a class="btn btn-sm btn-info" href="/admin/sales/salesDashboard?sid=<?=$lt->id?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 메출현황</a>
+              <a class="btn btn-sm btn-info" href="/admin/sales/salesDashboard?sid=<?=$lt->id?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 매출요약</a>
+              <a class="btn btn-sm btn-primary" href="/admin/sales/salesDashboard?sid=<?=$lt->id?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 매출상세</a>
             </td>
           </tr>
 				  <? $rowNum++; } ?>

@@ -111,12 +111,74 @@ class MenuModel extends Model
 
 	public function getSalesDashboard()
 	{
-		$sql = "select sum(amount) amount, payment_day from ( SELECT amount, DATE_FORMAT(payment_datetime, '%Y%m%d') as payment_date, DATE_FORMAT(payment_datetime, '%d') as payment_day FROM payment_2023 where shop='".$this->request->getGet('sid')."' and (van='KSNET' and authnumber!='1000')) A where payment_date>=SUBDATE(now(), 7) group by payment_date";
+		$sql = "select sum(amount) amount, payment_day from ( SELECT amount, DATE_FORMAT(payment_datetime, '%Y%m%d') as payment_date, DATE_FORMAT(payment_datetime, '%d') as payment_day FROM payment_".date("Y")." where shop='".$this->request->getGet('sid')."' and (van='KSNET' and authnumber!='1000')) A where payment_date>=SUBDATE(now(), 7) group by payment_date";
 		$query = $this->db->query($sql);
 		$result = $query->getResult();
 
 		$returnVal["dailysalelist"] = $result;
  
+		return $returnVal;
+	}
+
+	public function getStartYear()
+	{
+		$sql = "select year(registe_datetime) as startyear from shop where id='".$this->request->getGet('sid')."'";
+		$query = $this->db->query($sql);
+		$result = $query->getResult();
+
+		$returnVal = $result[0]->startyear;
+
+		return $returnVal;
+	}
+
+	public function getYearSales($getYear)
+	{
+		$sql = "select sum(amount) amount, payment_month from ( SELECT amount, DATE_FORMAT(payment_datetime, '%Y%m%d') as payment_date, month(payment_datetime) as payment_month FROM payment_".$getYear." where shop='".$this->request->getGet('sid')."' and (van='KSNET' and authnumber!='1000')) A group by payment_month";
+    $query = $this->db->query($sql);
+    $result = $query->getResult();
+
+		for($i=1; $i<=12; $i++) {
+			$returnVal[$i] = 0;
+		}
+
+		foreach($result as $row) {
+      $returnVal[$row->payment_month] = $row->amount;
+    }
+
+		return $returnVal;
+	}
+
+	public function getMonthSales($getYear, $getMonth)
+	{
+		$sql = "select sum(amount) amount, payment_day from ( SELECT amount, DATE_FORMAT(payment_datetime, '%Y%m%d') as payment_date, day(payment_datetime) as payment_day FROM payment_".$getYear." where shop='".$this->request->getGet('sid')."' and month(payment_datetime)='".$getMonth."' and (van='KSNET' and authnumber!='1000')) A group by payment_day";
+		$query = $this->db->query($sql);
+		$result = $query->getResult();
+
+		for($i=1; $i<=date("t", strtotime($getYear."-".$getMonth."-1")); $i++) {
+      $returnVal[$i] = 0;
+    }
+
+		foreach($result as $row) {
+      $returnVal[$row->payment_day] = $row->amount;
+    }
+
+		return $returnVal;
+	}
+
+	public function getDaySales($getYear, $getMonth, $getDay)
+	{
+		$sql = "select sum(amount) amount, payment_hour from ( SELECT amount, DATE_FORMAT(payment_datetime, '%Y%m%d') as payment_date, hour(payment_datetime) as payment_hour FROM payment_".$getYear." where shop='".$this->request->getGet('sid')."' and month(payment_datetime)='".$getMonth."' and day(payment_datetime)='".$getDay."' and (van='KSNET' and authnumber!='1000')) A group by payment_hour";
+    $query = $this->db->query($sql);
+    $result = $query->getResult();
+
+    for($i=0; $i<=23; $i++) {
+      $returnVal[$i] = 0;
+    }
+
+    foreach($result as $row) {
+      $returnVal[$row->payment_hour] = $row->amount;
+    }
+
 		return $returnVal;
 	}
 }
