@@ -47,7 +47,6 @@ $_Link = "page=".$_request->getGet('page');
             <td><?=$lt->totalpoint?></td>
             <? if($session->member_grade >= 90) { ?>
             <td>
-              <a class="btn btn-sm btn-info" href="/admin/point/pointView?oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>"><i class="bx bx-edit-alt me-1"></i> 보기</a>
               <a class="btn btn-sm btn-danger" href="javascript:delConfirm('/admin/point/delPoint?oid=<?=$lt->id?>&cid=<?=md5($lt->id)?>&<?=$_Link?>')"><i class="bx bx-trash-alt me-1"></i> 삭제</a>
             </td>
             <? } ?>
