@@ -86,11 +86,32 @@ class Sales extends BaseController
     $data["monthSales"] = $this->sales_model->getMonthSales($getYear, $getMonth);
     $data["daySales"] = $this->sales_model->getDaySales($getYear, $getMonth, $getDay);
 
+    $getStartDate = ($this->svc_request->getGet('startdate')?$this->svc_request->getGet('startdate'):date("Y-m-d", strtotime("-7 Day")));
+    $getEndDate = ($this->svc_request->getGet('enddate')?$this->svc_request->getGet('enddate'):date("Y-m-d"));
+
+    //$data["menuSales"] = $this->sales_model->getMenuSales($getStartDate, $getEndDate);
+
     $data["_request"] = $this->svc_request;
 
     return view('admin/common/html_header', $data).
            view('admin/common/menu', $data).
            view('admin/sales/salesDashboard', $data).
+           view('admin/common/help', $data).
+           view('admin/common/html_footer', $data);
+  }
+
+  public function salesDetail()
+  {
+    $getStartDate = ($this->svc_request->getGet('startdate')?$this->svc_request->getGet('startdate'):date("Y-m-d"));
+    $getEndDate = ($this->svc_request->getGet('enddate')?$this->svc_request->getGet('enddate'):date("Y-m-d"));
+
+    $data = $this->sales_model->getSalesDetail($getStartDate, $getEndDate);
+
+    $data["_request"] = $this->svc_request;
+
+    return view('admin/common/html_header', $data).
+           view('admin/common/menu', $data).
+           view('admin/sales/salesDetail', $data).
            view('admin/common/help', $data).
            view('admin/common/html_footer', $data);
   }

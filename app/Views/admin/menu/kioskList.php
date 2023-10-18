@@ -8,7 +8,7 @@ $_Link = "page=".$_request->getGet('page');
   .progress { height: 1.5rem; font-size: 1rem; }
 </style>
 <div class="container-fluid flex-grow-1 container-p-y">
-  <h4 class="fw-bold py-3 mb-4">메뉴 관리<button type="button" class="btn btn-primary btn-xs btn-help" data-bs-toggle="modal" data-bs-target="#menuHelp">Help</button></h4>
+  <h4 class="fw-bold py-3 mb-0">메뉴 관리<button type="button" class="btn btn-primary btn-xs btn-help" data-bs-toggle="modal" data-bs-target="#menuHelp">Help</button></h4>
   
   <div class="row">
     <div class="col-sm-6 row">      
