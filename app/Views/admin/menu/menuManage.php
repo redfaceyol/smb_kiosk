@@ -449,7 +449,7 @@ function loadCategory(inCid) {
 
         $('#categoryForm .add_btn').remove();
         if(result.data.menu_cnt<1) {
-          $('#categoryForm .btn-primary:last').after('<a href="javascript:delConfirm(\'/admin/menu/delCategory?sid=<?=$_request->getGet('sid')?>&cid='+inCid+'&ccid='+result.data.ccid+'&\')" class="btn btn-danger col-sm-1 offset-sm-1 add_btn">삭제</a>');
+          $('#categoryForm .btn-primary:last').after('<a href="javascript:delConfirm(\'/admin/menu/delCategory?sid=<?=$_request->getGet('sid')?>&kid=<?=$_request->getGet('kid')?>&cid='+inCid+'&ccid='+result.data.ccid+'&\')" class="btn btn-danger col-sm-1 offset-sm-1 add_btn">삭제</a>');
         }
         $('#categoryForm .btn-primary:last').after('<div class="btn-group col-sm-2 add_btn" role="group" aria-label="Basic outlined example"><a class="btn btn-outline-primary" href="javascript:reordercategory('+inCid+', 1);" onfocus="blur">↑</a><a class="btn btn-outline-primary" href="javascript:reordercategory('+inCid+', 2);" onfocus="blur">↓</a></div>');
 

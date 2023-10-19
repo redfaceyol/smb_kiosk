@@ -346,7 +346,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'danger|카테고리관리|삭제되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getGet('sid')."&kid=".$this->request->getGet('kid')."&".$_Link);
 	}
 
 	public function postMenu($imgdata)
