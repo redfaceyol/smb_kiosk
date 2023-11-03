@@ -343,7 +343,7 @@ function setMenuTree(selectnode) {
       alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
     },
     complete: function() {
-
+      console.log(resultVal);
       $('#menus').treeview({
         data: resultVal,
         levels: 1,

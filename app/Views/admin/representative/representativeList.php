@@ -39,7 +39,7 @@ $_Link = "page=".$_request->getGet('page');
         <tbody class="table-border-bottom-0">
 					<? $rowNum = 0; foreach($list as $lt) { ?>
           <tr>
-            <td><?=($total_count - (($cur_page - 1) * $num_per_page) - $rowNum)?></td>
+            <td><?=((($cur_page - 1) * $num_per_page) + $rowNum + 1)?></td>
             <td><?=$lt->name?></td>
             <td><?=$lt->id?></td>
             <td><?=$lt->phone?></td>

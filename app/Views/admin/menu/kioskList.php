@@ -102,6 +102,15 @@ $_Link = "page=".$_request->getGet('page');
   </div>
 
 </div>
+<div class="modal fade" id="processing" aria-hidden="true" aria-labelledby="processingLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <button class="btn btn-primary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 복사중... 
+      </button>
+    </div>
+  </div>
+</div>
 <!-- / Content -->
 <script>
   function copyKioskMenu(soucekiosk, targetkiosk) {
@@ -110,7 +119,23 @@ $_Link = "page=".$_request->getGet('page');
     }
     else {
       if(confirm("기존의 모든 메뉴가 삭제된 후 복사됩니다. 진행하시겠습니까?")) {
-        location.href="/admin/menu/copyKioskMenu?sid=<?=$_request->getGet('sid')?>&sourcekid="+$('#'+soucekiosk).val()+"&targetkid="+targetkiosk;
+        $('#processing').modal({
+          backdrop: 'static',
+          keyboard: false,
+          show: true,
+        }).modal('show');
+        console.log("1");
+        $.ajax({
+          type: "GET",
+          url: "/admin/menu/copyKioskMenu?sid=<?=$_request->getGet('sid')?>&sourcekid="+$('#'+soucekiosk).val()+"&targetkid="+targetkiosk,
+          success: function (result) {
+            location.reload();
+          },
+          error:function(request, status, error){
+            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+          }
+        });
+        //location.href="/admin/menu/copyKioskMenu?sid=<?=$_request->getGet('sid')?>&sourcekid="+$('#'+soucekiosk).val()+"&targetkid="+targetkiosk;
       }
     }
   }
@@ -157,7 +182,23 @@ $_Link = "page=".$_request->getGet('page');
     }
     else {
       if(confirm("기존의 모든 키오스크의 모든 메뉴가 삭제된 후 복사됩니다.\r\n모든 키오스크에 동일하게 복사됩니다.\r\n\r\n진행하시겠습니까?")) {
-        location.href="/admin/menu/copyShopMenu?sid=<?=$_request->getGet('sid')?>&sourcekid="+$('#sourcekiosk').val();
+        $('#processing').modal({
+          backdrop: 'static',
+          keyboard: false,
+          show: true,
+        }).modal('show');
+        console.log("1");
+        $.ajax({
+          type: "GET",
+          url: "/admin/menu/copyShopMenu?sid=<?=$_request->getGet('sid')?>&sourcekid="+$('#sourcekiosk').val(),
+          success: function (result) {
+            location.reload();
+          },
+          error:function(request, status, error){
+            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+          }
+        });
+        //location.href="/admin/menu/copyShopMenu?sid=<?=$_request->getGet('sid')?>&sourcekid="+$('#sourcekiosk').val();
       }
     }
   }

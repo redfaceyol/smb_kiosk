@@ -324,7 +324,7 @@ class MenuModel extends Model
 
 		$this->session->setFlashdata('message', 'primary|카테고리관리|수정되었습니다.');
 
-		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&kid=".$this->request->getPost('kid')."&".$_Link);
+		$this->response->redirect("/admin/menu/menuManage?sid=".$this->request->getPost('sid')."&kid=".$this->request->getPost('kid')."&cid=".$this->request->getPost('cid')."&".$_Link);
 	}
 
 	public function delCategory()
@@ -1449,9 +1449,9 @@ class MenuModel extends Model
 			}
 		}
 
-		$this->session->setFlashdata('message', 'danger|메뉴관리|복사되었습니다.');
+		$this->session->set(array('message'=>'danger|메뉴관리|복사되었습니다.'));
 
-		$this->response->redirect("/admin/menu/kioskList?sid=".$this->request->getGet('sid'));
+		//$this->response->redirect("/admin/menu/kioskList?sid=".$this->request->getGet('sid'));
 	}
 
 
