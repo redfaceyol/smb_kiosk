@@ -52,16 +52,16 @@ function indentation($depth) {
 
 //이미지 함수
 //비율 유지하여 최적 크기 계산
-function colImageSize($srcWidth, $srcHeight, $trgWidth, $trgHeight) {
-	if($srcWidth > $trgWidth) {
-    $ratio = $trgWidth / $srcWidth;
-    $trgWidth = $trgWidth * $ratio;
-    $trgHeight = $trgHeight * $ratio;
+function colImageSize($in_srcWidth, $in_srcHeight, $in_trgWidth, $in_trgHeight) {
+	if($in_srcWidth > $in_trgWidth) {
+    $ratio = $in_trgWidth / $in_srcWidth;
+    $trgWidth = $in_trgWidth * $ratio;
+    $trgHeight = $in_trgHeight * $ratio;
   }
-  if($srcHeight > $trgHeight) {
-    $ratio = $trgHeight / $srcHeight;
-    $trgHeight = $trgHeight * $ratio;
+  if($trgHeight > $in_trgHeight) {
+    $ratio = $in_trgHeight / $trgHeight;
     $trgWidth = $trgWidth * $ratio;
+    $trgHeight = $trgHeight * $ratio;
   }
   return array($trgWidth, $trgHeight);
 }
