@@ -335,7 +335,7 @@ class ShopModel extends Model
       $trg_height = 1676;
 
 			list($trg_width, $trg_height) = colImageSize($org_width, $org_height, $trg_width, $trg_height);
-			echo $org_width."--".$org_height."--".$trg_width."--".$trg_height;exit;
+			
 			$target = imagecreatetruecolor($trg_width, $trg_height);
 
 			if($imagesize[2] == 1)
