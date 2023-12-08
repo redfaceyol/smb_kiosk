@@ -53,12 +53,15 @@ function indentation($depth) {
 //이미지 함수
 //비율 유지하여 최적 크기 계산
 function colImageSize($in_srcWidth, $in_srcHeight, $in_trgWidth, $in_trgHeight) {
+	$trgWidth = $in_trgWidth;
+	$trgHeight = $in_trgHeight;
+
 	if($in_srcWidth > $in_trgWidth) {
     $ratio = $in_trgWidth / $in_srcWidth;
     $trgWidth = $in_srcWidth * $ratio;
     $trgHeight = $in_srcHeight * $ratio;
   }
-  if($trgHeight > $in_trgHeight) {
+  if($in_srcHeight > $in_trgHeight) {
     $ratio = $in_trgHeight / $trgHeight;
     $trgWidth = $trgWidth * $ratio;
     $trgHeight = $trgHeight * $ratio;

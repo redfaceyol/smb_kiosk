@@ -406,11 +406,11 @@ class MenuModel extends Model
 			if($imagesize[2] == 1)
 			{
 				$source = imagecreatefromgif($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ImageCopyResampled($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
 				ob_start();
 				imagegif($target);
 				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ImageCopyResampled($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
 				ob_start();
 				imagegif($target2);
 				$imgdata_bn2 = ob_get_clean();
@@ -418,11 +418,11 @@ class MenuModel extends Model
 			else if($imagesize[2] == 2)
 			{
 				$source = imagecreatefromjpeg($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ImageCopyResampled($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
 				ob_start();
 				imagejpeg($target, null, 100);
 				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ImageCopyResampled($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
 				ob_start();
 				imagejpeg($target2, null, 100);
 				$imgdata_bn2 = ob_get_clean();
@@ -430,11 +430,11 @@ class MenuModel extends Model
 			else if($imagesize[2] == 3)
 			{
 				$source = imagecreatefrompng($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ImageCopyResampled($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
 				ob_start();
 				imagepng($target, null, 0);
 				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ImageCopyResampled($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
 				ob_start();
 				imagepng($target2, null, 0);
 				$imgdata_bn2 = ob_get_clean();
@@ -563,11 +563,11 @@ class MenuModel extends Model
 			if($imagesize[2] == 1)
 			{
 				$source = imagecreatefromgif($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ImageCopyResampled($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
 				ob_start();
 				imagegif($target);
 				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ImageCopyResampled($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
 				ob_start();
 				imagegif($target2);
 				$imgdata_bn2 = ob_get_clean();
@@ -575,11 +575,11 @@ class MenuModel extends Model
 			else if($imagesize[2] == 2)
 			{
 				$source = imagecreatefromjpeg($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ImageCopyResampled($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
 				ob_start();
 				imagejpeg($target, null, 100);
 				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ImageCopyResampled($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
 				ob_start();
 				imagejpeg($target2, null, 100);
 				$imgdata_bn2 = ob_get_clean();
@@ -587,11 +587,11 @@ class MenuModel extends Model
 			else if($imagesize[2] == 3)
 			{
 				$source = imagecreatefrompng($imgdata["imagefile"]["upload_data"]->getTempName());
-				imagecopyresized($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
+				ImageCopyResampled($target, $source, 0, 0, 0, 0, $trg_width, $trg_height, $org_width, $org_height);
 				ob_start();
 				imagepng($target, null, 0);
 				$imgdata_bn = ob_get_clean();
-				imagecopyresized($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
+				ImageCopyResampled($target2, $source, 0, 0, 0, 0, $trg2_width, $trg2_height, $org_width, $org_height);
 				ob_start();
 				imagepng($target2, null, 0);
 				$imgdata_bn2 = ob_get_clean();
